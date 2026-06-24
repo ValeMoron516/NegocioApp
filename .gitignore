@@ -1,3 +1,8 @@
+application-secret.properties
+*.pem
+*.jar
+*.class
+
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
