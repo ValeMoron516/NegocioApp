@@ -1,4 +1,4 @@
-package com.backend.javaCrudApp.controller;
+package com.desarrolloweb.NegocioApp.controller;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.javaCrudApp.entity.Producto;
-import com.backend.javaCrudApp.service.ProductoService;
+import com.desarrolloweb.NegocioApp.entity.Producto;
+import com.desarrolloweb.NegocioApp.service.ProductoService;
 
 @RestController
 @RequestMapping("/producto")
