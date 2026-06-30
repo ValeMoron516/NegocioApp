@@ -1,12 +1,12 @@
-package com.backend.javaCrudApp.service;
+package com.desarrolloweb.NegocioApp.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.backend.javaCrudApp.entity.Producto;
-import com.backend.javaCrudApp.repository.ProductoRepository;
+import com.desarrolloweb.NegocioApp.entity.Producto;
+import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
 
 @Service
 public class ProductoService {

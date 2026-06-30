@@ -1,11 +1,9 @@
 package com.desarrolloweb.NegocioApp.repository;
 
+import com.desarrolloweb.NegocioApp.entity.DetalleVenta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.desarrolloweb.NegocioApp.entity.Producto;
-
 @Repository
-public interface ProductoRepository extends JpaRepository<Producto, Long>{
-    
+public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Long> {
 }
