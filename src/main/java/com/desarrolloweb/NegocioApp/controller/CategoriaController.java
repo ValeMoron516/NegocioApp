@@ -1,7 +1,7 @@
-package com.backend.javaCrudApp.controller;
+package com.desarrolloweb.NegocioApp.controller;
 
-import com.backend.javaCrudApp.entity.Categoria;
-import com.backend.javaCrudApp.service.CategoriaService;
+import com.desarrolloweb.NegocioApp.entity.Categoria;
+import com.desarrolloweb.NegocioApp.service.CategoriaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
