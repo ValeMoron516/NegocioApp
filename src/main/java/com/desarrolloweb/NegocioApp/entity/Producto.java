@@ -1,4 +1,4 @@
-package com.backend.javaCrudApp.entity;
+package com.desarrolloweb.NegocioApp.entity;
 
 import java.math.BigDecimal;
 

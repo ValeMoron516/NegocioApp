@@ -1,9 +1,9 @@
-package com.backend.javaCrudApp.repository;
+package com.desarrolloweb.NegocioApp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.backend.javaCrudApp.entity.Categoria;
+import com.desarrolloweb.NegocioApp.entity.Categoria;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
