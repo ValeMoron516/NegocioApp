@@ -1,20 +1,26 @@
 
-## Módulo: Valoración de Productos
+Módulo: Valoración de Productos
+###################################
 
-### 1. Registrar nueva valoración de producto
-* **URL:** `/api/v1/valoracion`
-* **Método HTTP:** `POST`
-* **Descripción:** Registra una nueva reseña y puntuación para un producto, vinculándolo al ID del usuario logueado.
-* **Request Body:**
-```json
+1. Registrar nueva valoración de producto
+URL: /api/v1/valoracion
+
+Método HTTP: POST
+
+Descripción: Crea una nueva reseña y puntuación para un producto en el sistema, vinculándola al usuario logueado.
+
+Request Body:
+
 {
   "productoId": 105,
   "puntuacion": 5,
   "comentario": "Excelente producto, llegó super rápido y cumple con todo."
 }
 Respuestas:
-201 Created (Éxito): Valoración registrada correctamente. Devuelve el objeto completo generado con su ID y la fecha de creación.
 
+Código: 201 (Creado exitosamente)
+
+Response Body:
 
 {
   "id": 1,
@@ -24,8 +30,9 @@ Respuestas:
   "comentario": "Excelente producto, llegó super rápido y cumple con todo.",
   "fecha": "2026-06-28T18:48:00"
 }
-400 Bad Request (Error): Error de validación (por ejemplo, si la puntuación está fuera del rango de 1 a 5, o si falta el ID del producto).
+Código: 400 Bad Request (Datos enviados inválidos o mal formados)
 
+Response Body:
 
 {
   "timestamp": "2026-06-28T18:48:00",
@@ -33,8 +40,9 @@ Respuestas:
   "error": "Bad Request",
   "message": "La puntuación debe ser un número entero entre 1 y 5."
 }
-404 Not Found (Error): El producto que se intenta valorar no existe en el sistema.
+Código: 404 Not Found (El producto que se intenta valorar no existe)
 
+Response Body:
 
 {
   "timestamp": "2026-06-28T18:48:00",
@@ -42,17 +50,20 @@ Respuestas:
   "error": "Not Found",
   "message": "No se encontró el producto con ID: 105"
 }
+##################################################
+
 2. Obtener las valoraciones de un producto
-URL: /api/v1/valoracion/producto/{productoId}
+URL: /api/v1/valoracion/producto/{id}
 
 Método HTTP: GET
 
-Descripción: Retorna la lista completa de comentarios y puntuaciones asociados a un producto específico.
+Descripción: Obtiene la lista completa de comentarios y puntuaciones asociados a un producto específico.
 
 Respuestas:
-200 OK (Éxito): Devuelve un arreglo con todas las valoraciones de ese producto. Si el producto existe pero nadie lo valoró, devuelve una lista vacía [].
 
+Código: 200 OK (Éxito con resultados)
 
+Response Body:
 [
   {
     "id": 1,
@@ -63,8 +74,14 @@ Respuestas:
     "fecha": "2026-06-28T18:48:00"
   }
 ]
-404 Not Found (Error): El ID del producto ingresado no existe en la base de datos.
+Código: 200 OK (Éxito sin resultados)
 
+Response Body:
+
+[]
+Código: 404 Not Found (El producto con el ID provisto no existe)
+
+Response Body:
 
 {
   "timestamp": "2026-06-28T18:50:00",
@@ -72,23 +89,29 @@ Respuestas:
   "error": "Not Found",
   "message": "No se encontró el producto con ID: 105"
 }
+##################################################
+
 3. Obtener el promedio de puntuación de un producto
-URL: /api/v1/valoracion/producto/{productoId}/promedio
+URL: /api/v1/valoracion/producto/{id}/promedio
 
 Método HTTP: GET
 
-Descripción: Calcula y devuelve el puntaje promedio de estrellas de un producto (útil para mostrar las "estrellitas" en el frontend).
+Descripción: Calcula y devuelve el puntaje promedio de estrellas de un producto junto con el total de opiniones.
 
 Respuestas:
-200 OK (Éxito): Devuelve el ID del producto junto con su promedio matemático y el total de personas que opinaron.
+
+Código: 200 OK (Éxito)
+
+Response Body:
 
 {
   "productoId": 105,
   "puntuacionPromedio": 4.75,
   "totalValoraciones": 12
 }
-404 Not Found (Error): El ID del producto no corresponde a ningún registro.
+Código: 404 Not Found (El producto con el ID provisto no existe)
 
+Response Body:
 
 {
   "timestamp": "2026-06-28T18:52:00",
@@ -96,18 +119,22 @@ Respuestas:
   "error": "Not Found",
   "message": "No se puede calcular el promedio. El producto con ID 105 no existe."
 }
-4. Eliminar una valoración
+##################################################
+
+4. Borrar valoración
 URL: /api/v1/valoracion/{id}
 
 Método HTTP: DELETE
 
-Descripción: Borra definitivamente una reseña de la base de datos mediante su ID (por ejemplo, si el usuario decide borrar su propio comentario).
+Descripción: Elimina una valoración del sistema definitivamente mediante su ID.
 
 Respuestas:
-204 No Content (Éxito): Se eliminó correctamente de la base de datos. El cuerpo de la respuesta está vacío.
 
-404 Not Found (Error): Se intentó eliminar una valoración que no existe.
+Código: 204 No Content (Borrado exitosamente)
 
+Código: 404 Not Found (La valoración con el ID provisto no existe)
+
+Response Body:
 
 {
   "timestamp": "2026-06-28T18:55:00",
