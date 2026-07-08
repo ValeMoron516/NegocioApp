@@ -17,13 +17,11 @@
       "data": [
         {
           "id": 1,
-          "nombre": "Hogar",
-          "descripcion": "Productos para el hogar"
+          "nombre": "Hogar"
         },
         {
           "id": 2,
-          "nombre": "Tecnología",
-          "descripcion": "Dispositivos electrónicos y accesorios"
+          "nombre": "Tecnología"
         }
       ],
       "meta": {
@@ -64,8 +62,7 @@
     ```json
     {
       "id": 1,
-      "nombre": "Hogar",
-      "descripcion": "Productos para el hogar"
+      "nombre": "Hogar"
     }
     ```
 
