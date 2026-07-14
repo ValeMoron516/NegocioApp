@@ -74,22 +74,20 @@
 * **URL:** `/api/v1/categorias`
 * **Método HTTP:** `POST`
 * **Descripción:** Crea una nueva categoria en el sistema.
-* **Request Body:**
-    ```json
-    {
-        "nombre": "Computacion",
-        "descripcion": "Productos relacionados a la computacion"
-    }
-    ```
+* **Parámetros de consulta (Query Params):**
+  * `nombre` (texto, obligatorio): Nombre de la nueva categoría.
+  * `descripcion` (texto, obligatorio): Descripción de la nueva categoría.
+
+#### Ejemplo de Petición Completa
+`POST /api/v1/categorias?nombre=Computacion&descripcion=Productos%20relacionados%20a%20la%20computacion`
 
 #### Respuestas
-* **Código:** `201` (Creado exitosamente)
+* **Código:** `201 Created` (Creado exitosamente)
 * **Response Body:**
     ```json (registro creado)
     {
-      "id": 1,
-      "nombre": "Hogar",
-      "descripcion": "Productos para el hogar"
+        "id": 1,
+        "nombre": "Computacion"
     }
     ```
 

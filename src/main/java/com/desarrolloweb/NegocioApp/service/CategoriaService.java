@@ -15,12 +15,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.NoSuchElementException;
+
 
 @Service
 public class CategoriaService {
 
     @Autowired
     private CategoriaRepository categoriaRepository;
+
+// ##################################################
 
     // Leer todas las Categorias (paginadas)
     public PaginacionDTO<CategoriaDTO> obtenerTodasCategorias(Integer page, Integer limit) { 
@@ -49,10 +53,13 @@ public class CategoriaService {
         return new PaginacionDTO<>(dtos, meta);
     }
 
+// ##################################################
+
     // Leer Categoria por ID
-    public Optional<CategoriaDTO> obtenerCategoriaPorId(Long id) { 
+    public CategoriaDTO obtenerCategoriaPorId(Long id) { 
         Optional<Categoria> optC = categoriaRepository.findById(id);
         
+        // Existe
         if (optC.isPresent()) {
             Categoria c = optC.get();
             CategoriaDTO dto = new CategoriaDTO();
@@ -60,16 +67,43 @@ public class CategoriaService {
             dto.setId(c.getId());
             dto.setNombre(c.getNombre());
             
-            return Optional.of(dto);
+            return dto;
         }
         
-        return Optional.empty();
+        // No existe
+        throw new NoSuchElementException();
     }
 
+// ##################################################
+
     // Crear nueva Categoria
-    //public void crearCategoria(Categoria categoria) {
-    //    categoriaRepository.save(categoria); 
-    //}
+    public CategoriaDTO crearCategoria(String nombre, String descripcion) {
+        
+        if (nombre == null || nombre.isEmpty()) {
+            throw new IllegalArgumentException(); // nombre nulo o vacio
+        }
+        
+        if (descripcion == null || descripcion.isEmpty()) {
+            throw new IllegalArgumentException(); // descripcion nulo o vacio
+        }
+        
+        Optional<Categoria> optC = categoriaRepository.findByNombre(nombre);
+        if (optC.isPresent()) {
+            // Ya existe
+            throw new IllegalStateException();
+        } else {
+            // No existe
+            Categoria c = new Categoria();
+            c.setNombre(nombre);
+            c.setDescripcion(descripcion);
+            
+            Categoria cResp = categoriaRepository.save(c);
+            
+            return new CategoriaDTO(cResp.getId(), cResp.getNombre()); // Exito
+        }
+    }
+
+// ##################################################
 
     // Actualizar Categoria
     //public void actualizarCategoriaPorId(Long id, Categoria categoria) {

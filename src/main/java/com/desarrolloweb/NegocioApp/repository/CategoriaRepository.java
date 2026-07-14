@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.desarrolloweb.NegocioApp.entity.Categoria;
 
+import java.util.Optional;
+
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     
+    Optional<Categoria> findByNombre(String nombre);
 }
