@@ -1,6 +1,9 @@
 package com.desarrolloweb.NegocioApp.controller;
 
 import com.desarrolloweb.NegocioApp.entity.Categoria;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.dtos.CategoriaDTO;
 import com.desarrolloweb.NegocioApp.dtos.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.service.CategoriaService;
@@ -49,7 +52,7 @@ public class CategoriaController {
             CategoriaDTO cDto = categoriaService.obtenerCategoriaPorId(id);
             // Existe
             return ResponseEntity.status(HttpStatus.OK).body(cDto); // 200
-        } catch (NoSuchElementException e) {
+        } catch (NotFoundException e) {
             // No existe
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
         }
@@ -67,10 +70,10 @@ public class CategoriaController {
             CategoriaDTO cDto = categoriaService.crearCategoria(nombre, descripcion);
             return ResponseEntity.status(HttpStatus.CREATED).body(cDto); // 201
         }
-        catch (IllegalArgumentException e) {
+        catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400
         }
-        catch (IllegalStateException e) {
+        catch (ConflictException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
         }
     }

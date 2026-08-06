@@ -1,6 +1,9 @@
 package com.desarrolloweb.NegocioApp.service;
 
 import com.desarrolloweb.NegocioApp.entity.Categoria;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.dtos.CategoriaDTO;
 import com.desarrolloweb.NegocioApp.dtos.MetaDTO;
 import com.desarrolloweb.NegocioApp.dtos.PaginacionDTO;
@@ -15,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.NoSuchElementException;
 
 
 @Service
@@ -71,28 +73,24 @@ public class CategoriaService {
         }
         
         // No existe
-        throw new NoSuchElementException();
+        throw new NotFoundException();
     }
 
 // ##################################################
 
     // Crear nueva Categoria
     public CategoriaDTO crearCategoria(String nombre, String descripcion) {
+
+        // nombre nulo o vacio
+        if (nombre == null || nombre.isEmpty()) { throw new BadRequestException(); }
         
-        if (nombre == null || nombre.isEmpty()) {
-            throw new IllegalArgumentException(); // nombre nulo o vacio
-        }
-        
-        if (descripcion == null || descripcion.isEmpty()) {
-            throw new IllegalArgumentException(); // descripcion nulo o vacio
-        }
+        // descripcion nulo o vacio
+        if (descripcion == null || descripcion.isEmpty()) { throw new BadRequestException(); }
         
         Optional<Categoria> optC = categoriaRepository.findByNombre(nombre);
-        if (optC.isPresent()) {
-            // Ya existe
-            throw new IllegalStateException();
-        } else {
-            // No existe
+        
+        if (optC.isPresent()) { throw new ConflictException(); } // Ya existe
+        else { // No existe
             Categoria c = new Categoria();
             c.setNombre(nombre);
             c.setDescripcion(descripcion);
