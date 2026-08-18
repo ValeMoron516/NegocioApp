@@ -63,11 +63,10 @@ public class CategoriaController {
     // Crear nueva categoria
     @PostMapping
     public ResponseEntity<CategoriaDTO> crearCategoria(
-        @RequestParam String nombre, 
-        @RequestParam String descripcion) {
+        @RequestBody Categoria c) {
         
         try {
-            CategoriaDTO cDto = categoriaService.crearCategoria(nombre, descripcion);
+            CategoriaDTO cDto = categoriaService.crearCategoria(c);
             return ResponseEntity.status(HttpStatus.CREATED).body(cDto); // 201
         }
         catch (BadRequestException e) {
@@ -81,14 +80,22 @@ public class CategoriaController {
 // ##################################################
 
     // Actualizar por id
-    //@PutMapping("{id}")
-    //public void actualizarCategoriaPorId(@PathVariable Long id, @RequestBody Categoria categoria) {
-    //    categoriaService.actualizarCategoriaPorId(id, categoria);
-    //}
+    @PutMapping("{id}")
+    public ResponseEntity<categoriaDTO> actualizarCategoriaPorId(@PathVariable Long id, @RequestBody Categoria categoria) {
+        categoriaService.actualizarCategoriaPorId(id, categoria);
+    }
     
+// ##################################################
+
     // Borrar por ID
-    //@DeleteMapping("{id}")
-    //public void borrarCategoriaPorId(@PathVariable Long id) {
-    //    categoriaService.borrarCategoriaPorId(id);
-    //}
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> borrarCategoriaPorId(@PathVariable Long id) {
+        try {
+            categoriaService.borrarCategoriaPorId(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204
+        }
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
+    }
 }

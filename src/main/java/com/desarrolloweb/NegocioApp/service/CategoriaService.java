@@ -28,7 +28,7 @@ public class CategoriaService {
 
 // ##################################################
 
-    // Leer todas las Categorias (paginadas)
+    // Obtener lista de categorías (paginadas)
     public PaginacionDTO<CategoriaDTO> obtenerTodasCategorias(Integer page, Integer limit) { 
         
         Pageable pageable = PageRequest.of(page - 1, limit);
@@ -40,6 +40,7 @@ public class CategoriaService {
             CategoriaDTO dto = new CategoriaDTO();
             dto.setId(c.getId());
             dto.setNombre(c.getNombre());
+            dto.setDescripcion(c.getDescripcion());
             
             dtos.add(dto);
         }
@@ -57,7 +58,7 @@ public class CategoriaService {
 
 // ##################################################
 
-    // Leer Categoria por ID
+    // Obtener Categoria por ID
     public CategoriaDTO obtenerCategoriaPorId(Long id) { 
         Optional<Categoria> optC = categoriaRepository.findById(id);
         
@@ -73,30 +74,25 @@ public class CategoriaService {
         }
         
         // No existe
-        throw new NotFoundException();
+        throw new NotFoundException("El elemento solicitado no existe");
     }
 
 // ##################################################
 
     // Crear nueva Categoria
-    public CategoriaDTO crearCategoria(String nombre, String descripcion) {
+    public CategoriaDTO crearCategoria(Categoria c) {
 
         // nombre nulo o vacio
-        if (nombre == null || nombre.isEmpty()) { throw new BadRequestException(); }
+        if (c.nombre == null || c.nombre.isEmpty()) { throw new BadRequestException("Nombre invalido"); }
         
         // descripcion nulo o vacio
-        if (descripcion == null || descripcion.isEmpty()) { throw new BadRequestException(); }
+        if (c.descripcion == null || c.descripcion.isEmpty()) { throw new BadRequestException("Descripcion invalida"); }
         
-        Optional<Categoria> optC = categoriaRepository.findByNombre(nombre);
+        Optional<Categoria> optC = categoriaRepository.findByNombre(c.nombre);
         
-        if (optC.isPresent()) { throw new ConflictException(); } // Ya existe
+        if (optC.isPresent()) { throw new ConflictException("Ya existe una categoria von el nombre provisto"); } // Ya existe
         else { // No existe
-            Categoria c = new Categoria();
-            c.setNombre(nombre);
-            c.setDescripcion(descripcion);
-            
             Categoria cResp = categoriaRepository.save(c);
-            
             return new CategoriaDTO(cResp.getId(), cResp.getNombre()); // Exito
         }
     }
@@ -104,21 +100,41 @@ public class CategoriaService {
 // ##################################################
 
     // Actualizar Categoria
-    //public void actualizarCategoriaPorId(Long id, Categoria categoria) {
-    //    Categoria newRegistro = categoriaRepository.findById(id).get();
+    public categoriaDTO actualizarCategoriaPorId(Long id, Categoria c) {
+        Optional<Categoria> optC = categoriaRepository.findById(id);
 
-    //    if (categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
-    //        newRegistro.setNombre(categoria.getNombre());
-    //    }
-    //    if (categoria.getDescripcion() != null && !categoria.getDescripcion().isBlank()) {
-    //        newRegistro.setDescripcion(categoria.getDescripcion());
-    //    }
+        if (optC.isPresent()) {
+            Categoria newC = optC.get();
+            if (c.getNombre() != null || !c.getNombre().isBlank()) {
+                Optional<Categoria> optC = categoriaRepository.findByNombre(c.nombre);
+                if (optC.isPresent()) {
+                    newC.setNombre(c.getNombre());
+                } else {
+                    throw new ConflictException("El nombre provisto ya existe")
+                }
+            }
+            if (c.getDescripcion() != null || !c.getDescripcion().isBlank()) {
+                newC.setDescripcion(c.getDescripcion());
+            }
         
-    //    categoriaRepository.save(newRegistro); 
-    //}
+            categoriaRepository.save(newC);
+            Categoria c = categoriaRepository.findById(newC.getId()).get();
+            return new categoriaDTO(c.getId(), c.getNombre(), c.getDescripcion());
+        }
+        else {
+            throw new NotFoundException("La categoria con el ID provisto no existe");  
+   }
+
+// ##################################################
 
     // Borrar Categoria por id
-    //public void borrarCategoriaPorId(Long id) { 
-    //    categoriaRepository.deleteById(id); 
-    //}
+    public void borrarCategoriaPorId(Long id) {
+         
+         Optional<Categoria> optC = categoriaRepository.findById(id);
+
+        if (optC.isPresent()) {
+            categoriaRepository.deleteById(id);
+        } else {
+            throw new NotFoundException("La categoria con el ID provisto no existe");
+    }
 }
