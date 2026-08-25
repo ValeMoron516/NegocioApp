@@ -40,7 +40,8 @@ public class CategoriaController {
     public ResponseEntity<PaginacionDTO<CategoriaDTO>> obtenerTodasCategorias(
         @RequestParam(defaultValue = "1") Integer page, 
         @RequestParam(defaultValue = "20") Integer limit) {
-        return ResponseEntity.status(HttpStatus.OK).body(categoriaService.obtenerTodasCategorias(page, limit)); // 200
+        return ResponseEntity.status(HttpStatus.OK)
+        .body(categoriaService.obtenerTodasCategorias(page, limit)); // 200
     }
 
 // ##################################################
@@ -49,11 +50,9 @@ public class CategoriaController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaDTO> obtenerCategoriaPorId(@PathVariable Long id) {
         try {
-            CategoriaDTO cDto = categoriaService.obtenerCategoriaPorId(id);
-            // Existe
-            return ResponseEntity.status(HttpStatus.OK).body(cDto); // 200
+            return ResponseEntity.status(HttpStatus.OK)
+            .body(categoriaService.obtenerCategoriaPorId(id)); // 200
         } catch (NotFoundException e) {
-            // No existe
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
         }
     }
@@ -63,11 +62,11 @@ public class CategoriaController {
     // Crear nueva categoria
     @PostMapping
     public ResponseEntity<CategoriaDTO> crearCategoria(
-        @RequestBody Categoria c) {
+        @RequestBody CategoriaDTO c) {
         
         try {
-            CategoriaDTO cDto = categoriaService.crearCategoria(c);
-            return ResponseEntity.status(HttpStatus.CREATED).body(cDto); // 201
+            return ResponseEntity.status(HttpStatus.CREATED)
+            .body(categoriaService.crearCategoria(c)); // 201
         }
         catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400
@@ -81,8 +80,17 @@ public class CategoriaController {
 
     // Actualizar por id
     @PutMapping("{id}")
-    public ResponseEntity<categoriaDTO> actualizarCategoriaPorId(@PathVariable Long id, @RequestBody Categoria categoria) {
-        categoriaService.actualizarCategoriaPorId(id, categoria);
+    public ResponseEntity<categoriaDTO> actualizarCategoriaPorId(@PathVariable Long id, @RequestBody CategoriaDTO c) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+            .body(categoriaService.actualizarCategoriaPorId(id, c)); // 200
+        }
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
+        catch (ConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
+        }
     }
     
 // ##################################################
@@ -97,5 +105,7 @@ public class CategoriaController {
         catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
         }
+        catch (ConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
     }
 }

@@ -17,41 +17,41 @@ public class ProductoController {
     @Autowired
     private ProductoService productoService;
 
-// ##################################################
+    // ##################################################
 
     // Leer todos los productos (paginadas)
     @GetMapping
     public ResponseEntity<PaginacionDTO<ProductoDTO>> obtenerTodosProductos(
         @RequestParam(defaultValue = "1") Integer page, 
         @RequestParam(defaultValue = "20") Integer limit) {
-        return ResponseEntity.status(HttpStatus.OK).body(categoriaService.obtenerTodosProductos(page, limit)); // 200
+        return ResponseEntity.status(HttpStatus.OK)
+        .body(categoriaService.obtenerTodosProductos(page, limit)); // 200
     }
 
-// ##################################################
+    // ##################################################
 
     // Leer producto por ID
     @GetMapping("/{id}")
     public ResponseEntity<ProductoDTO> obtenerCategoriaPorId(@PathVariable Long id) {
         try {
-            ProductoDTO pDto = categoriaService.obtenerPtoductoPorId(id);
-            // Existe
-            return ResponseEntity.status(HttpStatus.OK).body(pDto); // 200
-        } catch (NotFoundException e) {
-            // No existe
+            return ResponseEntity.status(HttpStatus.OK)
+            .body(categoriaService.obtenerPtoductoPorId(id)); // 200
+        } 
+        catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
         }
     }
 
-// ##################################################
+    // ##################################################
 
     // Crear nuevo producto
     @PostMapping
     public ResponseEntity<ProductoDTO> crearPtoducto(
-        @RequestBody Producto p) {
+        @RequestBody ProductoDTO p) {
         
         try {
-            ProductoDTO pDto = categoriaService.crearProducto(p);
-            return ResponseEntity.status(HttpStatus.CREATED).body(pDto); // 201
+            return ResponseEntity.status(HttpStatus.CREATED)
+            .body(categoriaService.crearProducto(p)); // 201
         }
         catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400
@@ -61,15 +61,21 @@ public class ProductoController {
         }
     }
 
-// ##################################################
+    // ##################################################
 
-    // Actualizar por id
+    // Actualizar producto por id
     @PutMapping("{id}")
-    public ResponseEntity<ProductoDTO> actualizarProductoPorId(@PathVariable Long id, @RequestBody Producto producto) {
-        categoriaService.actualizarProductoPorId(id, categoria);
+    public ResponseEntity<ProductoDTO> actualizarProductoPorId(@PathVariable Long id, @RequestBody ProductoDTO p) {
+        
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+            .body(categoriaService.actualizarProductoPorId(id, p)); // 200
+        }
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
     }
     
-// ##################################################
+    // ##################################################
 
     // Borrar por ID
     @DeleteMapping("{id}")

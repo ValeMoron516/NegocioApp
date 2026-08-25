@@ -8,6 +8,7 @@ import com.desarrolloweb.NegocioApp.dtos.CategoriaDTO;
 import com.desarrolloweb.NegocioApp.dtos.MetaDTO;
 import com.desarrolloweb.NegocioApp.dtos.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.repository.CategoriaRepository;
+import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +27,9 @@ public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-// ##################################################
+    @Autowired
+    private ProductoRepository productoRepository;
+    // ##################################################
 
     // Obtener lista de categorías (paginadas)
     public PaginacionDTO<CategoriaDTO> obtenerTodasCategorias(Integer page, Integer limit) { 
@@ -35,6 +38,7 @@ public class CategoriaService {
         Page<Categoria> paginaCategorias = categoriaRepository.findAll(pageable);
         List<Categoria> categorias = paginaCategorias.getContent();
         
+        // Mapear a DTO
         List<CategoriaDTO> dtos = new ArrayList<>();
         for (Categoria c : categorias) {
             CategoriaDTO dto = new CategoriaDTO();
@@ -56,7 +60,7 @@ public class CategoriaService {
         return new PaginacionDTO<>(dtos, meta);
     }
 
-// ##################################################
+    // ##################################################
 
     // Obtener Categoria por ID
     public CategoriaDTO obtenerCategoriaPorId(Long id) { 
@@ -65,76 +69,94 @@ public class CategoriaService {
         // Existe
         if (optC.isPresent()) {
             Categoria c = optC.get();
-            CategoriaDTO dto = new CategoriaDTO();
             
-            dto.setId(c.getId());
-            dto.setNombre(c.getNombre());
-            
-            return dto;
+            return new CategoriaDTO(
+            c.getId(), 
+            c.getNombre(), 
+            c.getDescripcion());
         }
         
         // No existe
         throw new NotFoundException("El elemento solicitado no existe");
     }
 
-// ##################################################
+    // ##################################################
 
     // Crear nueva Categoria
-    public CategoriaDTO crearCategoria(Categoria c) {
+    public CategoriaDTO crearCategoria(CategoriaDTO c) {
 
-        // nombre nulo o vacio
+        // Verificar nombre
         if (c.nombre == null || c.nombre.isEmpty()) { throw new BadRequestException("Nombre invalido"); }
-        
-        // descripcion nulo o vacio
+        // Verificar descripcion
         if (c.descripcion == null || c.descripcion.isEmpty()) { throw new BadRequestException("Descripcion invalida"); }
         
+        // =========================================
         Optional<Categoria> optC = categoriaRepository.findByNombre(c.nombre);
         
-        if (optC.isPresent()) { throw new ConflictException("Ya existe una categoria von el nombre provisto"); } // Ya existe
+        if (optC.isPresent()) { // Ya existe
+            throw new ConflictException("Ya existe una categoria con el nombre provisto"); } 
         else { // No existe
             Categoria cResp = categoriaRepository.save(c);
-            return new CategoriaDTO(cResp.getId(), cResp.getNombre()); // Exito
+            return new CategoriaDTO(
+            cResp.getId(), 
+            cResp.getNombre(), 
+            cResp.getDescripcion()); // Exito
         }
     }
 
-// ##################################################
+    // ##################################################
 
-    // Actualizar Categoria
-    public categoriaDTO actualizarCategoriaPorId(Long id, Categoria c) {
+    // Actualizar Categoria por ID
+    public CategoriaDTO actualizarCategoriaPorId(Long id, CategoriaDTO c) {
         Optional<Categoria> optC = categoriaRepository.findById(id);
 
         if (optC.isPresent()) {
             Categoria newC = optC.get();
+            
+            // Verificar nombre
             if (c.getNombre() != null || !c.getNombre().isBlank()) {
                 Optional<Categoria> optC = categoriaRepository.findByNombre(c.nombre);
-                if (optC.isPresent()) {
-                    newC.setNombre(c.getNombre());
-                } else {
-                    throw new ConflictException("El nombre provisto ya existe")
-                }
+                
+                if (optC.isPresent()) { newC.setNombre(c.getNombre()); } 
+                else { throw new ConflictException("El nombre provisto ya existe"); }
             }
+            
+            // Verificar descripcion
             if (c.getDescripcion() != null || !c.getDescripcion().isBlank()) {
                 newC.setDescripcion(c.getDescripcion());
             }
-        
-            categoriaRepository.save(newC);
-            Categoria c = categoriaRepository.findById(newC.getId()).get();
-            return new categoriaDTO(c.getId(), c.getNombre(), c.getDescripcion());
+            // =========================================
+            
+            // Guardar nuevo
+            Categoria c = categoriaRepository.save(newC);
+            return new categoriaDTO(
+            c.getId(), 
+            c.getNombre(), 
+            c.getDescripcion());
         }
         else {
-            throw new NotFoundException("La categoria con el ID provisto no existe");  
-   }
+            throw new NotFoundException("La categoria con el ID provisto no existe");
+        }
+    }
 
-// ##################################################
+    // ##################################################
 
     // Borrar Categoria por id
     public void borrarCategoriaPorId(Long id) {
          
          Optional<Categoria> optC = categoriaRepository.findById(id);
 
-        if (optC.isPresent()) {
+        if (optC.isPresent()) { // Existe
+            
+            // Buscar productos asociados a la id
+            if (productoRepository.existsByCategoriaId(id)) { // Hay productos
+                throw new ConflictException("La categoria provista no puede eliminarse debido a que tiene productos asociados");
+            }
+            
             categoriaRepository.deleteById(id);
-        } else {
+            
+        } else { // No existe
             throw new NotFoundException("La categoria con el ID provisto no existe");
+        }
     }
 }
