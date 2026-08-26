@@ -3,11 +3,24 @@ package com.desarrolloweb.NegocioApp.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.desarrolloweb.NegocioApp.dtos.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dtos.ProductoDTO;
 import com.desarrolloweb.NegocioApp.entity.Producto;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.service.ProductoService;
 
 @RestController
@@ -25,7 +38,7 @@ public class ProductoController {
         @RequestParam(defaultValue = "1") Integer page, 
         @RequestParam(defaultValue = "20") Integer limit) {
         return ResponseEntity.status(HttpStatus.OK)
-        .body(categoriaService.obtenerTodosProductos(page, limit)); // 200
+        .body(productoService.obtenerTodosProductos(page, limit)); // 200
     }
 
     // ##################################################
@@ -35,7 +48,7 @@ public class ProductoController {
     public ResponseEntity<ProductoDTO> obtenerCategoriaPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-            .body(categoriaService.obtenerPtoductoPorId(id)); // 200
+            .body(productoService.obtenerProductoPorId(id)); // 200
         } 
         catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
@@ -51,7 +64,7 @@ public class ProductoController {
         
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
-            .body(categoriaService.crearProducto(p)); // 201
+            .body(productoService.crearProducto(p)); // 201
         }
         catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400
@@ -69,10 +82,11 @@ public class ProductoController {
         
         try {
             return ResponseEntity.status(HttpStatus.OK)
-            .body(categoriaService.actualizarProductoPorId(id, p)); // 200
+            .body(productoService.actualizarProductoPorId(id, p)); // 200
         }
         catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
     }
     
     // ##################################################

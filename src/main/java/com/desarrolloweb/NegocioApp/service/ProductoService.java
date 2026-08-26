@@ -1,12 +1,24 @@
 package com.desarrolloweb.NegocioApp.service;
 
-import java.util.List;
+import com.desarrolloweb.NegocioApp.entity.Producto;
 
+import com.desarrolloweb.NegocioApp.dtos.MetaDTO;
+import com.desarrolloweb.NegocioApp.dtos.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dtos.ProductoDTO;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException;
+
+import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.desarrolloweb.NegocioApp.entity.Producto;
-import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class ProductoService {
@@ -21,16 +33,16 @@ public class ProductoService {
         
         Pageable pageable = PageRequest.of(page - 1, limit);
         Page<Producto> paginaProductos = productoRepository.findAll(pageable);
-        List<Producto> productos = paginaProductoss.getContent();
+        List<Producto> productos = paginaProductos.getContent();
         
         List<ProductoDTO> dtos = new ArrayList<>();
         for (Producto p : productos) {
             ProductoDTO dto = new ProductoDTO();
             dto.setId(p.getId());
-            dto.setNegocioId(p.getNegocioId());
-            dto.setNombreNegocio(p.getNombreNegocio());
-            dto.setCategoriaId(p.getCategoriaId());
-            dto.setNombreCategoria(p.getNombreCategoria());
+            dto.setNegocioId(p.getNegocio().getId());
+            dto.setNombreNegocio(p.getNegocio().getNombre());
+            dto.setCategoriaId(p.getNegocio().getId());
+            dto.setNombreCategoria(p.getNegocio().getNombre());
             dto.setNombre(p.getNombre());
             dto.setDescripcion(p.getDescripcion());
             dto.setPrecio(p.getPrecio());
@@ -61,15 +73,15 @@ public class ProductoService {
             Producto p = optP.get();
             
             return new ProductoDTO(
-            p.getId(),
-            p.getNegocioId(),
-            p.getNombreNegocio(),
-            p.getCategoriaId(),
-            p.getNombreCategoria(),
-            p.getNombre(),
-            p.getDescripcion(),
-            p.getPrecio(),
-            p.getStock()
+                p.getId(),
+                p.getNegocio().getId(),
+                p.getNegocio().getNombre(),
+                p.getNegocio().getId(),
+                p.getNegocio().getNombre(),
+                p.getNombre(),
+                p.getDescripcion(),
+                p.getPrecio(),
+                p.getStock()
             );
         }
         
@@ -80,29 +92,31 @@ public class ProductoService {
     // ##################################################
 
     // Crear nuevo producto
-    public ProductoDTO crearProducto(ProductoDTO p) {
+    public ProductoDTO crearProducto(ProductoDTO pDTO) {
+
+        Producto newP = new Producto();
 
         // Verificar nombre negocio
-        if (p.nombreNegocio == null || p.nombreNegocio.isEmpty()) { throw new BadRequestException("Nombre del negocio invalido"); }
+        if (pDTO.getNombreNegocio() == null || pDTO.getNombreNegocio().isEmpty()) { throw new BadRequestException("Nombre del negocio invalido"); }
         // Verificar nombre categoria
-        if (p.nombreCategoria == null || p.nombreCategoria.isEmpty()) { throw new BadRequestException("Nombre de categoria invalido"); }
+        if (pDTO.getNombreCategoria() == null || pDTO.getNombreCategoria().isEmpty()) { throw new BadRequestException("Nombre de categoria invalido"); }
         // Verificar nombre
-        if (p.nombre == null || p.nombre.isEmpty()) { throw new BadRequestException("Nombre invalido"); }
+        if (pDTO.getNombre() == null || pDTO.getNombre().isEmpty()) { throw new BadRequestException("Nombre invalido"); }
         // Verificar descripcion
-        if (p.descripcion == null || p.descripcion.isEmpty()) { throw new BadRequestException("Descripcion invalida"); }
+        if (pDTO.getDescripcion() == null || pDTO.getDescripcion().isEmpty()) { throw new BadRequestException("Descripcion invalida"); }
         // Verificar precio
-        if (p.precio == null || p.precio.isEmpty()) { throw new BadRequestException("Precio invalido"); }
+        if (pDTO.getPrecio() == null) { throw new BadRequestException("Precio invalido"); }
         // Verificar stock
-        if (p.stock == null || p.stock.isEmpty()) { throw new BadRequestException("Stock invalido"); }
+        if (pDTO.getStock() == null) { throw new BadRequestException("Stock invalido"); }
         
-        Producto p = productoRepository.save(p);
+        Producto p = productoRepository.save(newP);
         
         return new ProductoDTO(
             p.getId(),
-            p.getNegocioId(),
-            p.getNombreNegocio(),
-            p.getCategoriaId(),
-            p.getNombreCategoria(),
+            p.getNegocio().getId(),
+            p.getNegocio().getNombre(),
+            p.getNegocio().getId(),
+            p.getNegocio().getNombre(),
             p.getNombre(),
             p.getDescripcion(),
             p.getPrecio(),
@@ -114,38 +128,38 @@ public class ProductoService {
     // ##################################################
 
     // Actualizar producto por id
-    public ProductoDTO actualizarProductoPorId(Long id, Producto p) {
+    public ProductoDTO actualizarProductoPorId(Long id, ProductoDTO pDTO) {
         Optional<Producto> optP = productoRepository.findById(id);
 
         if (optP.isPresent()) {
             Producto newP = optP.get();
             
-            if (p.getNombreNegocio() != null || !p.getNombreNegocio().isBlank()) {
-                newP.setNombreNegocio(p.getNombreNegocio());
+            if (pDTO.getNombreNegocio() != null || !pDTO.getNombreNegocio().isBlank()) {
+                newP.setNombreNegocio(pDTO.getNombreNegocio());
             }            
-            if (p.getNombreCategoria() != null || !p.getNombreCategoria().isBlank()) {
-                newP.setNombreCategoria(p.getNombreCategoria());
+            if (pDTO.getNombreCategoria() != null || !pDTO.getNombreCategoria().isBlank()) {
+                newP.setNombreCategoria(pDTO.getNombreCategoria());
             }            
-            if (p.getNombre() != null || !p.getNombre().isBlank()) {
-                newP.setNombre(p.getNombre());
+            if (pDTO.getNombre() != null || !pDTO.getNombre().isBlank()) {
+                newP.setNombre(pDTO.getNombre());
             }
-            if (p.getDescripcion() != null || !p.getDescripcion().isBlank()) {
-                newP.setDescripcion(p.getDescripcion());
+            if (pDTO.getDescripcion() != null || !pDTO.getDescripcion().isBlank()) {
+                newP.setDescripcion(pDTO.getDescripcion());
             }
-            if (p.getPrecio() != null || !p.getPrecio().isBlank()) {
-                newP.setPrecio(p.getPrecio());
+            if (pDTO.getPrecio() != null) {
+                newP.setPrecio(pDTO.getPrecio());
             }            
-            if (p.getStock() != null || !p.getStock().isBlank()) {
-                newP.setStock(p.getStock());
+            if (pDTO.getStock() != null) {
+                newP.setStock(pDTO.getStock());
             }
             
             Producto p = productoRepository.save(newP);
             return new ProductoDTO(
                 p.getId(),
-                p.getNegocioId(),
-                p.getNombreNegocio(),
-                p.getCategoriaId(),
-                p.getNombreCategoria(),
+                p.getNegocio().getId(),
+                p.getNegocio().getNombre(),
+                p.getNegocio().getId(),
+                p.getNegocio().getNombre(),
                 p.getNombre(),
                 p.getDescripcion(),
                 p.getPrecio(),
@@ -153,8 +167,9 @@ public class ProductoService {
             );
         }
         else {
-            throw new NotFoundException("La categoria con el ID provisto no existe");  
-   }
+            throw new NotFoundException("La categoria con el ID provisto no existe");
+        }  
+    }
 
    // ##################################################
 
@@ -167,5 +182,6 @@ public class ProductoService {
             productoRepository.deleteById(id);
         } else {
             throw new NotFoundException("La categoria con el ID provisto no existe");
+        }
     }
 }

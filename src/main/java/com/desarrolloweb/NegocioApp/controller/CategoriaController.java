@@ -33,7 +33,7 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-// ##################################################
+    // ##################################################
 
     // Leer todas las Categorias (paginadas)
     @GetMapping
@@ -44,7 +44,7 @@ public class CategoriaController {
         .body(categoriaService.obtenerTodasCategorias(page, limit)); // 200
     }
 
-// ##################################################
+    // ##################################################
 
     // Leer Categoria por ID
     @GetMapping("/{id}")
@@ -57,7 +57,7 @@ public class CategoriaController {
         }
     }
 
-// ##################################################
+    // ##################################################
 
     // Crear nueva categoria
     @PostMapping
@@ -76,11 +76,11 @@ public class CategoriaController {
         }
     }
 
-// ##################################################
+    // ##################################################
 
     // Actualizar por id
     @PutMapping("{id}")
-    public ResponseEntity<categoriaDTO> actualizarCategoriaPorId(@PathVariable Long id, @RequestBody CategoriaDTO c) {
+    public ResponseEntity<CategoriaDTO> actualizarCategoriaPorId(@PathVariable Long id, @RequestBody CategoriaDTO c) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(categoriaService.actualizarCategoriaPorId(id, c)); // 200
@@ -93,7 +93,7 @@ public class CategoriaController {
         }
     }
     
-// ##################################################
+    // ##################################################
 
     // Borrar por ID
     @DeleteMapping("{id}")
