@@ -1,6 +1,5 @@
 package com.desarrolloweb.NegocioApp.controller;
 
-import com.desarrolloweb.NegocioApp.entity.Categoria;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
@@ -20,11 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.NoSuchElementException;
-
 
 @RestController
 @RequestMapping("api/v1/categorias")
@@ -107,5 +101,6 @@ public class CategoriaController {
         }
         catch (ConflictException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
+        }
     }
 }
