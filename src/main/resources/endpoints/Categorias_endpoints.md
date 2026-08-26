@@ -17,11 +17,13 @@
       "data": [
         {
           "id": 1,
-          "nombre": "Hogar"
+          "nombre": "Hogar",
+          "descripcion": "Productos para el hogar"
         },
         {
           "id": 2,
-          "nombre": "Tecnología"
+          "nombre": "Computacion",
+          "descripcion": "Productos sobre computacion"
         }
       ],
       "meta": {
@@ -94,7 +96,7 @@
     {
         "id": 1,
         "nombre": "Computacion",
-        "descripcion": "Productos sobre computacion
+        "descripcion": "Productos sobre computacion"
     }
     ```
 
