@@ -28,10 +28,10 @@ import com.desarrolloweb.NegocioApp.service.CategoriaService;
 public class CategoriaControllerTest {
     
     @Mock
-    CategoriaService categoriaService; // Falsificamos la lógica de negocio
+    CategoriaService categoriaService; // Modulo simulado
 
     @InjectMocks
-    CategoriaController categoriaController; // Nuestro protagonista
+    CategoriaController categoriaController; // Modulo principal
 
     // ##################################################
 

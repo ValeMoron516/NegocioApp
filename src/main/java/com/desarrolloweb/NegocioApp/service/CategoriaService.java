@@ -150,8 +150,9 @@ public class CategoriaService {
     // Borrar Categoria por id
     public void borrarCategoriaPorId(Long id) {
          
-        Optional<Categoria> optC = categoriaRepository.findById(id);
-        if (!optC.isPresent()) { throw new NotFoundException("La categoria con el ID provisto no existe"); }
+        if (!categoriaRepository.existsById(id)) { 
+            throw new NotFoundException("La categoria con el ID provisto no existe"); 
+        }
         
         // Buscar productos asociados a la id
         if (productoRepository.existsByCategoriaId(id)) { // Hay productos
