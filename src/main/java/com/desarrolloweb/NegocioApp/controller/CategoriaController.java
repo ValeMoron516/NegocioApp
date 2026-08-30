@@ -3,8 +3,9 @@ package com.desarrolloweb.NegocioApp.controller;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
-import com.desarrolloweb.NegocioApp.dtos.CategoriaDTO;
-import com.desarrolloweb.NegocioApp.dtos.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
+import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.service.CategoriaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class CategoriaController {
 
     // Leer todas las Categorias (paginadas)
     @GetMapping
-    public ResponseEntity<PaginacionDTO<CategoriaDTO>> obtenerTodasCategorias(
+    public ResponseEntity<PaginacionDTO<CategoriaResponseDTO>> obtenerTodasCategorias(
         @RequestParam(defaultValue = "1") Integer page, 
         @RequestParam(defaultValue = "20") Integer limit) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -42,7 +43,7 @@ public class CategoriaController {
 
     // Leer Categoria por ID
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaDTO> obtenerCategoriaPorId(@PathVariable Long id) {
+    public ResponseEntity<CategoriaResponseDTO> obtenerCategoriaPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(categoriaService.obtenerCategoriaPorId(id)); // 200
@@ -55,8 +56,8 @@ public class CategoriaController {
 
     // Crear nueva categoria
     @PostMapping
-    public ResponseEntity<CategoriaDTO> crearCategoria(
-        @RequestBody CategoriaDTO c) {
+    public ResponseEntity<CategoriaResponseDTO> crearCategoria(
+        @RequestBody CategoriaRequestDTO c) {
         
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -74,7 +75,8 @@ public class CategoriaController {
 
     // Actualizar por id
     @PutMapping("{id}")
-    public ResponseEntity<CategoriaDTO> actualizarCategoriaPorId(@PathVariable Long id, @RequestBody CategoriaDTO c) {
+    public ResponseEntity<CategoriaResponseDTO> actualizarCategoriaPorId(
+        @PathVariable Long id, @RequestBody CategoriaRequestDTO c) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(categoriaService.actualizarCategoriaPorId(id, c)); // 200
@@ -91,7 +93,7 @@ public class CategoriaController {
 
     // Borrar por ID
     @DeleteMapping("{id}")
-    public ResponseEntity<?> borrarCategoriaPorId(@PathVariable Long id) {
+    public ResponseEntity<Void> borrarCategoriaPorId(@PathVariable Long id) {
         try {
             categoriaService.borrarCategoriaPorId(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204

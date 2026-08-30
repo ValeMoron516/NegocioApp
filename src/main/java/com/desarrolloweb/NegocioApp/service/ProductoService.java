@@ -1,10 +1,9 @@
 package com.desarrolloweb.NegocioApp.service;
 
 import com.desarrolloweb.NegocioApp.entity.Producto;
-
-import com.desarrolloweb.NegocioApp.dtos.MetaDTO;
-import com.desarrolloweb.NegocioApp.dtos.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.ProductoDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 
@@ -94,7 +93,7 @@ public class ProductoService {
     // Crear nuevo producto
     public ProductoDTO crearProducto(ProductoDTO pDTO) {
 
-        Producto newP = new Producto();
+        Producto newP = new Producto(); // negocio -> buscar por id | categoria -> buscar por id
 
         // Verificar nombre negocio
         if (pDTO.getNombreNegocio() == null || pDTO.getNombreNegocio().isEmpty()) { throw new BadRequestException("Nombre del negocio invalido"); }
@@ -129,16 +128,17 @@ public class ProductoService {
 
     // Actualizar producto por id
     public ProductoDTO actualizarProductoPorId(Long id, ProductoDTO pDTO) {
+
         Optional<Producto> optP = productoRepository.findById(id);
 
         if (optP.isPresent()) {
             Producto newP = optP.get();
             
             if (pDTO.getNombreNegocio() != null || !pDTO.getNombreNegocio().isBlank()) {
-                newP.setNombreNegocio(pDTO.getNombreNegocio());
+                newP.getNegocio().setNombre(pDTO.getNombreNegocio());
             }            
             if (pDTO.getNombreCategoria() != null || !pDTO.getNombreCategoria().isBlank()) {
-                newP.setNombreCategoria(pDTO.getNombreCategoria());
+                newP.getCategoria().setNombre(pDTO.getNombreCategoria());
             }            
             if (pDTO.getNombre() != null || !pDTO.getNombre().isBlank()) {
                 newP.setNombre(pDTO.getNombre());

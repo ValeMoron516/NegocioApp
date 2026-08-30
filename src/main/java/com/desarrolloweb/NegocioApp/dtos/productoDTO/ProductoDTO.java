@@ -1,4 +1,4 @@
-package com.desarrolloweb.NegocioApp.dtos;
+package com.desarrolloweb.NegocioApp.dtos.productoDTO;
 
 import java.math.BigDecimal;
 

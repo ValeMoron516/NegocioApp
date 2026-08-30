@@ -1,16 +1,16 @@
-package com.desarrolloweb.NegocioApp.dtos;
+package com.desarrolloweb.NegocioApp.dtos.categoriaDTO;
 
 
-public class CategoriaDTO {
+public class CategoriaResponseDTO {
 
     private Long id;
     private String nombre;
     private String descripcion;
 
     // Constructores
-    public CategoriaDTO() { }
+    public CategoriaResponseDTO() { }
 
-    public CategoriaDTO(Long id, String nombre, String descripcion) {
+    public CategoriaResponseDTO(Long id, String nombre, String descripcion) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;

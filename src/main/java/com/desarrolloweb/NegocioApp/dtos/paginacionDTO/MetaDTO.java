@@ -1,4 +1,4 @@
-package com.desarrolloweb.NegocioApp.dtos;
+package com.desarrolloweb.NegocioApp.dtos.paginacionDTO;
 
 public class MetaDTO {
     private long totalItems;
