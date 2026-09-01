@@ -1,5 +1,6 @@
 package com.desarrolloweb.NegocioApp.categoriaTest;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -7,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +16,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.List;
 import java.util.Optional;
 
 import com.desarrolloweb.NegocioApp.entity.Categoria;
 import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.repository.CategoriaRepository;
@@ -37,6 +47,32 @@ public class CategoriaServiceTest {
 	CategoriaService categoriaService; // Modulo principal
 
 	// ##################################################
+	
+	@Test
+	void obtenerTodasCategorias_Valido() {
+	    Integer page = 1;
+	    Integer limit = 20;
+	    Categoria c1 = new Categoria(1L, "Hogar", "Productos para el hogar");
+        Categoria c2 = new Categoria(2L, "Computacion", "Productos sobre computacion");
+        List<Categoria> listaC = List.of(c1, c2);
+	    Pageable paginaConf = PageRequest.of(0, limit);
+        Page<Categoria> pagina = new PageImpl<>(listaC, paginaConf, 2);
+        when(categoriaRepository.findAll(any(Pageable.class))).thenReturn(pagina);
+        
+	    PaginacionDTO<CategoriaResponseDTO> resultado = categoriaService.obtenerTodasCategorias(page, limit);
+	    
+        assertNotNull(resultado.getData());
+        assertEquals(2, resultado.getData().size());
+        assertEquals("Hogar", resultado.getData().get(0).getNombre());
+        MetaDTO meta = resultado.getMeta();
+        assertEquals(2, meta.getTotalItems());
+        assertEquals(2, meta.getItemCount());
+        assertEquals(20, meta.getItemsPerPage());
+        assertEquals(1, meta.getTotalPages());
+        assertEquals(1, meta.getCurrentPage());
+        verify(categoriaRepository, times(1)).findAll(paginaConf);
+    }
+	
 	// ##################################################
 	
 	@Test
@@ -50,7 +86,6 @@ public class CategoriaServiceTest {
 	    assertEquals(respuesta.getId(), respuestaService.getId());
 	    assertEquals(respuesta.getNombre(), respuestaService.getNombre());
 	    assertEquals(respuesta.getDescripcion(), respuestaService.getDescripcion());
-	    
 	    verify(categoriaRepository, times(1)).findById(id);
 	}
 	
@@ -68,6 +103,19 @@ public class CategoriaServiceTest {
 	}
 	
 	// ##################################################
+	
+	@Test
+	void crearCategoria() {
+	    
+	}
+	
+	// ##################################################
+	
+	@Test
+	void actualizarCategoria() {
+	    
+	}
+	
 	// ##################################################
 
 	@Test
