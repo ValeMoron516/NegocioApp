@@ -25,11 +25,13 @@ import java.util.List;
 import java.util.Optional;
 
 import com.desarrolloweb.NegocioApp.entity.Categoria;
+import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
 import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
 import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
 import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.repository.CategoriaRepository;
 import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
 import com.desarrolloweb.NegocioApp.service.CategoriaService;
@@ -105,8 +107,59 @@ public class CategoriaServiceTest {
 	// ##################################################
 	
 	@Test
-	void crearCategoria() {
+	void crearCategoria_Valido() {
+	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("Hogar", "Productos para el hogar");
+	    Categoria respuestaMock = new Categoria(1L, "Hogar", "Productos para el hogar");
+	    when(categoriaRepository.save(any(Categoria.class))).thenReturn(respuestaMock);
 	    
+	    CategoriaResponseDTO respuestaService = categoriaService.crearCategoria(peticion);
+	    
+	    assertEquals(1L, respuestaService.getId());
+	    assertEquals(peticion.getNombre(), respuestaService.getNombre());
+	    assertEquals(peticion.getDescripcion(), respuestaService.getDescripcion());
+	    
+	    verify(categoriaRepository, times(1)).existsByNombre(peticion.getNombre());
+	    verify(categoriaRepository, times(1)).save(any(Categoria.class));
+	}
+	
+	@Test
+	void crearCategoria_NombreInvalido() {
+	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("", "Productos para el hogar");
+	    
+	    Exception excepcion = assertThrows(BadRequestException.class, () -> {
+			categoriaService.crearCategoria(peticion);
+		});
+	    
+	    assertEquals("Nombre invalido", excepcion.getMessage());
+	    verify(categoriaRepository, never()).existsByNombre(peticion.getNombre());
+	    verify(categoriaRepository, never()).save(any(Categoria.class));
+	}
+	
+	@Test
+	void crearCategoria_DescripcionInvalida() {
+	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("Hogar", "");
+	    
+	    Exception excepcion = assertThrows(BadRequestException.class, () -> {
+			categoriaService.crearCategoria(peticion);
+		});
+	    
+	    assertEquals("Descripcion invalida", excepcion.getMessage());
+	    verify(categoriaRepository, times(1)).existsByNombre(peticion.getNombre());
+	    verify(categoriaRepository, never()).save(any(Categoria.class));
+	}
+	
+	@Test
+	void crearCategoria_CategoriaYaExistente() {
+	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("Hogar", "Productos para el hogar");
+	    when(categoriaRepository.existsByNombre(peticion.getNombre())).thenReturn(true);
+	    
+	    Exception excepcion = assertThrows(ConflictException.class, () -> {
+			categoriaService.crearCategoria(peticion);
+		});
+	    
+	    assertEquals("Ya existe una categoria con el nombre provisto", excepcion.getMessage());
+	    verify(categoriaRepository, times(1)).existsByNombre(peticion.getNombre());
+	    verify(categoriaRepository, never()).save(any(Categoria.class));
 	}
 	
 	// ##################################################
