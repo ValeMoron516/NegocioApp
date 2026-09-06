@@ -1,7 +1,7 @@
 
 Módulo: Direcciones
 1. Registrar nueva dirección
-URL: /api/v1/direccion
+URL: /api/v1/direcciones
 
 Método HTTP: POST
 
@@ -44,7 +44,7 @@ Response Body:
 ##################################################
 
 2. Obtener direcciones de un usuario
-URL: /api/v1/direccion/usuario/{usuarioId}
+URL: /api/v1/usuarios/{id}/direcciones
 
 Método HTTP: GET
 
@@ -87,7 +87,7 @@ Response Body:
 ##################################################
 
 3. Obtener dirección específica por ID
-URL: /api/v1/direccion/{id}
+URL: /api/v1/direcciones/{id}
 
 Método HTTP: GET
 
@@ -122,7 +122,7 @@ Response Body:
 ##################################################
 
 4. Modificar dirección existente
-URL: /api/v1/direccion/{id}
+URL: /api/v1/direcciones/{id}
 
 Método HTTP: PUT
 
@@ -173,7 +173,7 @@ Response Body:
 ##################################################
 
 5. Borrar dirección
-URL: /api/v1/direccion/{id}
+URL: /api/v1/direcciones/{id}
 
 Método HTTP: DELETE
 

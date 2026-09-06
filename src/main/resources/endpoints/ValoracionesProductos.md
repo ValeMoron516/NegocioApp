@@ -3,7 +3,7 @@ Módulo: Valoración de Productos
 ###################################
 
 1. Registrar nueva valoración de producto
-URL: /api/v1/valoracion
+URL: /api/v1/valoraciones
 
 Método HTTP: POST
 
@@ -53,7 +53,7 @@ Response Body:
 ##################################################
 
 2. Obtener las valoraciones de un producto
-URL: /api/v1/valoracion/producto/{id}
+URL: /api/v1/productos/{id}/valoraciones
 
 Método HTTP: GET
 
@@ -92,7 +92,7 @@ Response Body:
 ##################################################
 
 3. Obtener el promedio de puntuación de un producto
-URL: /api/v1/valoracion/producto/{id}/promedio
+URL: /api/v1/productos/{id}/valoraciones/promedio
 
 Método HTTP: GET
 
@@ -122,7 +122,7 @@ Response Body:
 ##################################################
 
 4. Borrar valoración
-URL: /api/v1/valoracion/{id}
+URL: /api/v1/valoraciones/{id}
 
 Método HTTP: DELETE
 
