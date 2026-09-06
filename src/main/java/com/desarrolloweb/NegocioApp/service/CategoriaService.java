@@ -124,7 +124,7 @@ public class CategoriaService {
         Categoria newC = optC.get();
         
         // Verificar nombre
-        if (cDTO.getNombre() != null || !cDTO.getNombre().isBlank()) {
+        if (cDTO.getNombre() != null && !cDTO.getNombre().isBlank()) {
             // Verificar si ya existe una categoria con el nombre dado
             if (categoriaRepository.existsByNombre(cDTO.getNombre())) { 
                 throw new ConflictException("El nombre provisto ya existe");
@@ -133,7 +133,7 @@ public class CategoriaService {
         }
         
         // Verificar descripcion
-        if (cDTO.getDescripcion() != null || !cDTO.getDescripcion().isBlank()) {
+        if (cDTO.getDescripcion() != null && !cDTO.getDescripcion().isBlank()) {
             newC.setDescripcion(cDTO.getDescripcion());
         }
         // =========================================

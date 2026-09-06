@@ -91,6 +91,7 @@ public class CategoriaServiceTest {
 	    verify(categoriaRepository, times(1)).findById(id);
 	}
 	
+	
 	@Test
 	void obtenerCategoriaPorId_Invalido() {
 	    Long id = 1L;
@@ -122,6 +123,7 @@ public class CategoriaServiceTest {
 	    verify(categoriaRepository, times(1)).save(any(Categoria.class));
 	}
 	
+	
 	@Test
 	void crearCategoria_NombreInvalido() {
 	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("", "Productos para el hogar");
@@ -135,6 +137,7 @@ public class CategoriaServiceTest {
 	    verify(categoriaRepository, never()).save(any(Categoria.class));
 	}
 	
+	
 	@Test
 	void crearCategoria_DescripcionInvalida() {
 	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("Hogar", "");
@@ -147,6 +150,7 @@ public class CategoriaServiceTest {
 	    verify(categoriaRepository, times(1)).existsByNombre(peticion.getNombre());
 	    verify(categoriaRepository, never()).save(any(Categoria.class));
 	}
+	
 	
 	@Test
 	void crearCategoria_CategoriaYaExistente() {
@@ -165,8 +169,49 @@ public class CategoriaServiceTest {
 	// ##################################################
 	
 	@Test
-	void actualizarCategoria() {
+	void actualizarCategoria_Valido() {
+	    Long id = 1L;
+	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("Hogar", "Productos para el hogar");
+	    Categoria respuestaMockFindById = new Categoria(1L, "Computacion", "Productos sobre computacion");
+	    Categoria respuestaMockSave = new Categoria(1L, "Hogar", "Productos para el hogar");
+	    CategoriaResponseDTO respuesta = new CategoriaResponseDTO(1L, "Hogar", "Productos para el hogar");
 	    
+	    when(categoriaRepository.findById(id)).thenReturn(Optional.of(respuestaMockFindById));
+	    when(categoriaRepository.existsByNombre(peticion.getNombre())).thenReturn(false);
+	    when(categoriaRepository.save(any(Categoria.class))).thenReturn(respuestaMockSave);
+	    
+	    
+	    CategoriaResponseDTO resp = categoriaService.actualizarCategoriaPorId(id, peticion);
+	    
+	    
+	    assertEquals(respuesta.getId(), resp.getId());
+	    assertEquals(respuesta.getNombre(), resp.getNombre());
+	    assertEquals(respuesta.getDescripcion(), resp.getDescripcion());
+	    
+	    verify(categoriaRepository, times(1)).findById(id);
+	    verify(categoriaRepository, times(1)).existsByNombre(peticion.getNombre());
+	    verify(categoriaRepository, times(1)).save(any(Categoria.class));
+	}
+	
+	
+	@Test
+	void actualizarCategoria_IdNoExistente() {
+	    Long id = 1L;
+	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("Hogar", "Productos para el hogar");
+	    
+	    when(categoriaRepository.findById(id)).thenReturn(Optional.empty());
+	    
+	    
+	    Exception ex = assertThrows(NotFoundException.class,  () -> {
+			categoriaService.actualizarCategoriaPorId(id, peticion);
+		}); 
+	    
+	    
+	    assertEquals("La categoria con el ID provisto no existe", ex.getMessage());
+	    
+	    verify(categoriaRepository, times(1)).findById(id);
+	    verify(categoriaRepository, never()).existsByNombre(peticion.getNombre());
+	    verify(categoriaRepository, never()).save(any(Categoria.class));
 	}
 	
 	// ##################################################
@@ -186,6 +231,7 @@ public class CategoriaServiceTest {
 		verify(categoriaRepository, never()).deleteById(anyLong());
 	}
 
+
 	@Test
 	void borrarCategoriaPorId_ProductosAsociados() {
 		Long id = 1L;
@@ -201,6 +247,7 @@ public class CategoriaServiceTest {
 		verify(productoRepository, times(1)).existsByCategoriaId(anyLong());
 		verify(categoriaRepository, never()).deleteById(anyLong());
 	}
+
 
 	@Test
 	void borrarCategoriaPorId_Exitoso() {
