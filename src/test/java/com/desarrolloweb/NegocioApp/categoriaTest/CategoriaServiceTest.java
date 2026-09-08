@@ -214,6 +214,29 @@ public class CategoriaServiceTest {
 	    verify(categoriaRepository, never()).save(any(Categoria.class));
 	}
 	
+	
+	@Test
+	void actualizarCategoria_NombreYaExistente() {
+	    Long id = 1L;
+	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("Hogar", "Productos para el hogar");
+	    Categoria respuestaMockFindById = new Categoria(1L, "Computacion", "Productos sobre computacion");
+	    
+	    when(categoriaRepository.findById(id)).thenReturn(Optional.of(respuestaMockFindById));
+	    when(categoriaRepository.existsByNombre(peticion.getNombre())).thenReturn(true);
+	    
+	    
+	    Exception ex = assertThrows(ConflictException.class,  () -> {
+			categoriaService.actualizarCategoriaPorId(id, peticion);
+		}); 
+	    
+	    
+	    assertEquals("El nombre provisto ya existe", ex.getMessage());
+	    
+	    verify(categoriaRepository, times(1)).findById(id);
+	    verify(categoriaRepository, times(1)).existsByNombre(peticion.getNombre());
+	    verify(categoriaRepository, never()).save(any(Categoria.class));
+	}
+	
 	// ##################################################
 
 	@Test
