@@ -19,7 +19,7 @@
 -   **500 Internal Server Error**: Se produjo un error inesperado en el servidor.
 -   **503 Service Unavailable**: El servidor no está preparado para manejar la petición en este momento.
 
-
+##################################################
 
 ### Obtener todos los detalles de venta
 *   **URL:** `/api/v1/detalles-ventas`
@@ -32,7 +32,7 @@
 -   **500 Internal Server Error**: Se produjo un error inesperado en el servidor.
 -   **503 Service Unavailable**: El servidor no está preparado para manejar la petición en este momento.
 
-
+##################################################
 
 ### Obtener un detalle de venta por ID
 *   **URL:** `/api/v1/detalle-venta/{id}`
@@ -46,7 +46,7 @@
 -   **500 Internal Server Error**: Se produjo un error inesperado en el servidor.
 -   **503 Service Unavailable**: El servidor no está preparado para manejar la petición en este momento.
 
-
+##################################################
 
 ### Actualizar un detalle de venta
 *   **URL:** `/api/v1/detalle-venta/{id}`
@@ -68,7 +68,7 @@
 -   **500 Internal Server Error**: Se produjo un error inesperado en el servidor.
 -   **503 Service Unavailable**: El servidor no está preparado para manejar la petición en este momento.
 
-
+##################################################
 
 ### Eliminar un detalle de venta
 *   **URL:** `/api/v1/detalle-venta/{id}`
@@ -82,7 +82,7 @@
 -   **500 Internal Server Error**: Se produjo un error inesperado en el servidor.
 -   **503 Service Unavailable**: El servidor no está preparado para manejar la petición en este momento.
 
-
+##################################################
 
 ### Obtener todos los productos de una venta
 *   **URL:** `/api/v1/venta/{id}/detalles`
@@ -96,3 +96,31 @@
 -   **404 Not Found**: No existe una venta con el ID especificado.
 -   **500 Internal Server Error**: Se produjo un error inesperado en el servidor.
 -   **503 Service Unavailable**: El servidor no está preparado para manejar la petición en este momento.
+
+##################################################
+
+### Obtener los detalles de venta de un producto
+* **URL:** `/api/v1/productos/{id}/detalles-ventas`
+* **Método HTTP:** `GET`
+* **Descripción:** Obtiene todos los detalles de venta en los que se encuentra registrado un producto específico.
+* **Parámetros de la URL (Path Params):**
+  * `id` (Long): Identificador único del producto.
+#### Respuestas
+* **Código:** `200 OK`
+* **Response Body:**
+```json
+{
+    "data": [
+        {
+            "id": 1,
+            "ventaId": 10,
+            "cantidad": 2,
+            "precioUnitario": 1500.00
+        },
+    ]
+}
+```
+* **Código**: `200 OK` (El producto no se encuentra registrado en ninguna venta.)
+* **Código**: `404 Not Found` (El producto no existe.)
+* **Código**: `500 Internal Server Error`
+* **Código**: `503 Service Unavailable`
