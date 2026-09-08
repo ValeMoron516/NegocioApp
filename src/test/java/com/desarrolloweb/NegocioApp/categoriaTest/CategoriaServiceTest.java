@@ -1,29 +1,5 @@
 package com.desarrolloweb.NegocioApp.categoriaTest;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.List;
-import java.util.Optional;
-
 import com.desarrolloweb.NegocioApp.entity.Categoria;
 import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
 import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
@@ -35,6 +11,32 @@ import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.repository.CategoriaRepository;
 import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
 import com.desarrolloweb.NegocioApp.service.CategoriaService;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class CategoriaServiceTest {
@@ -168,16 +170,49 @@ public class CategoriaServiceTest {
 	
 	// ##################################################
 	
-	@Test
-	void actualizarCategoria_Valido() {
+	@ParameterizedTest
+    @CsvSource(
+        value = {
+            "Hogar, Productos para el hogar",
+            "'', Productos para el hogar",
+            "null, Productos para el hogar",
+            "Hogar, ''",
+            "Hogar, null"
+        },
+        nullValues = {"null"}
+    )
+	void actualizarCategoria_Valido(String nombre, String descripcion) {
 	    Long id = 1L;
-	    CategoriaRequestDTO peticion = new CategoriaRequestDTO("Hogar", "Productos para el hogar");
+	    CategoriaRequestDTO peticion = new CategoriaRequestDTO(nombre, descripcion);
 	    Categoria respuestaMockFindById = new Categoria(1L, "Computacion", "Productos sobre computacion");
-	    Categoria respuestaMockSave = new Categoria(1L, "Hogar", "Productos para el hogar");
-	    CategoriaResponseDTO respuesta = new CategoriaResponseDTO(1L, "Hogar", "Productos para el hogar");
+	    Categoria respuestaMockSave = new Categoria();
+	    
+	    // Configuracion segun parametros
+	    respuestaMockSave.setId(id);
+	    if (nombre != null && !nombre.isBlank()) {
+	        respuestaMockSave.setNombre(nombre);
+	    } else {
+	        respuestaMockSave.setNombre(respuestaMockFindById.getNombre());
+	    }
+	    
+	    if (descripcion != null && !descripcion.isBlank()) {
+	        respuestaMockSave.setDescripcion(descripcion);
+	    } else {
+	        respuestaMockSave.setDescripcion(respuestaMockFindById.getDescripcion());
+	    }
+	    
+	    CategoriaResponseDTO respuesta = new CategoriaResponseDTO(
+	        respuestaMockSave.getId(), 
+	        respuestaMockSave.getNombre(), 
+	        respuestaMockSave.getDescripcion()
+	    );
 	    
 	    when(categoriaRepository.findById(id)).thenReturn(Optional.of(respuestaMockFindById));
-	    when(categoriaRepository.existsByNombre(peticion.getNombre())).thenReturn(false);
+	    
+	    if (nombre != null && !nombre.isBlank()) {
+            when(categoriaRepository.existsByNombre(peticion.getNombre())).thenReturn(false);
+        }
+        
 	    when(categoriaRepository.save(any(Categoria.class))).thenReturn(respuestaMockSave);
 	    
 	    
@@ -189,7 +224,11 @@ public class CategoriaServiceTest {
 	    assertEquals(respuesta.getDescripcion(), resp.getDescripcion());
 	    
 	    verify(categoriaRepository, times(1)).findById(id);
-	    verify(categoriaRepository, times(1)).existsByNombre(peticion.getNombre());
+	    if (nombre != null && !nombre.isBlank()) {
+            verify(categoriaRepository, times(1)).existsByNombre(peticion.getNombre());
+        } else {
+            verify(categoriaRepository, never()).existsByNombre(any());
+        }
 	    verify(categoriaRepository, times(1)).save(any(Categoria.class));
 	}
 	
