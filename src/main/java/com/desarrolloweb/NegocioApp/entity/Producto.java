@@ -33,6 +33,7 @@ public class Producto {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Categoria categoria;
 
+
     @Column(length = 150, nullable = false)
     private String nombre;
 
