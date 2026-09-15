@@ -16,10 +16,7 @@ public class CategoriaRepositoryTest {
     @Autowired
     CategoriaRepository categoriaRepository;
 
-    // @AfterEach
-    // void limpiarBdd() {
-    //     categoriaRepository.deleteAll();
-    // }
+    // ##################################################
     
     @Test
     void existByNombre_Existente() {

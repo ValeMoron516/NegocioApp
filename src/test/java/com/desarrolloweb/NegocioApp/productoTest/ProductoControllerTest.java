@@ -1,0 +1,195 @@
+package com.desarrolloweb.NegocioApp.productoTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import com.desarrolloweb.NegocioApp.controller.ProductoController;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException;
+import com.desarrolloweb.NegocioApp.service.CategoriaService;
+
+@ExtendWith(MockitoExtension.class)
+public class ProductoControllerTest {
+    
+    @Mock
+    ProductoService productoService; // Modulo simulado
+
+    @InjectMocks
+    ProductoController productoController; // Modulo principal
+
+    // ##################################################
+
+    @Test
+    void obtenerTodosProductos_200() {
+        Integer page = 1;
+        Integer limit = 20;
+        MetaDTO metaVacio = new MetaDTO(0L, 0, 20, 0, 1);
+        PaginacionDTO<ProductoResponseDTO> respuestaService = new PaginacionDTO<>(new ArrayList<>(), metaVacio);
+        when(productoService.obtenerTodosProductos(page, limit)).thenReturn(respuestaService);
+
+        ResponseEntity<PaginacionDTO<ProductoResponseDTO>> respuestaHTTP = productoController.obtenerTodosProductos(page, limit);
+
+        assertEquals(HttpStatus.OK, respuestaHTTP.getStatusCode());
+        assertEquals(respuestaService, respuestaHTTP.getBody());
+    }
+
+    // ##################################################
+
+    @Test
+    void obtenerProductoPorId_200() {
+        Long id = 1L;
+        ProductoResponseDTO respuestaService = new ProductoResponseDTO(
+            
+        );
+        when(productoService.obtenerProductoPorId(id)).thenReturn(respuestaService);
+
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.obtenerProductoPorId(id);
+
+        assertEquals(HttpStatus.OK, respuestaHTTP.getStatusCode());
+        assertEquals(respuestaService, respuestaHTTP.getBody());
+    }
+
+    @Test
+    void obtenerCategoriaPorId_404() {
+        Long id = 1L;
+        when(categoriaService.obtenerCategoriaPorId(id)).thenThrow(new NotFoundException());
+
+        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.obtenerCategoriaPorId(id);
+
+        assertEquals(HttpStatus.NOT_FOUND, respuestaHTTP.getStatusCode());
+    }
+
+    // ##################################################
+
+    @Test
+    void crearCategoria_201() {
+        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
+            "Computacion", "Productos sobre computacion"
+        );
+        CategoriaResponseDTO respuestaService = new CategoriaResponseDTO(
+            1L, "Computacion", "Productos sobre computacion"
+        );
+        when(categoriaService.crearCategoria(peticion)).thenReturn(respuestaService);
+
+        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.crearCategoria(peticion);
+
+        assertEquals(HttpStatus.CREATED, respuestaHTTP.getStatusCode());
+        assertEquals(1L, respuestaHTTP.getBody().getId());
+    }
+
+    @Test
+    void crearCategoria_400() {
+        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
+            "Computacion", "Productos sobre computacion"
+        );
+        when(categoriaService.crearCategoria(peticion)).thenThrow(new BadRequestException());
+
+        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.crearCategoria(peticion);
+
+        assertEquals(HttpStatus.BAD_REQUEST, respuestaHTTP.getStatusCode());
+    }
+
+    @Test
+    void crearCategoria_409() {
+        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
+            "Computacion", "Productos sobre computacion"
+        );
+        when(categoriaService.crearCategoria(peticion)).thenThrow(new ConflictException());
+
+        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.crearCategoria(peticion);
+
+        assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
+    }
+
+    // ##################################################
+
+    @Test
+    void actualizarCategoriaPorId_200() {
+        Long id = 1L;
+        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
+            "Computacion", "Productos sobre computacion"
+        );
+        CategoriaResponseDTO respuesta = new CategoriaResponseDTO(
+            id, "Computacion", "Productos sobre computacion"
+        );
+        when(categoriaService.actualizarCategoriaPorId(id, peticion)).thenReturn(respuesta);
+
+        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.actualizarCategoriaPorId(id, peticion);
+
+        assertEquals(HttpStatus.OK, respuestaHTTP.getStatusCode());
+    }
+
+    @Test
+    void actualizarCategoriaPorId_404() {
+        Long id = 1L;
+        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
+            "Computacion", "Productos sobre computacion"
+        );
+        when(categoriaService.actualizarCategoriaPorId(id, peticion)).thenThrow(new NotFoundException());
+
+        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.actualizarCategoriaPorId(id, peticion);
+
+        assertEquals(HttpStatus.NOT_FOUND, respuestaHTTP.getStatusCode());
+    }
+
+    @Test
+    void actualizarCategoriaPorId_409() {
+        Long id = 1L;
+        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
+            "Computacion", "Productos sobre computacion"
+        );
+        when(categoriaService.actualizarCategoriaPorId(id, peticion)).thenThrow(new ConflictException());
+
+        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.actualizarCategoriaPorId(id, peticion);
+
+        assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
+    }
+
+    // ##################################################
+
+    @Test
+    void borrarCategoria_204() {
+        Long id = 1L;
+
+        ResponseEntity<Void> respuestaHTTP = categoriaController.borrarCategoriaPorId(id);
+
+        assertEquals(HttpStatus.NO_CONTENT, respuestaHTTP.getStatusCode());
+    }
+
+    @Test
+    void borrarCategoria_400() {
+        Long id = 1L;
+        doThrow(new NotFoundException()).when(categoriaService).borrarCategoriaPorId(id);
+
+        ResponseEntity<Void> respuestaHTTP = categoriaController.borrarCategoriaPorId(id);
+
+        assertEquals(HttpStatus.NOT_FOUND, respuestaHTTP.getStatusCode());
+    }
+
+    @Test
+    void borrarCategoria_409() {
+        Long id = 1L;
+        doThrow(new ConflictException()).when(categoriaService).borrarCategoriaPorId(id);
+
+        ResponseEntity<Void> respuestaHTTP = categoriaController.borrarCategoriaPorId(id);
+
+        assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
+    }
+
+}
