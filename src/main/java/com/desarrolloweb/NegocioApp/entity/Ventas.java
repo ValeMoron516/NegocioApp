@@ -27,7 +27,7 @@ public class Ventas {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Usuarios usuarios;
+    private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_direccion", nullable = false)
@@ -45,9 +45,9 @@ public class Ventas {
 
     public Ventas() {}
 
-    public Ventas(Long id, Usuarios usuarios, Direccion direccion, LocalDateTime fechaVentas, String estado, BigDecimal total) {
+    public Ventas(Long id, Usuario usuario, Direccion direccion, LocalDateTime fechaVentas, String estado, BigDecimal total) {
         this.id = id;
-        this.usuarios = usuarios;
+        this.usuario = usuario;
         this.direccion = direccion;
         this.fechaVentas = fechaVentas;
         this.estado = estado;
@@ -58,8 +58,8 @@ public class Ventas {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Usuarios getUsuarios() { return usuarios; }
-    public void setUsuarios(Usuarios usuarios) { this.usuarios = usuarios; }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 
     public Direccion getDireccion() { return direccion; }
     public void setDireccion(Direccion direccion) { this.direccion = direccion; }

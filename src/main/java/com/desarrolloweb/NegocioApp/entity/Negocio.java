@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 public class Negocio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="usuario_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -27,19 +27,19 @@ public class Negocio {
     private String nombre;
     @Column(columnDefinition = "TEXT")
     private String descripcion;
-    public Negocio(Long iD, Usuario usuario, String nombre, String descripcion) {
-        ID = iD;
+    public Negocio(Long id, Usuario usuario, String nombre, String descripcion) {
+        this.id = id;
         this.usuario = usuario;
         this.nombre = nombre;
         this.descripcion = descripcion;
     }
     public Negocio() {
     }
-    public Long getID() {
-        return ID;
+    public Long getId() {
+        return id;
     }
-    public void setID(Long iD) {
-        ID = iD;
+    public void setId(Long id) {
+        this.id = id;
     }
     public Usuario getUsuario() {
         return usuario;
