@@ -22,7 +22,9 @@ import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
-import com.desarrolloweb.NegocioApp.service.CategoriaService;
+import com.desarrolloweb.NegocioApp.service.ProductoService;
+import java.math.BigDecimal;
+
 
 @ExtendWith(MockitoExtension.class)
 public class ProductoControllerTest {
@@ -55,7 +57,7 @@ public class ProductoControllerTest {
     void obtenerProductoPorId_200() {
         Long id = 1L;
         ProductoResponseDTO respuestaService = new ProductoResponseDTO(
-            
+            id, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
         when(productoService.obtenerProductoPorId(id)).thenReturn(respuestaService);
 
@@ -66,11 +68,11 @@ public class ProductoControllerTest {
     }
 
     @Test
-    void obtenerCategoriaPorId_404() {
+    void obtenerProductoPorId_404() {
         Long id = 1L;
-        when(categoriaService.obtenerCategoriaPorId(id)).thenThrow(new NotFoundException());
+        when(productoService.obtenerProductoPorId(id)).thenThrow(new NotFoundException());
 
-        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.obtenerCategoriaPorId(id);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.obtenerProductoPorId(id);
 
         assertEquals(HttpStatus.NOT_FOUND, respuestaHTTP.getStatusCode());
     }
@@ -78,41 +80,41 @@ public class ProductoControllerTest {
     // ##################################################
 
     @Test
-    void crearCategoria_201() {
-        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
-            "Computacion", "Productos sobre computacion"
+    void crearProducto_201() {
+        ProductoRequestDTO peticion = new ProductoRequestDTO(
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
-        CategoriaResponseDTO respuestaService = new CategoriaResponseDTO(
-            1L, "Computacion", "Productos sobre computacion"
+        ProductoResponseDTO respuestaService = new ProductoResponseDTO(
+            1L, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
-        when(categoriaService.crearCategoria(peticion)).thenReturn(respuestaService);
+        when(productoService.crearProducto(peticion)).thenReturn(respuestaService);
 
-        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.crearCategoria(peticion);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.crearProducto(peticion);
 
         assertEquals(HttpStatus.CREATED, respuestaHTTP.getStatusCode());
         assertEquals(1L, respuestaHTTP.getBody().getId());
     }
 
     @Test
-    void crearCategoria_400() {
-        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
-            "Computacion", "Productos sobre computacion"
+    void crearProducto_400() {
+        ProductoRequestDTO peticion = new ProductoRequestDTO(
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
-        when(categoriaService.crearCategoria(peticion)).thenThrow(new BadRequestException());
+        when(productoService.crearProducto(peticion)).thenThrow(new BadRequestException());
 
-        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.crearCategoria(peticion);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.crearCategoria(peticion);
 
         assertEquals(HttpStatus.BAD_REQUEST, respuestaHTTP.getStatusCode());
     }
 
     @Test
-    void crearCategoria_409() {
-        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
-            "Computacion", "Productos sobre computacion"
+    void crearProducto_409() {
+        ProductoRequestDTO peticion = new ProductoRequestDTO(
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
-        when(categoriaService.crearCategoria(peticion)).thenThrow(new ConflictException());
+        when(productoService.crearProducto(peticion)).thenThrow(new ConflictException());
 
-        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.crearCategoria(peticion);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = categoriaController.crearCategoria(peticion);
 
         assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
     }
@@ -120,43 +122,43 @@ public class ProductoControllerTest {
     // ##################################################
 
     @Test
-    void actualizarCategoriaPorId_200() {
+    void actualizarProductoPorId_200() {
         Long id = 1L;
-        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
-            "Computacion", "Productos sobre computacion"
+        ProductoRequestDTO peticion = new CategoriaRequestDTO(
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
-        CategoriaResponseDTO respuesta = new CategoriaResponseDTO(
-            id, "Computacion", "Productos sobre computacion"
+        ProductoResponseDTO respuesta = new ProductoResponseDTO(
+            id, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
-        when(categoriaService.actualizarCategoriaPorId(id, peticion)).thenReturn(respuesta);
+        when(productoService.actualizarProductoPorId(id, peticion)).thenReturn(respuesta);
 
-        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.actualizarCategoriaPorId(id, peticion);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.actualizarProductoPorId(id, peticion);
 
         assertEquals(HttpStatus.OK, respuestaHTTP.getStatusCode());
     }
 
     @Test
-    void actualizarCategoriaPorId_404() {
+    void actualizarProductoPorId_404() {
         Long id = 1L;
-        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
-            "Computacion", "Productos sobre computacion"
+        ProductoRequestDTO peticion = new ProductoRequestDTO(
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
-        when(categoriaService.actualizarCategoriaPorId(id, peticion)).thenThrow(new NotFoundException());
+        when(productoService.actualizarProductoPorId(id, peticion)).thenThrow(new NotFoundException());
 
-        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.actualizarCategoriaPorId(id, peticion);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.actualizarProductoPorId(id, peticion);
 
         assertEquals(HttpStatus.NOT_FOUND, respuestaHTTP.getStatusCode());
     }
 
     @Test
-    void actualizarCategoriaPorId_409() {
+    void actualizarProductoPorId_409() {
         Long id = 1L;
-        CategoriaRequestDTO peticion = new CategoriaRequestDTO(
-            "Computacion", "Productos sobre computacion"
+        ProductoRequestDTO peticion = new ProductoRequestDTO(
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
         );
-        when(categoriaService.actualizarCategoriaPorId(id, peticion)).thenThrow(new ConflictException());
+        when(productoService.actualizarProductoPorId(id, peticion)).thenThrow(new ConflictException());
 
-        ResponseEntity<CategoriaResponseDTO> respuestaHTTP = categoriaController.actualizarCategoriaPorId(id, peticion);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.actualizarProductoPorId(id, peticion);
 
         assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
     }
@@ -164,30 +166,30 @@ public class ProductoControllerTest {
     // ##################################################
 
     @Test
-    void borrarCategoria_204() {
+    void borrarProducto_204() {
         Long id = 1L;
 
-        ResponseEntity<Void> respuestaHTTP = categoriaController.borrarCategoriaPorId(id);
+        ResponseEntity<Void> respuestaHTTP = productoController.borrarProductoPorId(id);
 
         assertEquals(HttpStatus.NO_CONTENT, respuestaHTTP.getStatusCode());
     }
 
     @Test
-    void borrarCategoria_400() {
+    void borrarProducto_400() {
         Long id = 1L;
-        doThrow(new NotFoundException()).when(categoriaService).borrarCategoriaPorId(id);
+        doThrow(new NotFoundException()).when(productoService).borrarCategoriaPorId(id);
 
-        ResponseEntity<Void> respuestaHTTP = categoriaController.borrarCategoriaPorId(id);
+        ResponseEntity<Void> respuestaHTTP = productoController.borrarProductoPorId(id);
 
         assertEquals(HttpStatus.NOT_FOUND, respuestaHTTP.getStatusCode());
     }
 
     @Test
-    void borrarCategoria_409() {
+    void borrarProducto_409() {
         Long id = 1L;
-        doThrow(new ConflictException()).when(categoriaService).borrarCategoriaPorId(id);
+        doThrow(new ConflictException()).when(productoService).borrarProductoPorId(id);
 
-        ResponseEntity<Void> respuestaHTTP = categoriaController.borrarCategoriaPorId(id);
+        ResponseEntity<Void> respuestaHTTP = productoController.borrarProductoPorId(id);
 
         assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
     }

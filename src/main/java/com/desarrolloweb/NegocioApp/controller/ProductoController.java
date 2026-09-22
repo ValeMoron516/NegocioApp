@@ -1,7 +1,8 @@
 package com.desarrolloweb.NegocioApp.controller;
 
 import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoDTO;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
@@ -31,7 +32,7 @@ public class ProductoController {
 
     // Leer todos los productos (paginadas)
     @GetMapping
-    public ResponseEntity<PaginacionDTO<ProductoDTO>> obtenerTodosProductos(
+    public ResponseEntity<PaginacionDTO<ProductoResponseDTO>> obtenerTodosProductos(
         @RequestParam(defaultValue = "1") Integer page, 
         @RequestParam(defaultValue = "20") Integer limit) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -42,7 +43,7 @@ public class ProductoController {
 
     // Leer producto por ID
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoDTO> obtenerCategoriaPorId(@PathVariable Long id) {
+    public ResponseEntity<ProductoResponseDTO> obtenerCategoriaPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(productoService.obtenerProductoPorId(id)); // 200
@@ -56,8 +57,8 @@ public class ProductoController {
 
     // Crear nuevo producto
     @PostMapping
-    public ResponseEntity<ProductoDTO> crearPtoducto(
-        @RequestBody ProductoDTO p) {
+    public ResponseEntity<ProductoResponseDTO> crearPtoducto(
+        @RequestBody ProductoRequestDTO p) {
         
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -75,7 +76,7 @@ public class ProductoController {
 
     // Actualizar producto por id
     @PutMapping("{id}")
-    public ResponseEntity<ProductoDTO> actualizarProductoPorId(@PathVariable Long id, @RequestBody ProductoDTO p) {
+    public ResponseEntity<ProductoResponseDTO> actualizarProductoPorId(@PathVariable Long id, @RequestBody ProductoRequestDTO p) {
         
         try {
             return ResponseEntity.status(HttpStatus.OK)
@@ -90,7 +91,7 @@ public class ProductoController {
 
     // Borrar por ID
     @DeleteMapping("{id}")
-    public ResponseEntity<?> borrarProductoPorId(@PathVariable Long id) {
+    public ResponseEntity<Void> borrarProductoPorId(@PathVariable Long id) {
         try {
             productoService.borrarProductoPorId(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204

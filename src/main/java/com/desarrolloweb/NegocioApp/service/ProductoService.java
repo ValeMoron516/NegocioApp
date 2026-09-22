@@ -3,7 +3,8 @@ package com.desarrolloweb.NegocioApp.service;
 import com.desarrolloweb.NegocioApp.entity.Producto;
 import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
 import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoDTO;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 
@@ -28,20 +29,20 @@ public class ProductoService {
     // ##################################################
 
     // Obtener lista de productos (paginadas)
-    public PaginacionDTO<ProductoDTO> obtenerTodosProductos(Integer page, Integer limit) { 
+    public PaginacionDTO<ProductoResponseDTO> obtenerTodosProductos(Integer page, Integer limit) { 
         
         Pageable pageable = PageRequest.of(page - 1, limit);
         Page<Producto> paginaProductos = productoRepository.findAll(pageable);
         List<Producto> productos = paginaProductos.getContent();
         
-        List<ProductoDTO> dtos = new ArrayList<>();
+        List<ProductoResponseDTO> dtos = new ArrayList<>();
         for (Producto p : productos) {
-            ProductoDTO dto = new ProductoDTO();
+            ProductoResponseDTO dto = new ProductoResponseDTO();
             dto.setId(p.getId());
             dto.setNegocioId(p.getNegocio().getId());
             dto.setNombreNegocio(p.getNegocio().getNombre());
             dto.setCategoriaId(p.getNegocio().getId());
-            dto.setNombreCategoria(p.getNegocio().getNombre());
+            dto.setNombreCategoria(p.getCategoria().getNombre());
             dto.setNombre(p.getNombre());
             dto.setDescripcion(p.getDescripcion());
             dto.setPrecio(p.getPrecio());
@@ -64,19 +65,19 @@ public class ProductoService {
     // ##################################################
 
     // Obtener producto por ID
-    public ProductoDTO obtenerProductoPorId(Long id) { 
+    public ProductoResponseDTO obtenerProductoPorId(Long id) { 
         Optional<Producto> optP = productoRepository.findById(id);
         
         // Existe
         if (optP.isPresent()) {
             Producto p = optP.get();
             
-            return new ProductoDTO(
+            return new ProductoResponseDTO(
                 p.getId(),
                 p.getNegocio().getId(),
                 p.getNegocio().getNombre(),
-                p.getNegocio().getId(),
-                p.getNegocio().getNombre(),
+                p.getCategoria().getId(),
+                p.getCategoria().getNombre(),
                 p.getNombre(),
                 p.getDescripcion(),
                 p.getPrecio(),
@@ -91,7 +92,7 @@ public class ProductoService {
     // ##################################################
 
     // Crear nuevo producto
-    public ProductoDTO crearProducto(ProductoDTO pDTO) {
+    public ProductoResponseDTO crearProducto(ProductoRequestDTO pDTO) {
 
         Producto newP = new Producto(); // negocio -> buscar por id | categoria -> buscar por id
 
@@ -110,12 +111,12 @@ public class ProductoService {
         
         Producto p = productoRepository.save(newP);
         
-        return new ProductoDTO(
+        return new ProductoResponseDTO(
             p.getId(),
             p.getNegocio().getId(),
             p.getNegocio().getNombre(),
-            p.getNegocio().getId(),
-            p.getNegocio().getNombre(),
+            p.getCategoria().getId(),
+            p.getCategoria().getNombre(),
             p.getNombre(),
             p.getDescripcion(),
             p.getPrecio(),
@@ -127,7 +128,7 @@ public class ProductoService {
     // ##################################################
 
     // Actualizar producto por id
-    public ProductoDTO actualizarProductoPorId(Long id, ProductoDTO pDTO) {
+    public ProductoResponseDTO actualizarProductoPorId(Long id, ProductoRequestDTO pDTO) {
 
         Optional<Producto> optP = productoRepository.findById(id);
 
@@ -154,12 +155,12 @@ public class ProductoService {
             }
             
             Producto p = productoRepository.save(newP);
-            return new ProductoDTO(
+            return new ProductoResponseDTO(
                 p.getId(),
                 p.getNegocio().getId(),
                 p.getNegocio().getNombre(),
-                p.getNegocio().getId(),
-                p.getNegocio().getNombre(),
+                p.getCategoria().getId(),
+                p.getCategoria().getNombre(),
                 p.getNombre(),
                 p.getDescripcion(),
                 p.getPrecio(),

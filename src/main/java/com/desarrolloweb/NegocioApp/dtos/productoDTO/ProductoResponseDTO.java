@@ -3,7 +3,7 @@ package com.desarrolloweb.NegocioApp.dtos.productoDTO;
 import java.math.BigDecimal;
 
 
-public class ProductoDTO {
+public class ProductoResponseDTO {
 
     private Long id;
     private Long negocioId;
@@ -12,15 +12,15 @@ public class ProductoDTO {
     private String nombreCategoria;
     private String nombre;
     private String descripcion;
-    private BigDecimal precio;
+    private double precio;
     private Integer stock;
 
     // Constructores
-    public ProductoDTO() { }
+    public ProductoResponseDTO() { }
 
-    public ProductoDTO(Long id, Long negocioId, String nombreNegocio, 
+    public ProductoResponseDTO(Long id, Long negocioId, String nombreNegocio, 
             Long categoriaId, String nombreCategoria, String nombre,
-            String descripcion, BigDecimal precio, Integer stock) {
+            String descripcion, double precio, Integer stock) {
         this.id = id;
         this.negocioId = negocioId;
         this.nombreNegocio = nombreNegocio;
@@ -54,8 +54,8 @@ public class ProductoDTO {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public BigDecimal getPrecio() { return precio; }
-    public void setPrecio(BigDecimal precio) { this.precio = precio; }
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
