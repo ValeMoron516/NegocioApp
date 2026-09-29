@@ -14,27 +14,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.desarrolloweb.NegocioApp.entity.DetalleVenta;
-import com.desarrolloweb.NegocioApp.repository.DetalleVentaRepository;
+import com.desarrolloweb.NegocioApp.service.DetalleVentaService;
 
 @RestController
 @RequestMapping("/api/v1")
 public class DetalleVentaController {
 
-    private final DetalleVentaRepository detalleVentaRepository;
+    private final DetalleVentaService detalleVentaService;
 
-    public DetalleVentaController(DetalleVentaRepository detalleVentaRepository) {
-        this.detalleVentaRepository = detalleVentaRepository;
+    public DetalleVentaController(DetalleVentaService detalleVentaService) {
+        this.detalleVentaService = detalleVentaService;
     }
 
     @PostMapping("/detalle-venta/{id}")
     public ResponseEntity<DetalleVenta> crearDetalleVenta(@RequestBody DetalleVenta detalleVenta) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(detalleVentaRepository.save(detalleVenta));
+                .body(detalleVentaService.crear(detalleVenta));
     }
 
     @GetMapping("/detalles-ventas")
     public ResponseEntity<List<DetalleVenta>> obtenerTodosLosDetalles() {
-        List<DetalleVenta> detalles = detalleVentaRepository.findAll();
+        List<DetalleVenta> detalles = detalleVentaService.obtenerTodos();
         return detalles.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(detalles);
@@ -42,7 +42,7 @@ public class DetalleVentaController {
 
     @GetMapping("/detalle-venta/{id}")
     public ResponseEntity<DetalleVenta> obtenerDetallePorId(@PathVariable Long id) {
-        return detalleVentaRepository.findById(id)
+        return detalleVentaService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -50,32 +50,27 @@ public class DetalleVentaController {
     @PutMapping("/detalle-venta/{id}")
     public ResponseEntity<DetalleVenta> actualizarDetalleVenta(
             @PathVariable Long id, @RequestBody DetalleVenta detalleActualizado) {
-        return detalleVentaRepository.findById(id)
-                .map(detalle -> {
-                    if (detalleActualizado.getCantidad() != null) {
-                        detalle.setCantidad(detalleActualizado.getCantidad());
-                    }
-                    return ResponseEntity.ok(detalleVentaRepository.save(detalle));
-                })
+        return detalleVentaService.actualizarCantidad(id, detalleActualizado.getCantidad())
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/detalle-venta/{id}")
     public ResponseEntity<Void> eliminarDetalleVenta(@PathVariable Long id) {
-        if (!detalleVentaRepository.existsById(id)) {
+        if (!detalleVentaService.existe(id)) {
             return ResponseEntity.notFound().build();
         }
-        detalleVentaRepository.deleteById(id);
+        detalleVentaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/venta/{id}/detalles")
     public ResponseEntity<List<DetalleVenta>> obtenerDetallesPorVenta(@PathVariable Long id) {
-        return ResponseEntity.ok(detalleVentaRepository.findByVentaId(id));
+        return ResponseEntity.ok(detalleVentaService.obtenerPorVenta(id));
     }
 
     @GetMapping("/productos/{id}/detalles-ventas")
     public ResponseEntity<List<DetalleVenta>> obtenerDetallesPorProducto(@PathVariable Long id) {
-        return ResponseEntity.ok(detalleVentaRepository.findByProductoId(id));
+        return ResponseEntity.ok(detalleVentaService.obtenerPorProducto(id));
     }
 }

@@ -1,6 +1,5 @@
 package com.desarrolloweb.NegocioApp.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -16,26 +15,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.desarrolloweb.NegocioApp.entity.ValoracionNegocio;
-import com.desarrolloweb.NegocioApp.repository.ValoracionNegocioRepository;
+import com.desarrolloweb.NegocioApp.service.ValoracionNegocioService;
 
 @RestController
 @RequestMapping("/api/v1")
 public class ValoracionNegocioController {
 
-    private final ValoracionNegocioRepository valoracionRepository;
+    private final ValoracionNegocioService valoracionService;
 
-    public ValoracionNegocioController(ValoracionNegocioRepository valoracionRepository) {
-        this.valoracionRepository = valoracionRepository;
+    public ValoracionNegocioController(ValoracionNegocioService valoracionService) {
+        this.valoracionService = valoracionService;
     }
 
     @GetMapping("/valoraciones-negocios")
     public ResponseEntity<List<ValoracionNegocio>> obtenerTodasLasValoraciones() {
-        return ResponseEntity.ok(valoracionRepository.findAll());
+        return ResponseEntity.ok(valoracionService.obtenerTodas());
     }
 
     @GetMapping("/valoraciones-negocios/{id}")
     public ResponseEntity<ValoracionNegocio> obtenerValoracionPorId(@PathVariable Long id) {
-        return valoracionRepository.findById(id)
+        return valoracionService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -43,48 +42,37 @@ public class ValoracionNegocioController {
     @PostMapping("/valoraciones-negocios")
     public ResponseEntity<ValoracionNegocio> crearValoracion(
             @RequestBody ValoracionNegocio valoracion) {
-        if (valoracion.getFecha() == null) {
-            valoracion.setFecha(LocalDateTime.now());
-        }
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(valoracionRepository.save(valoracion));
+                .body(valoracionService.crear(valoracion));
     }
 
     @PatchMapping("/valoraciones-negocios/{id}")
     public ResponseEntity<ValoracionNegocio> actualizarValoracion(
             @PathVariable Long id, @RequestBody ValoracionNegocio valoracionActualizada) {
-        return valoracionRepository.findById(id)
-                .map(valoracion -> {
-                    if (valoracionActualizada.getEstrellas() != null) {
-                        valoracion.setEstrellas(valoracionActualizada.getEstrellas());
-                    }
-                    if (valoracionActualizada.getComentario() != null) {
-                        valoracion.setComentario(valoracionActualizada.getComentario());
-                    }
-                    return ResponseEntity.ok(valoracionRepository.save(valoracion));
-                })
+        return valoracionService.actualizar(id, valoracionActualizada)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/valoraciones-negocios/{id}")
     public ResponseEntity<Void> eliminarValoracion(@PathVariable Long id) {
-        if (!valoracionRepository.existsById(id)) {
+        if (!valoracionService.existe(id)) {
             return ResponseEntity.notFound().build();
         }
-        valoracionRepository.deleteById(id);
+        valoracionService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/negocios/{id}/valoraciones")
     public ResponseEntity<List<ValoracionNegocio>> obtenerValoracionesPorNegocio(
             @PathVariable Long id) {
-        return ResponseEntity.ok(valoracionRepository.findByNegocioId(id));
+        return ResponseEntity.ok(valoracionService.obtenerPorNegocio(id));
     }
 
     @GetMapping("/clientes/{id}/valoraciones-negocios")
     public ResponseEntity<List<ValoracionNegocio>> obtenerValoracionesPorCliente(
             @PathVariable Long id) {
-        return ResponseEntity.ok(valoracionRepository.findByClienteId(id));
+        return ResponseEntity.ok(valoracionService.obtenerPorCliente(id));
     }
 
     @GetMapping("/valoraciones-negocios/estrellas/{estrellas}")
@@ -92,6 +80,6 @@ public class ValoracionNegocioController {
         if (estrellas < 1 || estrellas > 5) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(Map.of("data", valoracionRepository.findByEstrellas(estrellas)));
+        return ResponseEntity.ok(Map.of("data", valoracionService.obtenerPorEstrellas(estrellas)));
     }
 }
