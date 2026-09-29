@@ -100,7 +100,7 @@ public class ProductoService {
         // Verificar nombre negocio
         if (pDTO.getNombreNegocio() == null || pDTO.getNombreNegocio().isEmpty()) { throw new BadRequestException("Nombre del negocio invalido"); }
         // Verificar nombre categoria
-        if (pDTO.getNombreCategoria() == null || pDTO.getNombreCategoria().isEmpty()) { throw new BadRequestException("Nombre de categoria invalido"); }
+        if (pDTO.getNombreCategoria() == null || pDTO.getNombreCategoria().isEmpty() || pDTO.getNombreCategoria().length() > 150) { throw new BadRequestException("Nombre de categoria invalido"); }
         // Verificar nombre
         if (pDTO.getNombre() == null || pDTO.getNombre().isEmpty()) { throw new BadRequestException("Nombre invalido"); }
         // Verificar descripcion
@@ -136,16 +136,16 @@ public class ProductoService {
         if (optP.isPresent()) {
             Producto newP = optP.get();
             
-            if (pDTO.getNombreNegocio() != null || !pDTO.getNombreNegocio().isBlank()) {
+            if (pDTO.getNombreNegocio() != null && !pDTO.getNombreNegocio().isBlank()) {
                 newP.getNegocio().setNombre(pDTO.getNombreNegocio());
             }            
-            if (pDTO.getNombreCategoria() != null || !pDTO.getNombreCategoria().isBlank()) {
+            if (pDTO.getNombreCategoria() != null && !pDTO.getNombreCategoria().isBlank()) {
                 newP.getCategoria().setNombre(pDTO.getNombreCategoria());
             }            
-            if (pDTO.getNombre() != null || !pDTO.getNombre().isBlank()) {
+            if (pDTO.getNombre() != null && !pDTO.getNombre().isBlank()) {
                 newP.setNombre(pDTO.getNombre());
             }
-            if (pDTO.getDescripcion() != null || !pDTO.getDescripcion().isBlank()) {
+            if (pDTO.getDescripcion() != null && !pDTO.getDescripcion().isBlank()) {
                 newP.setDescripcion(pDTO.getDescripcion());
             }
             if (pDTO.getPrecio() != null) {
@@ -169,7 +169,7 @@ public class ProductoService {
             );
         }
         else {
-            throw new NotFoundException("La categoria con el ID provisto no existe");
+            throw new NotFoundException("El producto con el ID provisto no existe");
         }  
     }
 
@@ -183,7 +183,7 @@ public class ProductoService {
         if (optP.isPresent()) {
             productoRepository.deleteById(id);
         } else {
-            throw new NotFoundException("La categoria con el ID provisto no existe");
+            throw new NotFoundException("El producto con el ID provisto no existe");
         }
     }
 }
