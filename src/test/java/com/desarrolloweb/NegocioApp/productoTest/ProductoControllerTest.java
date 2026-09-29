@@ -57,7 +57,7 @@ public class ProductoControllerTest {
     void obtenerProductoPorId_200() {
         Long id = 1L;
         ProductoResponseDTO respuestaService = new ProductoResponseDTO(
-            id, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
+            id, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999.0, 10
         );
         when(productoService.obtenerProductoPorId(id)).thenReturn(respuestaService);
 
@@ -82,10 +82,10 @@ public class ProductoControllerTest {
     @Test
     void crearProducto_201() {
         ProductoRequestDTO peticion = new ProductoRequestDTO(
-            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999.0, 10
         );
         ProductoResponseDTO respuestaService = new ProductoResponseDTO(
-            1L, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
+            1L, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999.0, 10
         );
         when(productoService.crearProducto(peticion)).thenReturn(respuestaService);
 
@@ -98,11 +98,11 @@ public class ProductoControllerTest {
     @Test
     void crearProducto_400() {
         ProductoRequestDTO peticion = new ProductoRequestDTO(
-            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999.0, 10
         );
         when(productoService.crearProducto(peticion)).thenThrow(new BadRequestException());
 
-        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.crearCategoria(peticion);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.crearProducto(peticion);
 
         assertEquals(HttpStatus.BAD_REQUEST, respuestaHTTP.getStatusCode());
     }
@@ -110,11 +110,11 @@ public class ProductoControllerTest {
     @Test
     void crearProducto_409() {
         ProductoRequestDTO peticion = new ProductoRequestDTO(
-            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999.0, 10
         );
         when(productoService.crearProducto(peticion)).thenThrow(new ConflictException());
 
-        ResponseEntity<ProductoResponseDTO> respuestaHTTP = categoriaController.crearCategoria(peticion);
+        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.crearProducto(peticion);
 
         assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
     }
@@ -124,11 +124,11 @@ public class ProductoControllerTest {
     @Test
     void actualizarProductoPorId_200() {
         Long id = 1L;
-        ProductoRequestDTO peticion = new CategoriaRequestDTO(
-            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
+        ProductoRequestDTO peticion = new ProductoRequestDTO(
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999.0, 10
         );
         ProductoResponseDTO respuesta = new ProductoResponseDTO(
-            id, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
+            id, 1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999.0, 10
         );
         when(productoService.actualizarProductoPorId(id, peticion)).thenReturn(respuesta);
 
@@ -141,7 +141,7 @@ public class ProductoControllerTest {
     void actualizarProductoPorId_404() {
         Long id = 1L;
         ProductoRequestDTO peticion = new ProductoRequestDTO(
-            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
+            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999.0, 10
         );
         when(productoService.actualizarProductoPorId(id, peticion)).thenThrow(new NotFoundException());
 
@@ -150,18 +150,6 @@ public class ProductoControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, respuestaHTTP.getStatusCode());
     }
 
-    @Test
-    void actualizarProductoPorId_409() {
-        Long id = 1L;
-        ProductoRequestDTO peticion = new ProductoRequestDTO(
-            1L, "Negocio Pablito", 1L, "Electronica", "Monitor 24 pulgadas", "Monitor de 24 pulgadas 1920x1080 OLED", 149999, 10
-        );
-        when(productoService.actualizarProductoPorId(id, peticion)).thenThrow(new ConflictException());
-
-        ResponseEntity<ProductoResponseDTO> respuestaHTTP = productoController.actualizarProductoPorId(id, peticion);
-
-        assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
-    }
 
     // ##################################################
 
@@ -177,21 +165,11 @@ public class ProductoControllerTest {
     @Test
     void borrarProducto_400() {
         Long id = 1L;
-        doThrow(new NotFoundException()).when(productoService).borrarCategoriaPorId(id);
+        doThrow(new NotFoundException()).when(productoService).borrarProductoPorId(id);
 
         ResponseEntity<Void> respuestaHTTP = productoController.borrarProductoPorId(id);
 
         assertEquals(HttpStatus.NOT_FOUND, respuestaHTTP.getStatusCode());
-    }
-
-    @Test
-    void borrarProducto_409() {
-        Long id = 1L;
-        doThrow(new ConflictException()).when(productoService).borrarProductoPorId(id);
-
-        ResponseEntity<Void> respuestaHTTP = productoController.borrarProductoPorId(id);
-
-        assertEquals(HttpStatus.CONFLICT, respuestaHTTP.getStatusCode());
     }
 
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.math.BigDecimal;
 
 @Service
 public class ProductoService {
@@ -45,7 +46,7 @@ public class ProductoService {
             dto.setNombreCategoria(p.getCategoria().getNombre());
             dto.setNombre(p.getNombre());
             dto.setDescripcion(p.getDescripcion());
-            dto.setPrecio(p.getPrecio());
+            dto.setPrecio(p.getPrecio().doubleValue());
             dto.setStock(p.getStock());
             
             dtos.add(dto);
@@ -80,7 +81,7 @@ public class ProductoService {
                 p.getCategoria().getNombre(),
                 p.getNombre(),
                 p.getDescripcion(),
-                p.getPrecio(),
+                p.getPrecio().doubleValue(),
                 p.getStock()
             );
         }
@@ -119,7 +120,7 @@ public class ProductoService {
             p.getCategoria().getNombre(),
             p.getNombre(),
             p.getDescripcion(),
-            p.getPrecio(),
+            p.getPrecio().doubleValue(),
             p.getStock()
         );
         
@@ -148,7 +149,7 @@ public class ProductoService {
                 newP.setDescripcion(pDTO.getDescripcion());
             }
             if (pDTO.getPrecio() != null) {
-                newP.setPrecio(pDTO.getPrecio());
+                newP.setPrecio(new BigDecimal(pDTO.getPrecio().doubleValue()));
             }            
             if (pDTO.getStock() != null) {
                 newP.setStock(pDTO.getStock());
@@ -163,7 +164,7 @@ public class ProductoService {
                 p.getCategoria().getNombre(),
                 p.getNombre(),
                 p.getDescripcion(),
-                p.getPrecio(),
+                p.getPrecio().doubleValue(),
                 p.getStock()
             );
         }

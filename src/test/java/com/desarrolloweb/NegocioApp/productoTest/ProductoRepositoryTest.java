@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import com.desarrolloweb.NegocioApp.entity.Producto;
+import com.desarrolloweb.NegocioApp.entity.Categoria;
 import com.desarrolloweb.NegocioApp.entity.Negocio;
 import com.desarrolloweb.NegocioApp.entity.Usuario;
 import com.desarrolloweb.NegocioApp.entity.Producto;
-import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+import com.desarrolloweb.NegocioApp.repository.CategoriaRepository;
 import com.desarrolloweb.NegocioApp.repository.NegocioRepository;
 import com.desarrolloweb.NegocioApp.repository.UsuarioRepository;
 import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 public class ProductoRepositoryTest {
 
 	@Autowired
-	ProductoRepository productoRepository;
+	CategoriaRepository categoriaRepository;
 
 	@Autowired
 	NegocioRepository negocioRepository;
@@ -37,21 +37,21 @@ public class ProductoRepositoryTest {
 
 	@Test
 	void existByProductoId_Existente() {
-		Usuario u = new Usuario("María", "Gómez", "+541123456789", "maria.gomez@email.com", "$2b$10$wXyZ2");
+		Usuario u = new Usuario(null, "María", "Gómez", "+541123456789", "maria.gomez@email.com", "$2b$10$wXyZ2", null);
 		Usuario uP = usuarioRepository.save(u);
 
-		Producto c = new Producto("Indumentaria", "Ropa, calzado y accesorios para todas las edades");
-		Producto cP = productoRepository.save(c);
+		Categoria c = new Categoria(null, "Indumentaria", "Ropa, calzado y accesorios para todas las edades");
+		Categoria cP = categoriaRepository.save(c);
 
-		Negocio n = new Negocio(uP, "Sublime Ropa", "Moda urbana y tendencias actuales (Propiedad de María)");
+		Negocio n = new Negocio(null, uP, "Sublime Ropa", "Moda urbana y tendencias actuales (Propiedad de María)");
 		Negocio nP = negocioRepository.save(n);
 
-		Producto p = new Producto(nP, cP, "Pantalón Cargo Verde", "Pantalón resistente con múltiples bolsillos", new BigDecimal("35000.00"), 12);
+		Producto p = new Producto(null, nP, cP, "Pantalón Cargo Verde", "Pantalón resistente con múltiples bolsillos", new BigDecimal("35000.00"), 12);
 		productoRepository.save(p);
 
-		Long id = 1L;
+		Long id = cP.getId();
 
-		boolean respuesta = productoRepository.existsByProductoId(id);
+		boolean respuesta = productoRepository.existsByCategoriaId(id);
 
 		assertTrue(respuesta);
 	}
@@ -59,9 +59,12 @@ public class ProductoRepositoryTest {
 
 	@Test
 	void existByProductoId_Inexistente() {
-		Long id = 1L;
+		Categoria c = new Categoria(null, "Indumentaria", "Ropa, calzado y accesorios para todas las edades");
+		Categoria cP = categoriaRepository.save(c);
 
-		boolean respuesta = productoRepository.existsByProductoId(id);
+		Long id = cP.getId();
+
+		boolean respuesta = productoRepository.existsByCategoriaId(id);
 
 		assertFalse(respuesta);
 	}

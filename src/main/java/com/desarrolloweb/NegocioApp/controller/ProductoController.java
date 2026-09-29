@@ -43,7 +43,7 @@ public class ProductoController {
 
     // Leer producto por ID
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoResponseDTO> obtenerCategoriaPorId(@PathVariable Long id) {
+    public ResponseEntity<ProductoResponseDTO> obtenerProductoPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(productoService.obtenerProductoPorId(id)); // 200
@@ -57,7 +57,7 @@ public class ProductoController {
 
     // Crear nuevo producto
     @PostMapping
-    public ResponseEntity<ProductoResponseDTO> crearPtoducto(
+    public ResponseEntity<ProductoResponseDTO> crearProducto(
         @RequestBody ProductoRequestDTO p) {
         
         try {

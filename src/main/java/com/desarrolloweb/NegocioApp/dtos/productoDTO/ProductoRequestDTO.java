@@ -11,7 +11,7 @@ public class ProductoRequestDTO {
     private String nombreCategoria;
     private String nombre;
     private String descripcion;
-    private double precio;
+    private Double precio;
     private Integer stock;
 
     // Constructores
@@ -19,7 +19,7 @@ public class ProductoRequestDTO {
 
     public ProductoRequestDTO(Long negocioId, String nombreNegocio, 
             Long categoriaId, String nombreCategoria, String nombre,
-            String descripcion, double precio, Integer stock) {
+            String descripcion, Double precio, Integer stock) {
         this.negocioId = negocioId;
         this.nombreNegocio = nombreNegocio;
         this.categoriaId = categoriaId;
@@ -49,8 +49,8 @@ public class ProductoRequestDTO {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public double getPrecio() { return precio; }
-    public void setPrecio(double precio) { this.precio = precio; }
+    public Double getPrecio() { return precio; }
+    public void setPrecio(Double precio) { this.precio = precio; }
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
