@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ventas")
-public class Ventas {
+public class Venta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,8 +34,13 @@ public class Ventas {
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private Direccion direccion;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "negocio_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Negocio negocio;
+
     @Column(name = "fecha_venta", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime fechaVentas;
+    private LocalDateTime fechaVenta;
 
     @Column(name = "estado", length = 50, nullable = false, columnDefinition = "VARCHAR(50) NOT NULL DEFAULT 'PENDIENTE'")
     private String estado;
@@ -43,13 +48,14 @@ public class Ventas {
     @Column(name = "total", nullable = false, columnDefinition = "DECIMAL(10,2) DEFAULT 0.0 CHECK (total >= 0)")
     private BigDecimal total;
 
-    public Ventas() {}
+    public Venta() {}
 
-    public Ventas(Long id, Usuario usuario, Direccion direccion, LocalDateTime fechaVentas, String estado, BigDecimal total) {
+    public Venta(Long id, Usuario usuario, Direccion direccion, Negocio negocio, LocalDateTime fechaVenta, String estado, BigDecimal total) {
         this.id = id;
         this.usuario = usuario;
         this.direccion = direccion;
-        this.fechaVentas = fechaVentas;
+        this.negocio = negocio;
+        this.fechaVenta = fechaVenta;
         this.estado = estado;
         this.total = total;
     }
@@ -64,8 +70,11 @@ public class Ventas {
     public Direccion getDireccion() { return direccion; }
     public void setDireccion(Direccion direccion) { this.direccion = direccion; }
 
-    public LocalDateTime getFechaVentas() { return fechaVentas; }
-    public void setFechaVentas(LocalDateTime fechaVentas) { this.fechaVentas = fechaVentas; }
+    public Negocio getNegocio() { return negocio;}
+    public void setNegocio( Negocio negocio){ this.negocio = negocio; }
+
+    public LocalDateTime getFechaVenta() { return fechaVenta; }
+    public void setFechaVenta(LocalDateTime fechaVenta) { this.fechaVenta = fechaVenta; }
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
