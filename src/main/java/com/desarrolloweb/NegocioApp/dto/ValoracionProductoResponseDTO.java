@@ -6,7 +6,7 @@ public class ValoracionProductoResponseDTO {
     private Long id;
     private Long usuarioId;
     private Long productoId;
-    private int puntuacion;
+    private int estrellas;
     private String comentario;
     private String fecha;
 
@@ -14,12 +14,12 @@ public class ValoracionProductoResponseDTO {
 
     }
 
-    public ValoracionProductoResponseDTO(Long id, Long usuarioId, Long productoId, int puntuacion, String comentario,
+    public ValoracionProductoResponseDTO(Long id, Long usuarioId, Long productoId, int estrellas, String comentario,
             String fecha) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.productoId = productoId;
-        this.puntuacion = puntuacion;
+        this.estrellas = estrellas;
         this.comentario = comentario;
         this.fecha = fecha;
     }
@@ -48,12 +48,12 @@ public class ValoracionProductoResponseDTO {
         this.productoId = productoId;
     }
 
-    public int getPuntuacion() {
-        return puntuacion;
+    public int getEstrellas() {
+        return estrellas;
     }
 
-    public void setPuntuacion(int puntuacion) {
-        this.puntuacion = puntuacion;
+    public void setEstrellas(int estrellas) {
+        this.estrellas = estrellas;
     }
 
     public String getComentario() {
