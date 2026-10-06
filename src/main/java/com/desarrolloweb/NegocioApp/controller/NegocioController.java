@@ -31,12 +31,12 @@ public class NegocioController {
         NegocioResponseDto negocio = negocioService.buscarPorId(id);
         return new ResponseEntity<>(negocio, HttpStatus.OK);
 }
-@GetMapping("/buscar")
+@GetMapping("/buscarPorNombre")
 public ResponseEntity<List<NegocioResponseDto>> buscarPorNombre(@RequestParam String nombre) {
     List<NegocioResponseDto> negocios = negocioService.buscarPorNombre(nombre);
     return new ResponseEntity<>(negocios, HttpStatus.OK);
 }
-@GetMapping("/buscar")
+@GetMapping("/buscarPorProducto")
 public ResponseEntity<List<NegocioResponseDto>> buscarPorProducto(@RequestParam String producto) {
     List<NegocioResponseDto> negocios = negocioService.buscarPorProducto(producto);
     return new ResponseEntity<>(negocios, HttpStatus.OK);
