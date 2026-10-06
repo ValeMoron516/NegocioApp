@@ -1,4 +1,4 @@
-package com.desarrolloweb.NegocioApp.dtos;
+package com.desarrolloweb.NegocioApp.dtos.paginacionDTO;
 
 import java.util.List;
 

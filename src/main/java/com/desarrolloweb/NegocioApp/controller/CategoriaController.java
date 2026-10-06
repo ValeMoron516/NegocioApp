@@ -1,8 +1,11 @@
 package com.desarrolloweb.NegocioApp.controller;
 
-import com.desarrolloweb.NegocioApp.entity.Categoria;
-import com.desarrolloweb.NegocioApp.dtos.CategoriaDTO;
-import com.desarrolloweb.NegocioApp.dtos.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException;
+import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
+import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.service.CategoriaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("api/v1/categorias")
 public class CategoriaController {
@@ -28,44 +28,81 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
+    // ##################################################
+
     // Leer todas las Categorias (paginadas)
     @GetMapping
-    public ResponseEntity<PaginacionDTO<CategoriaDTO>> obtenerTodasCategorias(
+    public ResponseEntity<PaginacionDTO<CategoriaResponseDTO>> obtenerTodasCategorias(
         @RequestParam(defaultValue = "1") Integer page, 
         @RequestParam(defaultValue = "20") Integer limit) {
-        return ResponseEntity.status(HttpStatus.OK).body(categoriaService.obtenerTodasCategorias(page, limit));
+        return ResponseEntity.status(HttpStatus.OK)
+        .body(categoriaService.obtenerTodasCategorias(page, limit)); // 200
     }
+
+    // ##################################################
 
     // Leer Categoria por ID
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaDTO> obtenerCategoriaPorId(@PathVariable Long id) {
-        Optional<CategoriaDTO> optDto = categoriaService.obtenerCategoriaPorId(id);
-        
-        // Existe
-        if (optDto.isPresent()) {
-            CategoriaDTO dto = optDto.get();
-            return ResponseEntity.status(HttpStatus.OK).body(dto);
+    public ResponseEntity<CategoriaResponseDTO> obtenerCategoriaPorId(@PathVariable Long id) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+            .body(categoriaService.obtenerCategoriaPorId(id)); // 200
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
         }
-        
-        // No existe
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    // Crear
-    //@PostMapping
-    //public void crearCategoria(@RequestBody Categoria categoria) {
-    //    categoriaService.crearCategoria(categoria);
-    //}
+    // ##################################################
+
+    // Crear nueva categoria
+    @PostMapping
+    public ResponseEntity<CategoriaResponseDTO> crearCategoria(
+        @RequestBody CategoriaRequestDTO c) {
+        
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+            .body(categoriaService.crearCategoria(c)); // 201
+        }
+        catch (BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400
+        }
+        catch (ConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
+        }
+    }
+
+    // ##################################################
 
     // Actualizar por id
-    //@PutMapping("{id}")
-    //public void actualizarCategoriaPorId(@PathVariable Long id, @RequestBody Categoria categoria) {
-    //    categoriaService.actualizarCategoriaPorId(id, categoria);
-    //}
+    @PutMapping("{id}")
+    public ResponseEntity<CategoriaResponseDTO> actualizarCategoriaPorId(
+        @PathVariable Long id, @RequestBody CategoriaRequestDTO c) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+            .body(categoriaService.actualizarCategoriaPorId(id, c)); // 200
+        }
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
+        catch (ConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
+        }
+    }
     
+    // ##################################################
+
     // Borrar por ID
-    //@DeleteMapping("{id}")
-    //public void borrarCategoriaPorId(@PathVariable Long id) {
-    //    categoriaService.borrarCategoriaPorId(id);
-    //}
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> borrarCategoriaPorId(@PathVariable Long id) {
+        try {
+            categoriaService.borrarCategoriaPorId(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204
+        }
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
+        catch (ConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
+        }
+    }
 }

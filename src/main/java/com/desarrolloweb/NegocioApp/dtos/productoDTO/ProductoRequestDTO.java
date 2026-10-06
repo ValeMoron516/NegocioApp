@@ -1,27 +1,25 @@
-package com.desarrolloweb.NegocioApp.dtos;
+package com.desarrolloweb.NegocioApp.dtos.productoDTO;
 
 import java.math.BigDecimal;
 
 
-public class ProductoDTO {
+public class ProductoRequestDTO {
 
-    private Long id;
     private Long negocioId;
     private String nombreNegocio;
     private Long categoriaId;
     private String nombreCategoria;
     private String nombre;
     private String descripcion;
-    private BigDecimal precio;
+    private Double precio;
     private Integer stock;
 
     // Constructores
-    public ProductoDTO() { }
+    public ProductoRequestDTO() { }
 
-    public ProductoDTO(Long id, Long negocioId, String nombreNegocio, 
+    public ProductoRequestDTO(Long negocioId, String nombreNegocio, 
             Long categoriaId, String nombreCategoria, String nombre,
-            String descripcion, BigDecimal precio, Integer stock) {
-        this.id = id;
+            String descripcion, Double precio, Integer stock) {
         this.negocioId = negocioId;
         this.nombreNegocio = nombreNegocio;
         this.categoriaId = categoriaId;
@@ -33,9 +31,6 @@ public class ProductoDTO {
     }
 
     // --- Getters y Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public Long getNegocioId() { return negocioId; }
     public void setNegocioId(Long negocioId) { this.negocioId = negocioId; }
 
@@ -54,8 +49,8 @@ public class ProductoDTO {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public BigDecimal getPrecio() { return precio; }
-    public void setPrecio(BigDecimal precio) { this.precio = precio; }
+    public Double getPrecio() { return precio; }
+    public void setPrecio(Double precio) { this.precio = precio; }
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }

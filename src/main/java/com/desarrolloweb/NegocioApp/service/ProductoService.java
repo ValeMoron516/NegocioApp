@@ -1,12 +1,25 @@
 package com.desarrolloweb.NegocioApp.service;
 
-import java.util.List;
+import com.desarrolloweb.NegocioApp.entity.Producto;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 
+import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.desarrolloweb.NegocioApp.entity.Producto;
-import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.math.BigDecimal;
 
 @Service
 public class ProductoService {
@@ -14,8 +27,163 @@ public class ProductoService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    public List<Producto> obtenerTodosProductos() {
-        return productoRepository.findAll();
-    }
+    // ##################################################
+
+    // Obtener lista de productos (paginadas)
+    public PaginacionDTO<ProductoResponseDTO> obtenerTodosProductos(Integer page, Integer limit) { 
+        
+        Pageable pageable = PageRequest.of(page - 1, limit);
+        Page<Producto> paginaProductos = productoRepository.findAll(pageable);
+        List<Producto> productos = paginaProductos.getContent();
+        
+        List<ProductoResponseDTO> dtos = new ArrayList<>();
+        for (Producto p : productos) {
+            ProductoResponseDTO dto = new ProductoResponseDTO();
+            dto.setId(p.getId());
+            dto.setNegocioId(p.getNegocio().getId());
+            dto.setNombreNegocio(p.getNegocio().getNombre());
+            dto.setCategoriaId(p.getNegocio().getId());
+            dto.setNombreCategoria(p.getCategoria().getNombre());
+            dto.setNombre(p.getNombre());
+            dto.setDescripcion(p.getDescripcion());
+            dto.setPrecio(p.getPrecio().doubleValue());
+            dto.setStock(p.getStock());
+            
+            dtos.add(dto);
+        }
+        
+        MetaDTO meta = new MetaDTO(
+            paginaProductos.getTotalElements(),     // totalItems   (elementos totales)
+            paginaProductos.getNumberOfElements(),  // itemCount    (elementos en la página actual)
+            paginaProductos.getSize(),              // itemsPerPage (elementos maximos por pagina)
+            paginaProductos.getTotalPages(),        // totalPages   (total de paginas)
+            paginaProductos.getNumber() + 1         // currentPage  (pagina actual)
+        );
     
+        return new PaginacionDTO<>(dtos, meta);
+    }
+
+    // ##################################################
+
+    // Obtener producto por ID
+    public ProductoResponseDTO obtenerProductoPorId(Long id) { 
+        Optional<Producto> optP = productoRepository.findById(id);
+        
+        // Existe
+        if (optP.isPresent()) {
+            Producto p = optP.get();
+            
+            return new ProductoResponseDTO(
+                p.getId(),
+                p.getNegocio().getId(),
+                p.getNegocio().getNombre(),
+                p.getCategoria().getId(),
+                p.getCategoria().getNombre(),
+                p.getNombre(),
+                p.getDescripcion(),
+                p.getPrecio().doubleValue(),
+                p.getStock()
+            );
+        }
+        
+        // No existe
+        throw new NotFoundException("El elemento solicitado no existe");
+    }
+
+    // ##################################################
+
+    // Crear nuevo producto
+    public ProductoResponseDTO crearProducto(ProductoRequestDTO pDTO) {
+
+        Producto newP = new Producto(); // negocio -> buscar por id | categoria -> buscar por id
+
+        // Verificar nombre negocio
+        if (pDTO.getNombreNegocio() == null || pDTO.getNombreNegocio().isEmpty()) { throw new BadRequestException("Nombre del negocio invalido"); }
+        // Verificar nombre categoria
+        if (pDTO.getNombreCategoria() == null || pDTO.getNombreCategoria().isEmpty() || pDTO.getNombreCategoria().length() > 150) { throw new BadRequestException("Nombre de categoria invalido"); }
+        // Verificar nombre
+        if (pDTO.getNombre() == null || pDTO.getNombre().isEmpty()) { throw new BadRequestException("Nombre invalido"); }
+        // Verificar descripcion
+        if (pDTO.getDescripcion() == null || pDTO.getDescripcion().isEmpty()) { throw new BadRequestException("Descripcion invalida"); }
+        // Verificar precio
+        if (pDTO.getPrecio() == null) { throw new BadRequestException("Precio invalido"); }
+        // Verificar stock
+        if (pDTO.getStock() == null) { throw new BadRequestException("Stock invalido"); }
+        
+        Producto p = productoRepository.save(newP);
+        
+        return new ProductoResponseDTO(
+            p.getId(),
+            p.getNegocio().getId(),
+            p.getNegocio().getNombre(),
+            p.getCategoria().getId(),
+            p.getCategoria().getNombre(),
+            p.getNombre(),
+            p.getDescripcion(),
+            p.getPrecio().doubleValue(),
+            p.getStock()
+        );
+        
+    }
+
+    // ##################################################
+
+    // Actualizar producto por id
+    public ProductoResponseDTO actualizarProductoPorId(Long id, ProductoRequestDTO pDTO) {
+
+        Optional<Producto> optP = productoRepository.findById(id);
+
+        if (optP.isPresent()) {
+            Producto newP = optP.get();
+            
+            if (pDTO.getNombreNegocio() != null && !pDTO.getNombreNegocio().isBlank()) {
+                newP.getNegocio().setNombre(pDTO.getNombreNegocio());
+            }            
+            if (pDTO.getNombreCategoria() != null && !pDTO.getNombreCategoria().isBlank()) {
+                newP.getCategoria().setNombre(pDTO.getNombreCategoria());
+            }            
+            if (pDTO.getNombre() != null && !pDTO.getNombre().isBlank()) {
+                newP.setNombre(pDTO.getNombre());
+            }
+            if (pDTO.getDescripcion() != null && !pDTO.getDescripcion().isBlank()) {
+                newP.setDescripcion(pDTO.getDescripcion());
+            }
+            if (pDTO.getPrecio() != null) {
+                newP.setPrecio(new BigDecimal(pDTO.getPrecio().doubleValue()));
+            }            
+            if (pDTO.getStock() != null) {
+                newP.setStock(pDTO.getStock());
+            }
+            
+            Producto p = productoRepository.save(newP);
+            return new ProductoResponseDTO(
+                p.getId(),
+                p.getNegocio().getId(),
+                p.getNegocio().getNombre(),
+                p.getCategoria().getId(),
+                p.getCategoria().getNombre(),
+                p.getNombre(),
+                p.getDescripcion(),
+                p.getPrecio().doubleValue(),
+                p.getStock()
+            );
+        }
+        else {
+            throw new NotFoundException("El producto con el ID provisto no existe");
+        }  
+    }
+
+   // ##################################################
+
+    // Borrar producto por id
+    public void borrarProductoPorId(Long id) {
+         
+         Optional<Producto> optP = productoRepository.findById(id);
+
+        if (optP.isPresent()) {
+            productoRepository.deleteById(id);
+        } else {
+            throw new NotFoundException("El producto con el ID provisto no existe");
+        }
+    }
 }

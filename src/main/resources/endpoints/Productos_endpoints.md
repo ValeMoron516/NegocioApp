@@ -23,7 +23,9 @@
         {
           "id": 1,
           "negocio_id": 1,
+          "nombre_negocio": "Negocio Pablito",
           "categoria_id": 1,
+          "nombre_categoria": "Electronica",
           "nombre": "Monitor 24 pulgadas",
           "descripcion": "Monitor de 24 pulgadas 1920x1080 OLED",
           "precio": 149999,
@@ -69,7 +71,9 @@
     {
       "id": 1,
       "negocio_id": 1,
+      "nombre_negocio": "Negocio Pablito",
       "categoria_id": 1,
+      "nombre_categoria": "Electronica",
       "nombre": "Monitor 24 pulgadas",
       "descripcion": "Monitor de 24 pulgadas 1920x1080 OLED",
       "precio": 149999,
@@ -90,7 +94,9 @@
     ```json
     {
       "negocio_id": 1,
+      "nombre_negocio": "Negocio Pablito",
       "categoria_id": 1,
+      "nombre_categoria": "Electronica",
       "nombre": "Monitor 24 pulgadas",
       "descripcion": "Monitor de 24 pulgadas 1920x1080 OLED",
       "precio": 149999,
@@ -99,13 +105,15 @@
     ```
 
 #### Respuestas
-* **Código:** `201` (Creado exitosamente)
+* **Código:** `201 Created` (Creado exitosamente)
 * **Response Body:**
     ```json (registro creado)
     {
       "id": 1,
       "negocio_id": 1,
+      "nombre_negocio": "Negocio Pablito",
       "categoria_id": 1,
+      "nombre_categoria": "Electronica",
       "nombre": "Monitor 24 pulgadas",
       "descripcion": "Monitor de 24 pulgadas 1920x1080 OLED",
       "precio": 149999,
@@ -136,7 +144,9 @@
     {
       "id": 1,
       "negocio_id": 1,
+      "nombre_negocio": "Negocio Pablito",
       "categoria_id": 1,
+      "nombre_categoria": "Electronica",
       "nombre": "Monitor 24 pulgadas",
       "descripcion": "Monitor de 24 pulgadas 1920x1080 OLED",
       "precio": 199999,
