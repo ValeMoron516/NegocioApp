@@ -13,7 +13,7 @@ Request Body:
 
 {
   "productoId": 105,
-  "puntuacion": 5,
+  "estrellas": 5,
   "comentario": "Excelente producto, llegó super rápido y cumple con todo."
 }
 Respuestas:
@@ -26,7 +26,7 @@ Response Body:
   "id": 1,
   "usuarioId": 10,
   "productoId": 105,
-  "puntuacion": 5,
+  "estrellas": 5,
   "comentario": "Excelente producto, llegó super rápido y cumple con todo.",
   "fecha": "2026-06-28T18:48:00"
 }
@@ -69,7 +69,7 @@ Response Body:
     "id": 1,
     "usuarioId": 10,
     "productoId": 105,
-    "puntuacion": 5,
+    "estrellas": 5,
     "comentario": "Excelente producto, llegó super rápido y cumple con todo.",
     "fecha": "2026-06-28T18:48:00"
   }

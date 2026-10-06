@@ -20,7 +20,7 @@ public class ValoracionProducto {
     private Producto productoId;
 
     @Column(nullable = false)
-    private Integer puntuacion;
+    private Integer estrellas;
 
     @Column(nullable = true, length = 500)
     private String comentario;
@@ -32,17 +32,17 @@ public class ValoracionProducto {
     public ValoracionProducto() {}
 
     // 2. Constructor con todos los datos usando tus setters
-    public ValoracionProducto(Long id, Usuario usuarioId, Producto productoId, Integer puntuacion, String comentario, LocalDateTime fecha) {
+    public ValoracionProducto(Long id, Usuario usuarioId, Producto productoId, Integer estrellas, String comentario, LocalDateTime fecha) {
         setId(id);
         setUsuarioId(usuarioId);
         setProductoId(productoId);
-        setPuntuacion(puntuacion);
+        setEstrellas(estrellas);
         setComentario(comentario);
         setFecha(fecha);
     }
 
     // Getters convencionales
-    public Long getId() { 
+    public Long getId() {
         return id; 
     }
 
@@ -54,8 +54,8 @@ public class ValoracionProducto {
         return productoId; 
     }
 
-    public Integer getPuntuacion() { 
-        return puntuacion; 
+    public Integer getEstrellas() { 
+        return estrellas; 
     }
 
     public String getComentario() { 
@@ -85,9 +85,9 @@ public class ValoracionProducto {
         }
     }
 
-    public void setPuntuacion(Integer nuevaPuntuacion) {
-        if (nuevaPuntuacion != null && !nuevaPuntuacion.equals(getPuntuacion())) {
-            puntuacion = nuevaPuntuacion;
+    public void setEstrellas(Integer nuevaEstrellas) {
+        if (nuevaEstrellas != null && !nuevaEstrellas.equals(getEstrellas())) {
+            estrellas = nuevaEstrellas;
         }
     }
 
