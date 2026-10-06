@@ -23,7 +23,7 @@ public class ValoracionProductoService {
 
     public ValoracionProductoResponseDTO crearValoracion(ValoracionProductoRequestDTO dto) {
         // 1. Validar la puntuación (1 a 5)
-        if (dto.getPuntuacion() < 1 || dto.getPuntuacion() > 5) {
+        if (dto.getEstrellas() < 1 || dto.getEstrellas() > 5) {
             throw new IllegalArgumentException("La puntuación debe ser un número entero entre 1 y 5.");
         }
 
