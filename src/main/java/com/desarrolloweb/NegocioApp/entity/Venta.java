@@ -30,7 +30,7 @@ public class Venta {
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_direccion", nullable = false)
+    @JoinColumn(name = "direccion_id", nullable = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private Direccion direccion;
 
