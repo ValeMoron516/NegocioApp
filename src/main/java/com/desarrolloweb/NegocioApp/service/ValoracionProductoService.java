@@ -29,7 +29,7 @@ public class ValoracionProductoService {
 
         // 2. Instanciar la entidad
         ValoracionProducto valoracion = new ValoracionProducto();
-        valoracion.setPuntuacion(dto.getPuntuacion());
+        valoracion.setEstrellas(dto.getEstrellas());
         valoracion.setComentario(dto.getComentario());
         valoracion.setFecha(LocalDateTime.now());
 
@@ -46,7 +46,7 @@ public class ValoracionProductoService {
             guardada.getId(),
             10L, // ID de usuario simulado para la respuesta
             guardada.getProductoId().getId(),
-            guardada.getPuntuacion(),
+            guardada.getEstrellas(),
             guardada.getComentario(),
             guardada.getFecha().toString()
         );
@@ -64,7 +64,7 @@ public class ValoracionProductoService {
             valoracion.getId(),
             10L,
             productoId,
-            valoracion.getPuntuacion(),
+            valoracion.getEstrellas(),
             valoracion.getComentario(),
             valoracion.getFecha() != null ? valoracion.getFecha().toString() : null
         );
@@ -84,7 +84,7 @@ public class ValoracionProductoService {
 
     double suma = 0;
     for (ValoracionProducto valoracion : listaEntidades) {
-        suma += valoracion.getPuntuacion();
+        suma += valoracion.getEstrellas();
     }
 
     double promedio = suma / listaEntidades.size();
