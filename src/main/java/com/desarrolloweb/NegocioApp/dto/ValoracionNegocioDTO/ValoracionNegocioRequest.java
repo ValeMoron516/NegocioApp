@@ -1,35 +1,21 @@
-package com.desarrolloweb.NegocioApp.dtos.ValoracionNegocioDTO;
+package com.desarrolloweb.NegocioApp.dto.ValoracionNegocioDTO;
 
-import java.time.LocalDateTime;
+public class ValoracionNegocioRequest {
 
-public class ValoracionNegocioResponse {
-
-	private Long id;
 	private Long negocioId;
 	private Long clienteId;
 	private Integer estrellas;
 	private String comentario;
-	private LocalDateTime fecha;
 
-	public ValoracionNegocioResponse() {
+	public ValoracionNegocioRequest() {
 	}
 
-	public ValoracionNegocioResponse(Long id, Long negocioId, Long clienteId,
-			Integer estrellas, String comentario, LocalDateTime fecha) {
-		this.id = id;
+	public ValoracionNegocioRequest(Long negocioId, Long clienteId,
+			Integer estrellas, String comentario) {
 		this.negocioId = negocioId;
 		this.clienteId = clienteId;
 		this.estrellas = estrellas;
 		this.comentario = comentario;
-		this.fecha = fecha;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public Long getNegocioId() {
@@ -62,13 +48,5 @@ public class ValoracionNegocioResponse {
 
 	public void setComentario(String comentario) {
 		this.comentario = comentario;
-	}
-
-	public LocalDateTime getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(LocalDateTime fecha) {
-		this.fecha = fecha;
 	}
 }
