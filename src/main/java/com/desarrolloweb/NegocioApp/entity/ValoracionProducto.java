@@ -12,7 +12,7 @@ public class ValoracionProducto {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Usuario usuarioId;
 
     @ManyToOne(fetch = FetchType.LAZY)
