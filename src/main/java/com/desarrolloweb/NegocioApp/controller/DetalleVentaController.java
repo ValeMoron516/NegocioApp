@@ -17,7 +17,7 @@ import com.desarrolloweb.NegocioApp.entity.DetalleVenta;
 import com.desarrolloweb.NegocioApp.service.DetalleVentaService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/detalles-ventas")
 public class DetalleVentaController {
 
     private final DetalleVentaService detalleVentaService;

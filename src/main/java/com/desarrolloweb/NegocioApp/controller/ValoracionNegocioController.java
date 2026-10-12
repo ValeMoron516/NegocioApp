@@ -18,7 +18,7 @@ import com.desarrolloweb.NegocioApp.entity.ValoracionNegocio;
 import com.desarrolloweb.NegocioApp.service.ValoracionNegocioService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/valoraciones-negocio")
 public class ValoracionNegocioController {
 
     private final ValoracionNegocioService valoracionService;
