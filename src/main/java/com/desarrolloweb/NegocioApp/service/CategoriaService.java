@@ -1,7 +1,20 @@
 package com.desarrolloweb.NegocioApp.service;
-
+ 
 import com.desarrolloweb.NegocioApp.entity.Categoria;
+import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
+import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
+import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException;
+
 import com.desarrolloweb.NegocioApp.repository.CategoriaRepository;
+import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,5 +1,5 @@
 package com.desarrolloweb.NegocioApp.dtos.categoriaDTO;
-
+ 
 
 public class CategoriaRequestDTO {
 

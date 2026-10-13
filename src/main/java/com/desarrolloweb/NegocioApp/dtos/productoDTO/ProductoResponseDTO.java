@@ -1,7 +1,7 @@
 package com.desarrolloweb.NegocioApp.dtos.productoDTO;
 
 import java.math.BigDecimal;
-
+ 
 
 public class ProductoResponseDTO {
 
