@@ -1,5 +1,5 @@
 package com.desarrolloweb.NegocioApp.controller;
-
+ 
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;

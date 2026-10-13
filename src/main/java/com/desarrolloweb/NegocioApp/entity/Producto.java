@@ -1,5 +1,5 @@
 package com.desarrolloweb.NegocioApp.entity;
-
+ 
 import java.math.BigDecimal;
 
 import org.hibernate.annotations.OnDelete;

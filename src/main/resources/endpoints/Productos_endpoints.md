@@ -1,5 +1,5 @@
 ### Buscar y filtrar productos
-
+ 
 * **URL:** `/api/v1/productos`
 * **Método HTTP:** `GET`
 * **Descripción:** Obtiene una lista de productos que coinciden con los criterios de búsqueda y filtros especificados.

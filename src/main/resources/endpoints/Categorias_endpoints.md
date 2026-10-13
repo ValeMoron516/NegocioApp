@@ -5,7 +5,7 @@
 * **Parámetros de consulta (Query Params):**
   * `page` (entero, opcional): Número de página a consultar (por defecto `1`).
   * `limit` (entero, opcional): Cantidad de registros a mostrar por página (por defecto `20`).
-
+ 
 #### Ejemplo de Petición Completa
 `GET /api/v1/categorias?page=1&limit=20`
 
