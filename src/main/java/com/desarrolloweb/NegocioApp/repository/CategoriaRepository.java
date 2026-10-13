@@ -8,4 +8,5 @@ import com.desarrolloweb.NegocioApp.entity.Categoria;
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     
+    boolean existsByNombre(String categoriaNombre);
 }

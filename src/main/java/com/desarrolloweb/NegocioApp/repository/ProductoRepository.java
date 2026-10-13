@@ -7,5 +7,6 @@ import com.desarrolloweb.NegocioApp.entity.Producto;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long>{
-    
+    // Existe algun producto perteneciente a la categoria de ID = ?
+    boolean existsByCategoriaId(Long categoriaId);
 }
