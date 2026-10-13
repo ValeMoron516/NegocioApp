@@ -22,15 +22,15 @@
         },
         {
           "id": 2,
-          "nombre": "Computacion",
-          "descripcion": "Productos sobre computacion"
+          "nombre": "Tecnología",
+          "descripcion": "Dispositivos electrónicos y accesorios"
         }
       ],
       "meta": {
-        "totalItems": 2,
+        "totalItems": 42,
         "itemCount": 2,
         "itemsPerPage": 20,
-        "totalPages": 1,
+        "totalPages": 3,
         "currentPage": 1
       }
     }
@@ -63,9 +63,9 @@
 * **Response Body:**
     ```json
     {
-        "id": 1,
-        "nombre": "Hogar",
-        "descripcion": "Productos para el hogar"
+      "id": 1,
+      "nombre": "Hogar",
+      "descripcion": "Productos para el hogar"
     }
     ```
 
@@ -73,30 +73,26 @@
 
 ##################################################
 
-### Crear nueva categoría
+### Crear categorías
 * **URL:** `/api/v1/categorias`
 * **Método HTTP:** `POST`
 * **Descripción:** Crea una nueva categoria en el sistema.
-* **Parámetros de consulta (Query Params):**
-  * `nombre` (texto, obligatorio): Nombre de la nueva categoría.
-  * `descripcion` (texto, obligatorio): Descripción de la nueva categoría.
-
 * **Request Body:**
     ```json
     {
         "nombre": "Computacion",
-        "descripcion": "Productos sobre computacion"
+        "descripcion": "Productos relacionados a la computacion"
     }
     ```
 
 #### Respuestas
-* **Código:** `201 Created` (Creado exitosamente)
+* **Código:** `201` (Creado exitosamente)
 * **Response Body:**
     ```json (registro creado)
     {
-        "id": 1,
-        "nombre": "Computacion",
-        "descripcion": "Productos sobre computacion"
+      "id": 1,
+      "nombre": "Hogar",
+      "descripcion": "Productos para el hogar"
     }
     ```
 
@@ -105,7 +101,7 @@
 
 ##################################################
 
-### Actualizar categoría
+### Actualizar categorías
 * **URL:** `/api/v1/categorias/{id}`
 * **Método HTTP:** `PATCH`
 * **Descripción:** Actualiza la categoria en el sistema.
@@ -127,6 +123,7 @@
     }
     ```
 
+* **Código:** `400 Bad Request` (Datos enviados inválidos o mal formados)
 * **Código:** `404 Not Found` (La categoría con el ID provisto no existe)
 * **Código:** `409 Conflict` (El nombre ya está siendo utilizado por otra categoría)
 

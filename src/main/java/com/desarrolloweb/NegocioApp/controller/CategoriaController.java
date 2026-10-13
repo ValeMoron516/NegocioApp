@@ -1,11 +1,6 @@
 package com.desarrolloweb.NegocioApp.controller;
 
-import com.desarrolloweb.NegocioApp.exception.BadRequestException;
-import com.desarrolloweb.NegocioApp.exception.ConflictException;
-import com.desarrolloweb.NegocioApp.exception.NotFoundException;
-import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.entity.Categoria;
 import com.desarrolloweb.NegocioApp.service.CategoriaService;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -16,10 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.math.BigDecimal;
+import com.desarrolloweb.NegocioApp.entity.Producto;
+import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
 
 @Service
 public class ProductoService {

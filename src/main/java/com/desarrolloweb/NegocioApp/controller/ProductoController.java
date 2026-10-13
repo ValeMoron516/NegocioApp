@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.desarrolloweb.NegocioApp.entity.Producto;
+import com.desarrolloweb.NegocioApp.service.ProductoService;
+
 @RestController
 @RequestMapping("api/v1/productos")
 public class ProductoController {
