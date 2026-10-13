@@ -1,5 +1,5 @@
 package com.desarrolloweb.NegocioApp.entity;
-
+ 
 import java.math.BigDecimal;
 
 import org.hibernate.annotations.OnDelete;
@@ -32,7 +32,6 @@ public class Producto {
     @JoinColumn(name = "categoria_id")
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Categoria categoria;
-
 
     @Column(length = 150, nullable = false)
     private String nombre;

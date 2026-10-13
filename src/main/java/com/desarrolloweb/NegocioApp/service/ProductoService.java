@@ -1,5 +1,5 @@
 package com.desarrolloweb.NegocioApp.service;
-
+ 
 import com.desarrolloweb.NegocioApp.entity.Producto;
 import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
 import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
@@ -16,8 +16,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.desarrolloweb.NegocioApp.entity.Producto;
-import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.math.BigDecimal;
 
 @Service
 public class ProductoService {
