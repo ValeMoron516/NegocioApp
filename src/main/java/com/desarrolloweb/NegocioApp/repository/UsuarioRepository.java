@@ -13,4 +13,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByTelefono(String telefono);
 
     Optional<Usuario> findByTelefono(String telefono);
+
+    // Usado por RolService para impedir borrar un rol que tiene usuarios
+    boolean existsByRolId(Long rolId);
 }
