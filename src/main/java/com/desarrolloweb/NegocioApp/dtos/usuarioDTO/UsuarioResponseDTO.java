@@ -2,45 +2,76 @@ package com.desarrolloweb.NegocioApp.dtos.usuarioDTO;
 
 import java.time.LocalDateTime;
 
-// IMPORTANTE: este DTO NO incluye password ni passwordHash.
+// IMPORTANTE: este DTO NO incluye password.
 public class UsuarioResponseDTO {
 
     private Long id;
+    private String nombre;
+    private String apellido;
     private String telefono;
-    private Long rolId;
-    private String rolNombre;
-    private LocalDateTime creadoEn;
-    private LocalDateTime ultimoAcceso;
+    private String email;
+    private LocalDateTime fechaRegistro;
 
     // Constructores
-    public UsuarioResponseDTO() { }
+    public UsuarioResponseDTO() {
+    }
 
-    public UsuarioResponseDTO(Long id, String telefono, Long rolId, String rolNombre,
-            LocalDateTime creadoEn, LocalDateTime ultimoAcceso) {
+    public UsuarioResponseDTO(Long id, String nombre, String apellido, String telefono,
+            String email, LocalDateTime fechaRegistro) {
         this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
         this.telefono = telefono;
-        this.rolId = rolId;
-        this.rolNombre = rolNombre;
-        this.creadoEn = creadoEn;
-        this.ultimoAcceso = ultimoAcceso;
+        this.email = email;
+        this.fechaRegistro = fechaRegistro;
     }
 
     // --- Getters y Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Long getRolId() { return rolId; }
-    public void setRolId(Long rolId) { this.rolId = rolId; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getRolNombre() { return rolNombre; }
-    public void setRolNombre(String rolNombre) { this.rolNombre = rolNombre; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public LocalDateTime getCreadoEn() { return creadoEn; }
-    public void setCreadoEn(LocalDateTime creadoEn) { this.creadoEn = creadoEn; }
+    public String getApellido() {
+        return apellido;
+    }
 
-    public LocalDateTime getUltimoAcceso() { return ultimoAcceso; }
-    public void setUltimoAcceso(LocalDateTime ultimoAcceso) { this.ultimoAcceso = ultimoAcceso; }
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
 }

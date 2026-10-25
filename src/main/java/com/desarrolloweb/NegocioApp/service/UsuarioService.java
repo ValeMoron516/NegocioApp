@@ -16,14 +16,12 @@ import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
 import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.dtos.usuarioDTO.UsuarioRequestDTO;
 import com.desarrolloweb.NegocioApp.dtos.usuarioDTO.UsuarioResponseDTO;
-import com.desarrolloweb.NegocioApp.entity.Rol;
 import com.desarrolloweb.NegocioApp.entity.Usuario;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.repository.DireccionRepository;
 import com.desarrolloweb.NegocioApp.repository.NegocioRepository;
-import com.desarrolloweb.NegocioApp.repository.RolRepository;
 import com.desarrolloweb.NegocioApp.repository.UsuarioRepository;
 import com.desarrolloweb.NegocioApp.repository.VentaRepository;
 
@@ -35,20 +33,17 @@ public class UsuarioService {
     private static final int PASSWORD_MAX_BYTES = 72; // Limite de BCrypt
 
     private final UsuarioRepository usuarioRepository;
-    private final RolRepository rolRepository;
     private final NegocioRepository negocioRepository;
     private final DireccionRepository direccionRepository;
     private final VentaRepository ventaRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
-            RolRepository rolRepository,
             NegocioRepository negocioRepository,
             DireccionRepository direccionRepository,
             VentaRepository ventaRepository,
             PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
-        this.rolRepository = rolRepository;
         this.negocioRepository = negocioRepository;
         this.direccionRepository = direccionRepository;
         this.ventaRepository = ventaRepository;
@@ -68,18 +63,17 @@ public class UsuarioService {
         Pageable pageable = PageRequest.of(page - 1, limit);
         Page<Usuario> paginaUsuarios = usuarioRepository.findAll(pageable);
 
-        // Mapear a DTO
         List<UsuarioResponseDTO> dtos = new ArrayList<>();
         for (Usuario u : paginaUsuarios.getContent()) {
             dtos.add(aDTO(u));
         }
 
         MetaDTO meta = new MetaDTO(
-            paginaUsuarios.getTotalElements(),     // totalItems
-            paginaUsuarios.getNumberOfElements(),  // itemCount
-            paginaUsuarios.getSize(),              // itemsPerPage
-            paginaUsuarios.getTotalPages(),        // totalPages
-            paginaUsuarios.getNumber() + 1         // currentPage
+                paginaUsuarios.getTotalElements(), // totalItems
+                paginaUsuarios.getNumberOfElements(), // itemCount
+                paginaUsuarios.getSize(), // itemsPerPage
+                paginaUsuarios.getTotalPages(), // totalPages
+                paginaUsuarios.getNumber() + 1 // currentPage
         );
 
         return new PaginacionDTO<>(dtos, meta);
@@ -91,7 +85,7 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public UsuarioResponseDTO obtenerUsuarioPorId(Long id) {
         Usuario u = usuarioRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("El usuario solicitado no existe"));
+                .orElseThrow(() -> new NotFoundException("El usuario solicitado no existe"));
         return aDTO(u);
     }
 
@@ -100,23 +94,23 @@ public class UsuarioService {
     // Crear nuevo Usuario
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO uDTO) {
 
+        String nombre = validarTextoObligatorio(uDTO.getNombre(), "Nombre", 100);
+        String apellido = validarTextoObligatorio(uDTO.getApellido(), "Apellido", 100);
         String telefono = validarTelefono(uDTO.getTelefono());
+        String email = validarEmail(uDTO.getEmail());
         validarPassword(uDTO.getPassword());
 
-        if (uDTO.getRolId() == null) {
-            throw new BadRequestException("Rol invalido");
-        }
-        Rol rol = buscarRol(uDTO.getRolId());
-
-        if (usuarioRepository.existsByTelefono(telefono)) {
-            throw new ConflictException("Ya existe un usuario con el telefono provisto");
+        if (usuarioRepository.existsByEmail(email)) {
+            throw new ConflictException("Ya existe un usuario con el email provisto");
         }
 
         Usuario newU = new Usuario();
+        newU.setNombre(nombre);
+        newU.setApellido(apellido);
         newU.setTelefono(telefono);
-        newU.setPasswordHash(passwordEncoder.encode(uDTO.getPassword())); // Se guarda SOLO el hash
-        newU.setRol(rol);
-        newU.setCreadoEn(LocalDateTime.now());
+        newU.setEmail(email);
+        newU.setPassword(passwordEncoder.encode(uDTO.getPassword())); // Se guarda SOLO el hash
+        newU.setFechaRegistro(LocalDateTime.now());
 
         return aDTO(usuarioRepository.save(newU));
     }
@@ -127,28 +121,33 @@ public class UsuarioService {
     public UsuarioResponseDTO actualizarUsuarioPorId(Long id, UsuarioRequestDTO uDTO) {
 
         Usuario u = usuarioRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("El usuario con el ID provisto no existe"));
+                .orElseThrow(() -> new NotFoundException("El usuario con el ID provisto no existe"));
 
-        // Telefono
+        if (uDTO.getNombre() != null) {
+            u.setNombre(validarTextoObligatorio(uDTO.getNombre(), "Nombre", 100));
+        }
+
+        if (uDTO.getApellido() != null) {
+            u.setApellido(validarTextoObligatorio(uDTO.getApellido(), "Apellido", 100));
+        }
+
         if (uDTO.getTelefono() != null) {
-            String telefono = validarTelefono(uDTO.getTelefono());
+            u.setTelefono(validarTelefono(uDTO.getTelefono()));
+        }
 
-            // Conflicto solo si el telefono pertenece a OTRO usuario
-            if (!telefono.equals(u.getTelefono()) && usuarioRepository.existsByTelefono(telefono)) {
-                throw new ConflictException("El telefono provisto ya existe");
+        // Email: conflicto solo si pertenece a OTRO usuario
+        if (uDTO.getEmail() != null) {
+            String email = validarEmail(uDTO.getEmail());
+            if (!email.equals(u.getEmail()) && usuarioRepository.existsByEmail(email)) {
+                throw new ConflictException("El email provisto ya existe");
             }
-            u.setTelefono(telefono);
+            u.setEmail(email);
         }
 
         // Password (se vuelve a hashear)
         if (uDTO.getPassword() != null) {
             validarPassword(uDTO.getPassword());
-            u.setPasswordHash(passwordEncoder.encode(uDTO.getPassword()));
-        }
-
-        // Rol
-        if (uDTO.getRolId() != null) {
-            u.setRol(buscarRol(uDTO.getRolId()));
+            u.setPassword(passwordEncoder.encode(uDTO.getPassword()));
         }
 
         return aDTO(usuarioRepository.save(u));
@@ -176,6 +175,17 @@ public class UsuarioService {
     // ##################################################
     // Metodos auxiliares
 
+    private String validarTextoObligatorio(String valor, String campo, int maxLargo) {
+        if (valor == null || valor.isBlank()) {
+            throw new BadRequestException(campo + " invalido");
+        }
+        String v = valor.trim();
+        if (v.length() > maxLargo) {
+            throw new BadRequestException(campo + " invalido: maximo " + maxLargo + " caracteres");
+        }
+        return v;
+    }
+
     private String validarTelefono(String telefono) {
         if (telefono == null || telefono.isBlank()) {
             throw new BadRequestException("Telefono invalido");
@@ -183,34 +193,42 @@ public class UsuarioService {
         String t = telefono.trim();
         // Opcional '+' y de 6 a 19 digitos (maximo 20 caracteres en total)
         if (!t.matches("\\+?[0-9]{6,19}")) {
-            throw new BadRequestException("Telefono invalido: solo numeros (opcionalmente con +), entre 6 y 19 digitos");
+            throw new BadRequestException(
+                    "Telefono invalido: solo numeros (opcionalmente con +), entre 6 y 19 digitos");
         }
         return t;
+    }
+
+    private String validarEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new BadRequestException("Email invalido");
+        }
+        String e = email.trim().toLowerCase();
+        if (e.length() > 150 || !e.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            throw new BadRequestException("Email invalido");
+        }
+        return e;
     }
 
     private void validarPassword(String password) {
         if (password == null || password.length() < PASSWORD_MIN_CARACTERES) {
             throw new BadRequestException("Password invalida: minimo " + PASSWORD_MIN_CARACTERES + " caracteres");
         }
-        // BCrypt ignora todo lo que pase de 72 bytes: se rechaza en lugar de truncar en silencio
+        // BCrypt ignora todo lo que pase de 72 bytes: se rechaza en lugar de truncar en
+        // silencio
         if (password.getBytes(StandardCharsets.UTF_8).length > PASSWORD_MAX_BYTES) {
             throw new BadRequestException("Password invalida: maximo " + PASSWORD_MAX_BYTES + " bytes");
         }
     }
 
-    private Rol buscarRol(Long rolId) {
-        return rolRepository.findById(rolId)
-            .orElseThrow(() -> new BadRequestException("El rol provisto no existe"));
-    }
-
-    // Nunca incluye el hash en la respuesta
+    // Nunca incluye la password en la respuesta
     private UsuarioResponseDTO aDTO(Usuario u) {
         return new UsuarioResponseDTO(
-            u.getId(),
-            u.getTelefono(),
-            u.getRol().getId(),
-            u.getRol().getNombre(),
-            u.getCreadoEn(),
-            u.getUltimoAcceso());
+                u.getId(),
+                u.getNombre(),
+                u.getApellido(),
+                u.getTelefono(),
+                u.getEmail(),
+                u.getFechaRegistro());
     }
 }
