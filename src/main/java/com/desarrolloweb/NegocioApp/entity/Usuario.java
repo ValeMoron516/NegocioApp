@@ -1,9 +1,8 @@
 package com.desarrolloweb.NegocioApp.entity;
 
 import java.time.LocalDateTime;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,55 +20,71 @@ import jakarta.persistence.Table;
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // autoincrement
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // BIGSERIAL: autoincrement
     private Long id;
 
-    @Column(length = 20, nullable = false, unique = true) // Login por telefono
+    @Column(length = 100, nullable = false)
+    private String nombre;
+
+    @Column(length = 100, nullable = false)
+    private String apellido;
+
+    @Column(length = 20, nullable = false)
     private String telefono;
 
-    @Column(name = "password_hash", length = 255, nullable = false)
-    private String passwordHash;
+    @Column(length = 150, nullable = false, unique = true)
+    private String email;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rol_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
-    private Rol rol;
+    @Column(length = 255, nullable = false)
+    private String password; // se guarda hasheada
 
-    @Column(name = "creado_en")
-    private LocalDateTime creadoEn;
+    @Column(name = "fecha_registro")
+    private LocalDateTime fechaRegistro;
 
-    @Column(name = "ultimo_acceso")
-    private LocalDateTime ultimoAcceso;
+    // Relacion muchos a muchos con Rol, a traves de la tabla usuario_roles
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "usuario_roles",
+        joinColumns = @JoinColumn(name = "usuario_id"),
+        inverseJoinColumns = @JoinColumn(name = "rol_id"))
+    private Set<Rol> roles = new HashSet<>();
 
     // Constructores
     public Usuario() { }
 
-    public Usuario(Long id, String telefono, String passwordHash, Rol rol,
-            LocalDateTime creadoEn, LocalDateTime ultimoAcceso) {
+    public Usuario(Long id, String nombre, String apellido, String telefono,
+            String email, String password, LocalDateTime fechaRegistro) {
         this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
         this.telefono = telefono;
-        this.passwordHash = passwordHash;
-        this.rol = rol;
-        this.creadoEn = creadoEn;
-        this.ultimoAcceso = ultimoAcceso;
+        this.email = email;
+        this.password = password;
+        this.fechaRegistro = fechaRegistro;
     }
 
     // --- Getters y Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
 
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public Rol getRol() { return rol; }
-    public void setRol(Rol rol) { this.rol = rol; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public LocalDateTime getCreadoEn() { return creadoEn; }
-    public void setCreadoEn(LocalDateTime creadoEn) { this.creadoEn = creadoEn; }
+    public LocalDateTime getFechaRegistro() { return fechaRegistro; }
+    public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
 
-    public LocalDateTime getUltimoAcceso() { return ultimoAcceso; }
-    public void setUltimoAcceso(LocalDateTime ultimoAcceso) { this.ultimoAcceso = ultimoAcceso; }
+    public Set<Rol> getRoles() { return roles; }
+    public void setRoles(Set<Rol> roles) { this.roles = roles; }
 }
