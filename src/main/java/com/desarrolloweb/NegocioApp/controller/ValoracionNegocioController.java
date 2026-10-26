@@ -2,6 +2,7 @@ package com.desarrolloweb.NegocioApp.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.desarrolloweb.NegocioApp.dto.ValoracionNegocioResponse;
 import com.desarrolloweb.NegocioApp.entity.ValoracionNegocio;
 import com.desarrolloweb.NegocioApp.service.ValoracionNegocioService;
 
@@ -28,28 +30,32 @@ public class ValoracionNegocioController {
     }
 
     @GetMapping("/valoraciones-negocios")
-    public ResponseEntity<List<ValoracionNegocio>> obtenerTodasLasValoraciones() {
-        return ResponseEntity.ok(valoracionService.obtenerTodas());
+    public ResponseEntity<List<ValoracionNegocioResponse>> obtenerTodasLasValoraciones() {
+        return ResponseEntity.ok(valoracionService.obtenerTodas().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/valoraciones-negocios/{id}")
-    public ResponseEntity<ValoracionNegocio> obtenerValoracionPorId(@PathVariable Long id) {
+    public ResponseEntity<ValoracionNegocioResponse> obtenerValoracionPorId(@PathVariable Long id) {
         return valoracionService.obtenerPorId(id)
+                .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/valoraciones-negocios")
-    public ResponseEntity<ValoracionNegocio> crearValoracion(
+    public ResponseEntity<ValoracionNegocioResponse> crearValoracion(
             @RequestBody ValoracionNegocio valoracion) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(valoracionService.crear(valoracion));
+                .body(toResponse(valoracionService.crear(valoracion)));
     }
 
     @PatchMapping("/valoraciones-negocios/{id}")
-    public ResponseEntity<ValoracionNegocio> actualizarValoracion(
+    public ResponseEntity<ValoracionNegocioResponse> actualizarValoracion(
             @PathVariable Long id, @RequestBody ValoracionNegocio valoracionActualizada) {
         return valoracionService.actualizar(id, valoracionActualizada)
+                .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -64,15 +70,19 @@ public class ValoracionNegocioController {
     }
 
     @GetMapping("/negocios/{id}/valoraciones")
-    public ResponseEntity<List<ValoracionNegocio>> obtenerValoracionesPorNegocio(
+    public ResponseEntity<List<ValoracionNegocioResponse>> obtenerValoracionesPorNegocio(
             @PathVariable Long id) {
-        return ResponseEntity.ok(valoracionService.obtenerPorNegocio(id));
+        return ResponseEntity.ok(valoracionService.obtenerPorNegocio(id).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/clientes/{id}/valoraciones-negocios")
-    public ResponseEntity<List<ValoracionNegocio>> obtenerValoracionesPorCliente(
+    public ResponseEntity<List<ValoracionNegocioResponse>> obtenerValoracionesPorCliente(
             @PathVariable Long id) {
-        return ResponseEntity.ok(valoracionService.obtenerPorCliente(id));
+        return ResponseEntity.ok(valoracionService.obtenerPorCliente(id).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/valoraciones-negocios/estrellas/{estrellas}")
@@ -80,6 +90,18 @@ public class ValoracionNegocioController {
         if (estrellas < 1 || estrellas > 5) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(Map.of("data", valoracionService.obtenerPorEstrellas(estrellas)));
+        return ResponseEntity.ok(Map.of("data", valoracionService.obtenerPorEstrellas(estrellas).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList())));
+    }
+
+    private ValoracionNegocioResponse toResponse(ValoracionNegocio valoracion) {
+        return new ValoracionNegocioResponse(
+                valoracion.getId(),
+                valoracion.getNegocio().getId(),
+                valoracion.getCliente().getId(),
+                valoracion.getEstrellas(),
+                valoracion.getComentario(),
+                valoracion.getFecha());
     }
 }
