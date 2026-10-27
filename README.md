@@ -243,8 +243,6 @@ Antes de ejecutar el proyecto, es necesario disponer de:
 
 ### 1. Clonar el repositorio
 
-Reemplazá `USUARIO` y `REPOSITORIO` por los datos reales del repositorio de GitHub.
-
 ```bash
 git clone https://github.com/ValeMoron516/NegocioApp.git
 cd NegocioApp
