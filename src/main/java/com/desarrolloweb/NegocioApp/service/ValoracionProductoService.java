@@ -52,6 +52,20 @@ public class ValoracionProductoService {
         );
     }
 
+   // Listado general, sin requerir productoId.
+   public List<ValoracionProductoResponseDTO> listarTodasLasValoraciones() {
+       return valoracionProductoRepository.findAll().stream()
+           .map(valoracion -> new ValoracionProductoResponseDTO(
+               valoracion.getId(),
+               valoracion.getUsuarioId() != null ? valoracion.getUsuarioId().getId() : null,
+               valoracion.getProductoId() != null ? valoracion.getProductoId().getId() : null,
+               valoracion.getEstrellas(),
+               valoracion.getComentario(),
+               valoracion.getFecha() != null ? valoracion.getFecha().toString() : null
+           ))
+           .toList();
+   }
+
    public List<ValoracionProductoResponseDTO> obtenerPorProducto (Long productoId){
 
         //1. Se busca todas las valoraciones del producto en la base de datos
