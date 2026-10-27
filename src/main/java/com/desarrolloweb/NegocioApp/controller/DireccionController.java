@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/direcciones")
@@ -33,6 +35,16 @@ public class DireccionController {
 
     public void eliminarDireccion(@PathVariable Long id){
         direccionService.eliminarDireccion(id);
+    }
+
+    // GET /api/v1/direcciones - Listar todas las direcciones
+    // GET /api/v1/direcciones?usuarioId=3 - Filtrar por usuario
+    @GetMapping
+    public List<DireccionResponseDTO> listarDirecciones(
+            @RequestParam(required = false) Long usuarioId) {
+        return (usuarioId == null)
+                ? direccionService.listarDirecciones()
+                : direccionService.obtenerDireccionPorUsuario(usuarioId);
     }
 
     @GetMapping("/{id}")

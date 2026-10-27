@@ -38,6 +38,20 @@ public class DireccionService {
 
     }
 
+    // Obtiene todas las direcciones como DTO, sin exponer las entidades JPA.
+    public List<DireccionResponseDTO> listarDirecciones() {
+        return direccionRepository.findAll().stream()
+            .map(dir -> new DireccionResponseDTO(
+                dir.getId(),
+                dir.getUsuarioId(),
+                dir.getCalle(),
+                dir.getNumero(),
+                dir.getCodigoPostal(),
+                dir.getCiudad()
+            ))
+            .toList();
+    }
+
      public DireccionResponseDTO obtenerDireccionPorId (Long id){
 
         Direccion direccion = direccionRepository.findById(id)

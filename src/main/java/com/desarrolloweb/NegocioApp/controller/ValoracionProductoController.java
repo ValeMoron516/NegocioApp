@@ -31,10 +31,15 @@ public class ValoracionProductoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(creada);
     }
 
+    // GET /api/v1/valoraciones: todas
+    // GET /api/v1/valoraciones?productoId=1: filtradas (comportamiento existente)
     @GetMapping
-    public ResponseEntity<List<ValoracionProductoResponseDTO>> obtenerPorProducto(@RequestParam Long productoId) {
-    List<ValoracionProductoResponseDTO> lista = valoracionProductoService.obtenerPorProducto(productoId);
-    return ResponseEntity.ok(lista);
+    public ResponseEntity<List<ValoracionProductoResponseDTO>> obtenerValoraciones(
+            @RequestParam(required = false) Long productoId) {
+        List<ValoracionProductoResponseDTO> lista = (productoId == null)
+            ? valoracionProductoService.listarTodasLasValoraciones()
+            : valoracionProductoService.obtenerPorProducto(productoId);
+        return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/promedio")
