@@ -1,8 +1,13 @@
+
 package com.desarrolloweb.NegocioApp.dto;
+
 import java.time.LocalDate;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VentaResponseDto {
+
     private Long id;
     private Long usuarioId;
     private Long direccionId;
@@ -10,10 +15,17 @@ public class VentaResponseDto {
     private LocalDate fechaVenta;
     private String estado;
     private BigDecimal total;
-    public VentaResponseDto(){
 
+    private List<ProductoVendidoDto> productos = new ArrayList<>();
+
+    public VentaResponseDto() {
     }
-    public VentaResponseDto(Long id, Long usuarioId, Long direccionId, Long negocioId, LocalDate fechaVenta, String estado, BigDecimal total){
+
+    public VentaResponseDto(Long id, Long usuarioId,
+            Long direccionId, Long negocioId,
+            LocalDate fechaVenta, String estado,
+            BigDecimal total) {
+
         this.id = id;
         this.usuarioId = usuarioId;
         this.direccionId = direccionId;
@@ -22,46 +34,75 @@ public class VentaResponseDto {
         this.estado = estado;
         this.total = total;
     }
-    public Long getId(){
+
+    public Long getId() {
         return id;
     }
-    public void setId(Long id){
+
+    public void setId(Long id) {
         this.id = id;
     }
-    public Long getUsuarioId(){
+
+    public Long getUsuarioId() {
         return usuarioId;
     }
-    public void setUsuarioId(Long usuarioId){
+
+    public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
     }
-    public Long getDireccionId(){
+
+    public Long getDireccionId() {
         return direccionId;
     }
-    public void setDireccionId(Long direccionId){
+
+    public void setDireccionId(Long direccionId) {
         this.direccionId = direccionId;
     }
-    public Long getNegocioId(){
+
+    public Long getNegocioId() {
         return negocioId;
     }
-    public void setNegocioId(Long negocioId){
+
+    public void setNegocioId(Long negocioId) {
         this.negocioId = negocioId;
     }
-    public LocalDate getFechaVenta(){
+
+    public LocalDate getFechaVenta() {
         return fechaVenta;
     }
-    public void setFechaVenta(LocalDate fechaVenta){
+
+    public void setFechaVenta(LocalDate fechaVenta) {
         this.fechaVenta = fechaVenta;
     }
-    public String getEstado(){
+
+    public String getEstado() {
         return estado;
     }
-    public void setEstado(String estado){
+
+    public void setEstado(String estado) {
         this.estado = estado;
     }
-    public BigDecimal getTotal(){
+
+    public BigDecimal getTotal() {
         return total;
     }
-    public void setTotal(BigDecimal total){
+
+    public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public List<ProductoVendidoDto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(List<ProductoVendidoDto> productos) {
+        this.productos = productos;
+    }
+
+    public record ProductoVendidoDto(
+            Long productoId,
+            String nombre,
+            Integer cantidad,
+            BigDecimal precioUnitario) {
     }
 }
