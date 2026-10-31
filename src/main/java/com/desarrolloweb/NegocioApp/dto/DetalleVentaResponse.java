@@ -7,6 +7,7 @@ public class DetalleVentaResponse {
 	private Long id;
 	private Long ventaId;
 	private Long productoId;
+	private String nombreProducto;
 	private Integer cantidad;
 	private BigDecimal precioUnitario;
 
@@ -44,6 +45,14 @@ public class DetalleVentaResponse {
 
 	public void setProductoId(Long productoId) {
 		this.productoId = productoId;
+	}
+
+	public String getNombreProducto() {
+		return nombreProducto;
+	}
+
+	public void setNombreProducto(String nombreProducto) {
+		this.nombreProducto = nombreProducto;
 	}
 
 	public Integer getCantidad() {

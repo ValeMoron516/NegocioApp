@@ -32,7 +32,7 @@ public class VentaController {
         return new ResponseEntity<>(venta, HttpStatus.OK);
     }
 
-    @GetMapping("/api/v1/usuarios/{id}/ventas")
+    @GetMapping({"/api/v1/usuarios/{id}/ventas", "/usuario/{id}"})
     public ResponseEntity<List<VentaResponseDto>> buscarPorUsuario(@PathVariable Long id) {
         List<VentaResponseDto> ventas = ventaService.buscarPorUsuario(id);
         return new ResponseEntity<>(ventas, HttpStatus.OK);
@@ -47,7 +47,7 @@ public ResponseEntity<List<VentaResponseDto>> buscarPorFechas(@RequestParam(name
     List<VentaResponseDto> ventas = ventaService.buscarPorFechas(fechaDesde, fechaHasta);
     return new ResponseEntity<>(ventas, HttpStatus.OK);
 }
-@GetMapping("/api/v1/negocios/{id}/ventas/total")
+@GetMapping({"/api/v1/negocios/{id}/ventas/total", "/negocio/{id}/total"})
 public ResponseEntity<Long> contarPorNegocio(@PathVariable Long id) {
     Long total = ventaService.contarPorNegocio(id);
     return new ResponseEntity<>(total, HttpStatus.OK);

@@ -54,6 +54,7 @@ class VentaServiceTest {
 
         when(usuario.getId()).thenReturn(3L);
         when(direccion.getId()).thenReturn(1L);
+        when(direccion.getUsuarioId()).thenReturn(3L);
         when(negocio.getId()).thenReturn(1L);
 
         Producto producto = new Producto(
@@ -126,6 +127,7 @@ void crearVentaSinStockDebeFallar() {
     Negocio negocio = mock(Negocio.class);
 
     when(negocio.getId()).thenReturn(1L);
+    when(direccion.getUsuarioId()).thenReturn(3L);
 
     Producto producto = new Producto(
             1L,
@@ -172,5 +174,54 @@ void crearVentaSinStockDebeFallar() {
     verify(detalleVentaRepository, never()).saveAll(any());
     verify(productoRepository, never()).save(any(Producto.class));
 }
+
+
+    @Test
+    void totalNoPuedeCambiarseDesdePut() {
+        Venta venta = new Venta();
+        venta.setId(4L);
+        venta.setEstado("PENDIENTE");
+        venta.setTotal(new BigDecimal("45000.00"));
+        when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
+        VentaRequestDto request = new VentaRequestDto();
+        request.setTotal(new BigDecimal("1.00"));
+        assertThrows(IllegalArgumentException.class,
+                () -> ventaService.actualizar(4L, request));
+        verify(ventaRepository, never()).save(any(Venta.class));
+    }
+
+    @Test
+    void cancelarVentaReponeStockUnaSolaVez() {
+        Venta venta = new Venta();
+        venta.setId(4L);
+        venta.setEstado("PENDIENTE");
+        venta.setTotal(new BigDecimal("90000.00"));
+        venta.setFechaVenta(java.time.LocalDateTime.now());
+        Usuario usuario = new Usuario();
+        usuario.setId(3L);
+        Direccion direccion = new Direccion();
+        direccion.setId(1L);
+        Negocio negocio = new Negocio();
+        negocio.setId(1L);
+        venta.setUsuario(usuario);
+        venta.setDireccion(direccion);
+        venta.setNegocio(negocio);
+        Producto producto = new Producto(1L, negocio, null, "Auriculares",
+                "Bluetooth", new BigDecimal("45000.00"), 3);
+        DetalleVenta detalle = new DetalleVenta(5L, venta, producto, 2,
+                new BigDecimal("45000.00"));
+        when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
+        when(detalleVentaRepository.findByVentaId(4L)).thenReturn(List.of(detalle));
+        when(productoRepository.buscarParaVenta(1L)).thenReturn(Optional.of(producto));
+        when(ventaRepository.save(any(Venta.class))).thenAnswer(i -> i.getArgument(0));
+
+        VentaRequestDto request = new VentaRequestDto();
+        request.setEstado("CANCELADO");
+        VentaResponseDto respuesta = ventaService.actualizar(4L, request);
+        assertEquals("CANCELADO", respuesta.getEstado());
+        assertEquals(5, producto.getStock());
+        assertEquals(new BigDecimal("90000.00"), respuesta.getTotal());
+        verify(productoRepository, times(1)).save(producto);
+    }
 
 }
