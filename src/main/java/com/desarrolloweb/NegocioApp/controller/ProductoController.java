@@ -33,10 +33,14 @@ public class ProductoController {
     // Leer todos los productos (paginadas)
     @GetMapping
     public ResponseEntity<PaginacionDTO<ProductoResponseDTO>> obtenerTodosProductos(
-        @RequestParam(defaultValue = "1") Integer page, 
-        @RequestParam(defaultValue = "20") Integer limit) {
-        return ResponseEntity.status(HttpStatus.OK)
-        .body(productoService.obtenerTodosProductos(page, limit)); // 200
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer limit,
+            @RequestParam(name = "texto", required = false) String texto,
+            @RequestParam(name = "categoria", required = false) Long categoria,
+            @RequestParam(name = "precio_min", required = false) java.math.BigDecimal precioMin,
+            @RequestParam(name = "precio_max", required = false) java.math.BigDecimal precioMax) {
+        return ResponseEntity.ok(productoService.obtenerTodosProductos(
+                page, limit, texto, categoria, precioMin, precioMax));
     }
 
     // ##################################################

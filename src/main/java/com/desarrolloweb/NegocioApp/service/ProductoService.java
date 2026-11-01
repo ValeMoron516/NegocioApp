@@ -19,11 +19,15 @@ import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.List;
 
 @Service
@@ -41,6 +45,57 @@ public class ProductoService {
             throw new BadRequestException("Pagina o limite invalido (limite de 1 a 100)");
         }
         Page<Producto> pagina = productoRepository.findAll(PageRequest.of(page - 1, limit));
+        List<ProductoResponseDTO> productos = pagina.getContent().stream().map(this::convertir).toList();
+        MetaDTO meta = new MetaDTO(
+                pagina.getTotalElements(), pagina.getNumberOfElements(), pagina.getSize(),
+                pagina.getTotalPages(), pagina.getNumber() + 1);
+        return new PaginacionDTO<>(productos, meta);
+    }
+
+    // Sobrecarga para filtros opcionales. La version de dos argumentos sigue disponible.
+    @Transactional(readOnly = true)
+    public PaginacionDTO<ProductoResponseDTO> obtenerTodosProductos(
+            Integer page, Integer limit, String texto, Long categoria,
+            BigDecimal precioMin, BigDecimal precioMax) {
+
+        if (page == null || page < 1 || limit == null || limit < 1 || limit > 100) {
+            throw new BadRequestException("Pagina o limite invalido (limite de 1 a 100)");
+        }
+        if (categoria != null && categoria < 1) {
+            throw new BadRequestException("Categoria invalida");
+        }
+        if ((precioMin != null && precioMin.signum() < 0)
+                || (precioMax != null && precioMax.signum() < 0)
+                || (precioMin != null && precioMax != null && precioMin.compareTo(precioMax) > 0)) {
+            throw new BadRequestException("Rango de precios invalido");
+        }
+
+        final String busqueda = texto == null ? "" : texto.trim().toLowerCase(Locale.ROOT);
+        if (busqueda.isEmpty() && categoria == null && precioMin == null && precioMax == null) {
+            return obtenerTodosProductos(page, limit);
+        }
+
+        Specification<Producto> filtros = (root, query, cb) -> {
+            List<Predicate> condiciones = new ArrayList<>();
+            if (!busqueda.isEmpty()) {
+                String patron = "%" + busqueda + "%";
+                condiciones.add(cb.or(
+                        cb.like(cb.lower(root.get("nombre")), patron),
+                        cb.like(cb.lower(root.get("descripcion")), patron)));
+            }
+            if (categoria != null) {
+                condiciones.add(cb.equal(root.get("categoria").get("id"), categoria));
+            }
+            if (precioMin != null) {
+                condiciones.add(cb.greaterThanOrEqualTo(root.get("precio"), precioMin));
+            }
+            if (precioMax != null) {
+                condiciones.add(cb.lessThanOrEqualTo(root.get("precio"), precioMax));
+            }
+            return cb.and(condiciones.toArray(new Predicate[0]));
+        };
+
+        Page<Producto> pagina = productoRepository.findAll(filtros, PageRequest.of(page - 1, limit));
         List<ProductoResponseDTO> productos = pagina.getContent().stream().map(this::convertir).toList();
         MetaDTO meta = new MetaDTO(
                 pagina.getTotalElements(), pagina.getNumberOfElements(), pagina.getSize(),
