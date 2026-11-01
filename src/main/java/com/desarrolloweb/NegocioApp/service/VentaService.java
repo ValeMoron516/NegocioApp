@@ -79,7 +79,7 @@ public class VentaService {
         }
 
         if (request.getEstado() != null
-                && !"PENDIENTE".equalsIgnoreCase(request.getEstado())) {
+                && !"PENDIENTE".equalsIgnoreCase(request.getEstado().trim())) {
 
             throw new IllegalArgumentException(
                     "Las ventas nuevas deben comenzar PENDIENTES");
@@ -353,8 +353,7 @@ public class VentaService {
         if (request.getEstado() != null
                 && !request.getEstado().isBlank()) {
 
-            String nuevo = request.getEstado()
-                    .toUpperCase(Locale.ROOT);
+            String nuevo = normalizarEstado(request.getEstado());
 
             if (!Set.of(
                     "PENDIENTE",
@@ -368,10 +367,11 @@ public class VentaService {
                         "Estado de venta desconocido");
             }
 
-            validarCambioEstado(venta.getEstado(), nuevo);
+            String actual = normalizarEstado(venta.getEstado());
+            validarCambioEstado(actual, nuevo);
 
             if ("CANCELADO".equals(nuevo)
-                    && !"CANCELADO".equals(venta.getEstado())) {
+                    && !"CANCELADO".equals(actual)) {
 
                 reponerStock(
                         detalleVentaRepository.findByVentaId(id)
@@ -390,7 +390,7 @@ public class VentaService {
     }
 
     // ELIMINAR VENTA
-    // CORREGIDO: ACEPTA ESTADOS EN MAYUSCULAS O MINUSCULAS
+    // Acepta estados históricos en mayúsculas o minúsculas
     @Transactional
     public void eliminar(Long id) {
 
@@ -399,9 +399,7 @@ public class VentaService {
                         new NoSuchElementException(
                                 "Venta no encontrada"));
 
-        String estado = venta.getEstado()
-                .trim()
-                .toUpperCase(Locale.ROOT);
+        String estado = normalizarEstado(venta.getEstado());
 
         if (!"PENDIENTE".equals(estado)
                 && !"CANCELADO".equals(estado)) {
@@ -431,6 +429,14 @@ public class VentaService {
         }
 
         return ventaRepository.countByNegocioId(negocioId);
+    }
+
+    // Normalizar registros históricos sin alterar los demás campos de la venta.
+    private String normalizarEstado(String estado) {
+        if (estado == null || estado.isBlank()) {
+            throw new IllegalStateException("La venta no tiene un estado valido");
+        }
+        return estado.trim().toUpperCase(Locale.ROOT);
     }
 
     // VALIDAR CAMBIO DE ESTADO

@@ -70,6 +70,9 @@ public class ProductoController {
         catch (ConflictException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
         }
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
     }
 
     // ##################################################
@@ -85,6 +88,9 @@ public class ProductoController {
         catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
         }
+        catch (BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400
+        }
     }
     
     // ##################################################
@@ -98,6 +104,9 @@ public class ProductoController {
         }
         catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
+        catch (ConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
         }
     }
 }

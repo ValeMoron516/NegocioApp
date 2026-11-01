@@ -2,6 +2,7 @@ package com.desarrolloweb.NegocioApp.dto;
 
 public class ValoracionProductoRequestDTO {
     private Long productoId;
+    private Long usuarioId;
     private int estrellas;
     private String comentario;
 
@@ -14,6 +15,16 @@ public class ValoracionProductoRequestDTO {
         this.estrellas = estrellas;
         this.comentario = comentario;
     }
+
+    public ValoracionProductoRequestDTO(Long usuarioId, Long productoId, int estrellas, String comentario) {
+        this.usuarioId = usuarioId;
+        this.productoId = productoId;
+        this.estrellas = estrellas;
+        this.comentario = comentario;
+    }
+
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 
     public Long getProductoId() {
         return productoId;

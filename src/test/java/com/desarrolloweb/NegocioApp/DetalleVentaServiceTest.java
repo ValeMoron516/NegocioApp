@@ -104,15 +104,17 @@ class DetalleVentaServiceTest {
     @Test
     void eliminarDetalleDevuelveStockYReduceTotal() {
         Negocio n = negocio();
-        Venta v = venta(n, "PENDIENTE", "90000.00");
+        Venta v = venta(n, "PENDIENTE", "135000.00");
         Producto p = producto(n, 3);
         DetalleVenta d = new DetalleVenta(20L, v, p, 2, new BigDecimal("45000.00"));
+        DetalleVenta otro = new DetalleVenta(21L, v, p, 1, new BigDecimal("45000.00"));
+        when(detalleVentaRepository.findByVentaId(10L)).thenReturn(List.of(d, otro));
         when(detalleVentaRepository.findById(20L)).thenReturn(Optional.of(d));
         when(ventaRepository.buscarParaModificar(10L)).thenReturn(Optional.of(v));
         when(productoRepository.buscarParaVenta(5L)).thenReturn(Optional.of(p));
         detalleVentaService.eliminar(20L);
         assertEquals(5, p.getStock());
-        assertEquals(new BigDecimal("0.00"), v.getTotal());
+        assertEquals(new BigDecimal("45000.00"), v.getTotal());
         verify(detalleVentaRepository).delete(d);
     }
 
@@ -139,4 +141,19 @@ class DetalleVentaServiceTest {
                 () -> detalleVentaService.crear(new DetalleVentaRequest(10L, 5L, 1)));
         verify(detalleVentaRepository, never()).save(any(DetalleVenta.class));
     }
+
+    @Test
+    void noPermiteQuitarUltimoProductoDeVenta() {
+        Negocio n = negocio();
+        Venta v = venta(n, "PENDIENTE", "45000.00");
+        Producto p = producto(n, 2);
+        DetalleVenta d = new DetalleVenta(20L, v, p, 1, new BigDecimal("45000.00"));
+        when(detalleVentaRepository.findById(20L)).thenReturn(Optional.of(d));
+        when(ventaRepository.buscarParaModificar(10L)).thenReturn(Optional.of(v));
+        when(detalleVentaRepository.findByVentaId(10L)).thenReturn(List.of(d));
+        assertThrows(IllegalStateException.class, () -> detalleVentaService.eliminar(20L));
+        verify(detalleVentaRepository, never()).delete(any(DetalleVenta.class));
+        verify(productoRepository, never()).save(any(Producto.class));
+    }
+
 }

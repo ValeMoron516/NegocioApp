@@ -16,4 +16,6 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Long
 
     boolean existsByVentaIdAndProductoId(Long ventaId, Long productoId);
 
+    boolean existsByProductoId(Long productoId);
+
 }

@@ -224,4 +224,62 @@ void crearVentaSinStockDebeFallar() {
         verify(productoRepository, times(1)).save(producto);
     }
 
+
+    @Test
+    void actualizarVentaPendienteEnMinusculas() {
+        Venta venta = new Venta();
+        venta.setId(4L);
+        venta.setEstado(" pendiente ");
+        venta.setTotal(new BigDecimal("90000.00"));
+        venta.setFechaVenta(java.time.LocalDateTime.now());
+        Usuario u = new Usuario(); u.setId(3L);
+        Direccion d = new Direccion(); d.setId(1L);
+        Negocio n = new Negocio(); n.setId(1L);
+        venta.setUsuario(u); venta.setDireccion(d); venta.setNegocio(n);
+        when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
+        when(ventaRepository.save(any(Venta.class))).thenAnswer(i -> i.getArgument(0));
+        VentaRequestDto request = new VentaRequestDto();
+        request.setEstado("pagado");
+        VentaResponseDto res = ventaService.actualizar(4L, request);
+        assertEquals("PAGADO", res.getEstado());
+        verify(productoRepository, never()).save(any(Producto.class));
+    }
+
+    @Test
+    void cancelarVentaYaCanceladaEnMinusculasNoDuplicaStock() {
+        Venta venta = new Venta();
+        venta.setId(4L);
+        venta.setEstado("cancelado");
+        venta.setTotal(new BigDecimal("90000.00"));
+        venta.setFechaVenta(java.time.LocalDateTime.now());
+        Usuario u = new Usuario(); u.setId(3L);
+        Direccion d = new Direccion(); d.setId(1L);
+        Negocio n = new Negocio(); n.setId(1L);
+        venta.setUsuario(u); venta.setDireccion(d); venta.setNegocio(n);
+        when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
+        when(ventaRepository.save(any(Venta.class))).thenAnswer(i -> i.getArgument(0));
+        VentaRequestDto request = new VentaRequestDto();
+        request.setEstado("CANCELADO");
+        VentaResponseDto res = ventaService.actualizar(4L, request);
+        assertEquals("CANCELADO", res.getEstado());
+        verify(productoRepository, never()).save(any(Producto.class));
+    }
+
+    @Test
+    void eliminarVentaPendienteMinusculaReponeStock() {
+        Venta venta = new Venta();
+        venta.setId(4L);
+        venta.setEstado("pendiente");
+        Negocio negocio = new Negocio(); negocio.setId(1L);
+        Producto p = new Producto(5L, negocio, null, "Auriculares", "", new BigDecimal("10"), 3);
+        DetalleVenta detalle = new DetalleVenta(6L, venta, p, 2, new BigDecimal("10"));
+        when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
+        when(detalleVentaRepository.findByVentaId(4L)).thenReturn(List.of(detalle));
+        when(productoRepository.buscarParaVenta(5L)).thenReturn(Optional.of(p));
+        ventaService.eliminar(4L);
+        assertEquals(5, p.getStock());
+        verify(ventaRepository).delete(venta);
+        verify(detalleVentaRepository).deleteAll(List.of(detalle));
+    }
+
 }

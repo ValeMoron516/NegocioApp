@@ -1,114 +1,93 @@
-
 package com.desarrolloweb.NegocioApp.service;
 
-import org.springframework.stereotype.Service;
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoRequestDTO;
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoResponseDTO;
-import com.desarrolloweb.NegocioApp.repository.ValoracionProductoRepository;
-import com.desarrolloweb.NegocioApp.entity.Producto;
-import com.desarrolloweb.NegocioApp.entity.ValoracionProducto;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.NoSuchElementException;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.desarrolloweb.NegocioApp.dto.ValoracionProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.ValoracionProductoResponseDTO;
 import com.desarrolloweb.NegocioApp.dto.ValoracionProductoPromedioDTO;
+import com.desarrolloweb.NegocioApp.entity.Producto;
+import com.desarrolloweb.NegocioApp.entity.Usuario;
+import com.desarrolloweb.NegocioApp.entity.ValoracionProducto;
+import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+import com.desarrolloweb.NegocioApp.repository.UsuarioRepository;
+import com.desarrolloweb.NegocioApp.repository.ValoracionProductoRepository;
 
 @Service
 public class ValoracionProductoService {
-
     private final ValoracionProductoRepository valoracionProductoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ProductoRepository productoRepository;
 
-    public ValoracionProductoService(ValoracionProductoRepository valoracionProductoRepository) {
+    public ValoracionProductoService(ValoracionProductoRepository valoracionProductoRepository,
+            UsuarioRepository usuarioRepository, ProductoRepository productoRepository) {
         this.valoracionProductoRepository = valoracionProductoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.productoRepository = productoRepository;
     }
 
+    @Transactional
     public ValoracionProductoResponseDTO crearValoracion(ValoracionProductoRequestDTO dto) {
-        // 1. Validar la puntuación (1 a 5)
-        if (dto.getEstrellas() < 1 || dto.getEstrellas() > 5) {
-            throw new IllegalArgumentException("La puntuación debe ser un número entero entre 1 y 5.");
+        if (dto == null || dto.getUsuarioId() == null || dto.getProductoId() == null) {
+            throw new IllegalArgumentException("usuarioId y productoId son obligatorios");
         }
+        if (dto.getEstrellas() < 1 || dto.getEstrellas() > 5) {
+            throw new IllegalArgumentException("La puntuacion debe estar entre 1 y 5");
+        }
+        if (dto.getComentario() != null && dto.getComentario().length() > 500) {
+            throw new IllegalArgumentException("El comentario supera los 500 caracteres");
+        }
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
+        Producto producto = productoRepository.findById(dto.getProductoId())
+                .orElseThrow(() -> new NoSuchElementException("Producto no encontrado"));
 
-        // 2. Instanciar la entidad
         ValoracionProducto valoracion = new ValoracionProducto();
+        valoracion.setUsuarioId(usuario);
+        valoracion.setProductoId(producto);
         valoracion.setEstrellas(dto.getEstrellas());
         valoracion.setComentario(dto.getComentario());
         valoracion.setFecha(LocalDateTime.now());
+        return convertir(valoracionProductoRepository.save(valoracion));
+    }
 
-        // 3. Setear Producto (y dejamos Usuario temporalmente en null)
-        Producto producto = new Producto();
-        producto.setId(dto.getProductoId());
-        valoracion.setProductoId(producto);
+    @Transactional(readOnly = true)
+    public List<ValoracionProductoResponseDTO> listarTodasLasValoraciones() {
+        return valoracionProductoRepository.findAll().stream().map(this::convertir).toList();
+    }
 
-        // 4. Guardar en la base de datos
-        ValoracionProducto guardada = valoracionProductoRepository.save(valoracion);
+    @Transactional(readOnly = true)
+    public List<ValoracionProductoResponseDTO> obtenerPorProducto(Long productoId) {
+        return valoracionProductoRepository.findByProductoId_Id(productoId).stream()
+                .map(this::convertir).toList();
+    }
 
-        // 5. Retornar el ResponseDTO
+    @Transactional(readOnly = true)
+    public ValoracionProductoPromedioDTO obtenerPromedio(Long productoId) {
+        List<ValoracionProducto> lista = valoracionProductoRepository.findByProductoId_Id(productoId);
+        if (lista.isEmpty()) return new ValoracionProductoPromedioDTO(productoId, 0.0, 0);
+        double promedio = lista.stream().mapToInt(ValoracionProducto::getEstrellas).average().orElse(0.0);
+        return new ValoracionProductoPromedioDTO(productoId, promedio, lista.size());
+    }
+
+    @Transactional
+    public void eliminarValoracion(Long id) {
+        if (!valoracionProductoRepository.existsById(id)) {
+            throw new NoSuchElementException("No existe una valoracion con el ID: " + id);
+        }
+        valoracionProductoRepository.deleteById(id);
+    }
+
+    private ValoracionProductoResponseDTO convertir(ValoracionProducto valoracion) {
         return new ValoracionProductoResponseDTO(
-            guardada.getId(),
-            10L, // ID de usuario simulado para la respuesta
-            guardada.getProductoId().getId(),
-            guardada.getEstrellas(),
-            guardada.getComentario(),
-            guardada.getFecha().toString()
-        );
+                valoracion.getId(),
+                valoracion.getUsuarioId() == null ? null : valoracion.getUsuarioId().getId(),
+                valoracion.getProductoId() == null ? null : valoracion.getProductoId().getId(),
+                valoracion.getEstrellas(), valoracion.getComentario(),
+                valoracion.getFecha() == null ? null : valoracion.getFecha().toString());
     }
-
-   // Listado general, sin requerir productoId.
-   public List<ValoracionProductoResponseDTO> listarTodasLasValoraciones() {
-       return valoracionProductoRepository.findAll().stream()
-           .map(valoracion -> new ValoracionProductoResponseDTO(
-               valoracion.getId(),
-               valoracion.getUsuarioId() != null ? valoracion.getUsuarioId().getId() : null,
-               valoracion.getProductoId() != null ? valoracion.getProductoId().getId() : null,
-               valoracion.getEstrellas(),
-               valoracion.getComentario(),
-               valoracion.getFecha() != null ? valoracion.getFecha().toString() : null
-           ))
-           .toList();
-   }
-
-   public List<ValoracionProductoResponseDTO> obtenerPorProducto (Long productoId){
-
-        //1. Se busca todas las valoraciones del producto en la base de datos
-    List<ValoracionProducto> listaEntidades = valoracionProductoRepository.findByProductoId_Id(productoId);
-        //2. Preparar una lista vacia de DTOs
-    List<ValoracionProductoResponseDTO> lisDTOs = new ArrayList<>();
-        //3. Recorrer cada entidad y transformarlas en DTO
-    for (ValoracionProducto valoracion: listaEntidades){
-        ValoracionProductoResponseDTO dto = new ValoracionProductoResponseDTO(
-            valoracion.getId(),
-            10L,
-            productoId,
-            valoracion.getEstrellas(),
-            valoracion.getComentario(),
-            valoracion.getFecha() != null ? valoracion.getFecha().toString() : null
-        );
-        lisDTOs.add(dto);
-    }
-      return lisDTOs;
-
-    }
-
-   public ValoracionProductoPromedioDTO obtenerPromedio(Long productoId) {
-
-    List<ValoracionProducto> listaEntidades = valoracionProductoRepository.findByProductoId_Id(productoId);
-
-    if (listaEntidades.isEmpty()) {
-        return new ValoracionProductoPromedioDTO(productoId, 0.0, 0);
-    }
-
-    double suma = 0;
-    for (ValoracionProducto valoracion : listaEntidades) {
-        suma += valoracion.getEstrellas();
-    }
-
-    double promedio = suma / listaEntidades.size();
-    return new ValoracionProductoPromedioDTO(productoId, promedio, listaEntidades.size());
-}
-
-   public void eliminarValoracion(Long id) {
-    if (!valoracionProductoRepository.existsById(id)) {
-        throw new IllegalArgumentException("No existe una valoración con el ID: " + id);
-    }
-    valoracionProductoRepository.deleteById(id);
-}
 }

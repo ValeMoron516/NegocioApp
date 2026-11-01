@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-// Limitar este manejo a los controladores de ventas: no cambiar otras APIs del equipo.
-@RestControllerAdvice(assignableTypes = {VentaController.class, DetalleVentaController.class})
+// Manejar errores de ventas, detalles y valoraciones sin cambiar el resto de las APIs.
+@RestControllerAdvice(assignableTypes = {VentaController.class, DetalleVentaController.class, ValoracionProductoController.class})
 public class VentaDetalleExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)

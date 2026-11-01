@@ -128,6 +128,11 @@ public class DetalleVentaService {
         exigirPendiente(venta);
         DetalleVenta detalle = detalleVentaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Detalle no encontrado"));
+        // No permitir ventas pendientes vacías: para eso se elimina la venta completa.
+        if (detalleVentaRepository.findByVentaId(venta.getId()).size() <= 1) {
+            throw new IllegalStateException(
+                    "No se puede dejar la venta sin productos; elimina la venta pendiente completa");
+        }
         Producto producto = obtenerProductoBloqueado(detalle.getProducto().getId());
         BigDecimal nuevoTotal = venta.getTotal().subtract(detalle.getPrecioUnitario()
                 .multiply(BigDecimal.valueOf(detalle.getCantidad())));
@@ -152,7 +157,8 @@ public class DetalleVentaService {
     }
 
     private void exigirPendiente(Venta venta) {
-        if (!"PENDIENTE".equalsIgnoreCase(venta.getEstado())) {
+        if (venta.getEstado() == null
+                || !"PENDIENTE".equalsIgnoreCase(venta.getEstado().trim())) {
             throw new IllegalStateException("Solo se pueden modificar detalles de ventas PENDIENTES");
         }
     }
