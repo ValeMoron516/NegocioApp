@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.usuarioDTO.UsuarioRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.usuarioDTO.UsuarioResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.usuario.UsuarioRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.usuario.UsuarioResponseDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
@@ -23,6 +23,9 @@ import com.desarrolloweb.NegocioApp.service.UsuarioService;
 @RestController
 @RequestMapping("api/v1/usuarios")
 public class UsuarioController {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
+
 
     private final UsuarioService usuarioService;
 
@@ -37,6 +40,8 @@ public class UsuarioController {
     public ResponseEntity<PaginacionDTO<UsuarioResponseDTO>> obtenerTodosUsuarios(
         @RequestParam(defaultValue = "1") Integer page,
         @RequestParam(defaultValue = "20") Integer limit) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(usuarioService.obtenerTodosUsuarios(page, limit)); // 200
@@ -50,6 +55,8 @@ public class UsuarioController {
     // Leer por ID
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorId(@PathVariable Long id) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(usuarioService.obtenerUsuarioPorId(id)); // 200
@@ -63,6 +70,8 @@ public class UsuarioController {
     // Crear nuevo
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> crearUsuario(@RequestBody UsuarioRequestDTO dto) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
             .body(usuarioService.crearUsuario(dto)); // 201
@@ -81,6 +90,8 @@ public class UsuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuarioPorId(
         @PathVariable Long id, @RequestBody UsuarioRequestDTO dto) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(usuarioService.actualizarUsuarioPorId(id, dto)); // 200
@@ -101,6 +112,8 @@ public class UsuarioController {
     // Borrar por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> borrarUsuarioPorId(@PathVariable Long id) {
+        guard.adminOnly();
+
         try {
             usuarioService.borrarUsuarioPorId(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204

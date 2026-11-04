@@ -1,10 +1,11 @@
 package com.desarrolloweb.NegocioApp;
 
-import com.desarrolloweb.NegocioApp.dto.DetalleVentaRequest;
-import com.desarrolloweb.NegocioApp.dto.DetalleVentaResponse;
+import com.desarrolloweb.NegocioApp.dto.detalleVenta.DetalleVentaRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.detalleVenta.DetalleVentaResponseDTO;
 import com.desarrolloweb.NegocioApp.entity.*;
 import com.desarrolloweb.NegocioApp.repository.*;
 import com.desarrolloweb.NegocioApp.service.DetalleVentaService;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,8 +61,8 @@ class DetalleVentaServiceTest {
             d.setId(15L);
             return d;
         });
-        DetalleVentaResponse res = detalleVentaService.crear(
-                new DetalleVentaRequest(10L, 5L, 2));
+        DetalleVentaResponseDTO res = detalleVentaService.crear(
+                new DetalleVentaRequestDTO(10L, 5L, 2));
         assertEquals(3, p.getStock());
         assertEquals(new BigDecimal("90000.00"), v.getTotal());
         assertEquals(15L, res.getId());
@@ -79,7 +80,7 @@ class DetalleVentaServiceTest {
         when(ventaRepository.buscarParaModificar(10L)).thenReturn(Optional.of(v));
         when(productoRepository.buscarParaVenta(5L)).thenReturn(Optional.of(p));
         when(detalleVentaRepository.save(d)).thenReturn(d);
-        DetalleVentaResponse res = detalleVentaService.actualizarCantidad(20L, 3).orElseThrow();
+        DetalleVentaResponseDTO res = detalleVentaService.actualizarCantidad(20L, 3).orElseThrow();
         assertEquals(3, res.getCantidad());
         assertEquals(3, p.getStock());
         assertEquals(new BigDecimal("135000.00"), v.getTotal());
@@ -125,11 +126,11 @@ class DetalleVentaServiceTest {
         Producto p = producto(n, 3);
         DetalleVenta d = new DetalleVenta(20L, v, p, 1, new BigDecimal("45000.00"));
         when(detalleVentaRepository.findAll()).thenReturn(List.of(d));
-        List<DetalleVentaResponse> res = detalleVentaService.obtenerTodos();
+        List<DetalleVentaResponseDTO> res = detalleVentaService.obtenerTodos();
         assertEquals(1, res.size());
         assertEquals(5L, res.get(0).getProductoId());
         assertThrows(NoSuchMethodException.class,
-                () -> DetalleVentaResponse.class.getMethod("getPassword"));
+                () -> DetalleVentaResponseDTO.class.getMethod("getPassword"));
     }
 
     @Test
@@ -137,8 +138,8 @@ class DetalleVentaServiceTest {
         Negocio n = negocio();
         Venta v = venta(n, "ENTREGADO", "45000.00");
         when(ventaRepository.buscarParaModificar(10L)).thenReturn(Optional.of(v));
-        assertThrows(IllegalStateException.class,
-                () -> detalleVentaService.crear(new DetalleVentaRequest(10L, 5L, 1)));
+        assertThrows(ConflictException.class,
+                () -> detalleVentaService.crear(new DetalleVentaRequestDTO(10L, 5L, 1)));
         verify(detalleVentaRepository, never()).save(any(DetalleVenta.class));
     }
 
@@ -151,7 +152,7 @@ class DetalleVentaServiceTest {
         when(detalleVentaRepository.findById(20L)).thenReturn(Optional.of(d));
         when(ventaRepository.buscarParaModificar(10L)).thenReturn(Optional.of(v));
         when(detalleVentaRepository.findByVentaId(10L)).thenReturn(List.of(d));
-        assertThrows(IllegalStateException.class, () -> detalleVentaService.eliminar(20L));
+        assertThrows(ConflictException.class, () -> detalleVentaService.eliminar(20L));
         verify(detalleVentaRepository, never()).delete(any(DetalleVenta.class));
         verify(productoRepository, never()).save(any(Producto.class));
     }

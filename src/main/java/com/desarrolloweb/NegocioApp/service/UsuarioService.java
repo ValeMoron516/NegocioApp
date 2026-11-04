@@ -12,10 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.usuarioDTO.UsuarioRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.usuarioDTO.UsuarioResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.MetaDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.usuario.UsuarioRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.usuario.UsuarioResponseDTO;
 import com.desarrolloweb.NegocioApp.entity.Usuario;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
@@ -93,6 +93,7 @@ public class UsuarioService {
 
     // Crear nuevo Usuario
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO uDTO) {
+        if (uDTO == null) throw new BadRequestException("Datos de usuario obligatorios");
 
         String nombre = validarTextoObligatorio(uDTO.getNombre(), "Nombre", 100);
         String apellido = validarTextoObligatorio(uDTO.getApellido(), "Apellido", 100);
@@ -119,6 +120,7 @@ public class UsuarioService {
 
     // Actualizar Usuario por ID (solo se modifican los campos enviados)
     public UsuarioResponseDTO actualizarUsuarioPorId(Long id, UsuarioRequestDTO uDTO) {
+        if (uDTO == null) throw new BadRequestException("Datos de usuario obligatorios");
 
         Usuario u = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("El usuario con el ID provisto no existe"));

@@ -1,8 +1,8 @@
 
 package com.desarrolloweb.NegocioApp;
 
-import com.desarrolloweb.NegocioApp.dto.VentaRequestDto;
-import com.desarrolloweb.NegocioApp.dto.VentaResponseDto;
+import com.desarrolloweb.NegocioApp.dto.venta.VentaRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.venta.VentaResponseDTO;
 import com.desarrolloweb.NegocioApp.entity.*;
 import com.desarrolloweb.NegocioApp.repository.*;
 import com.desarrolloweb.NegocioApp.service.VentaService;
@@ -86,7 +86,7 @@ class VentaServiceTest {
                     return venta;
                 });
 
-        VentaRequestDto request = new VentaRequestDto();
+        VentaRequestDTO request = new VentaRequestDTO();
 
         request.setUsuarioId(3L);
         request.setDireccionId(1L);
@@ -94,10 +94,10 @@ class VentaServiceTest {
         request.setEstado("PENDIENTE");
 
         request.setProductos(List.of(
-                new VentaRequestDto.ProductoCompraDto(1L, 2)
+                new VentaRequestDTO.ProductoCompraDTO(1L, 2)
         ));
 
-        VentaResponseDto respuesta = ventaService.crear(request);
+        VentaResponseDTO respuesta = ventaService.crear(request);
 
         // Dos auriculares de $45.000 = $90.000
         assertEquals(
@@ -151,14 +151,14 @@ void crearVentaSinStockDebeFallar() {
     when(productoRepository.buscarParaVenta(1L))
             .thenReturn(Optional.of(producto));
 
-    VentaRequestDto request = new VentaRequestDto();
+    VentaRequestDTO request = new VentaRequestDTO();
 
     request.setUsuarioId(3L);
     request.setDireccionId(1L);
     request.setNegocioId(1L);
 
     request.setProductos(List.of(
-            new VentaRequestDto.ProductoCompraDto(1L, 2)
+            new VentaRequestDTO.ProductoCompraDTO(1L, 2)
     ));
 
     Exception error = assertThrows(
@@ -183,7 +183,7 @@ void crearVentaSinStockDebeFallar() {
         venta.setEstado("PENDIENTE");
         venta.setTotal(new BigDecimal("45000.00"));
         when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
-        VentaRequestDto request = new VentaRequestDto();
+        VentaRequestDTO request = new VentaRequestDTO();
         request.setTotal(new BigDecimal("1.00"));
         assertThrows(IllegalArgumentException.class,
                 () -> ventaService.actualizar(4L, request));
@@ -215,9 +215,9 @@ void crearVentaSinStockDebeFallar() {
         when(productoRepository.buscarParaVenta(1L)).thenReturn(Optional.of(producto));
         when(ventaRepository.save(any(Venta.class))).thenAnswer(i -> i.getArgument(0));
 
-        VentaRequestDto request = new VentaRequestDto();
+        VentaRequestDTO request = new VentaRequestDTO();
         request.setEstado("CANCELADO");
-        VentaResponseDto respuesta = ventaService.actualizar(4L, request);
+        VentaResponseDTO respuesta = ventaService.actualizar(4L, request);
         assertEquals("CANCELADO", respuesta.getEstado());
         assertEquals(5, producto.getStock());
         assertEquals(new BigDecimal("90000.00"), respuesta.getTotal());
@@ -238,9 +238,9 @@ void crearVentaSinStockDebeFallar() {
         venta.setUsuario(u); venta.setDireccion(d); venta.setNegocio(n);
         when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
         when(ventaRepository.save(any(Venta.class))).thenAnswer(i -> i.getArgument(0));
-        VentaRequestDto request = new VentaRequestDto();
+        VentaRequestDTO request = new VentaRequestDTO();
         request.setEstado("pagado");
-        VentaResponseDto res = ventaService.actualizar(4L, request);
+        VentaResponseDTO res = ventaService.actualizar(4L, request);
         assertEquals("PAGADO", res.getEstado());
         verify(productoRepository, never()).save(any(Producto.class));
     }
@@ -258,9 +258,9 @@ void crearVentaSinStockDebeFallar() {
         venta.setUsuario(u); venta.setDireccion(d); venta.setNegocio(n);
         when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
         when(ventaRepository.save(any(Venta.class))).thenAnswer(i -> i.getArgument(0));
-        VentaRequestDto request = new VentaRequestDto();
+        VentaRequestDTO request = new VentaRequestDTO();
         request.setEstado("CANCELADO");
-        VentaResponseDto res = ventaService.actualizar(4L, request);
+        VentaResponseDTO res = ventaService.actualizar(4L, request);
         assertEquals("CANCELADO", res.getEstado());
         verify(productoRepository, never()).save(any(Producto.class));
     }

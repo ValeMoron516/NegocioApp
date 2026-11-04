@@ -9,10 +9,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.rolDTO.RolRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.rolDTO.RolResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.MetaDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.rol.RolRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.rol.RolResponseDTO;
 import com.desarrolloweb.NegocioApp.entity.Rol;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
@@ -73,6 +73,7 @@ public class RolService {
 
     // Crear nuevo Rol
     public RolResponseDTO crearRol(RolRequestDTO rDTO) {
+        if (rDTO == null) throw new BadRequestException("Datos de rol obligatorios");
 
         String nombre = normalizarNombre(rDTO.getNombre());
 
@@ -90,6 +91,7 @@ public class RolService {
 
     // Actualizar Rol por ID
     public RolResponseDTO actualizarRolPorId(Long id, RolRequestDTO rDTO) {
+        if (rDTO == null) throw new BadRequestException("Datos de rol obligatorios");
 
         Rol r = rolRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("El rol con el ID provisto no existe"));

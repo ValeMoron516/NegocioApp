@@ -1,8 +1,8 @@
 package com.desarrolloweb.NegocioApp.controller;
  
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoResponseDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/productos")
 public class ProductoController {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
+
 
     @Autowired
     private ProductoService productoService;
@@ -63,6 +66,8 @@ public class ProductoController {
     @PostMapping
     public ResponseEntity<ProductoResponseDTO> crearProducto(
         @RequestBody ProductoRequestDTO p) {
+        guard.createsProduct(p);
+
         
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -84,6 +89,8 @@ public class ProductoController {
     // Actualizar producto por id
     @PutMapping("{id}")
     public ResponseEntity<ProductoResponseDTO> actualizarProductoPorId(@PathVariable Long id, @RequestBody ProductoRequestDTO p) {
+        guard.updatesProduct(id,p);
+
         
         try {
             return ResponseEntity.status(HttpStatus.OK)
@@ -102,6 +109,8 @@ public class ProductoController {
     // Borrar por ID
     @DeleteMapping("{id}")
     public ResponseEntity<Void> borrarProductoPorId(@PathVariable Long id) {
+        guard.ownsProduct(id);
+
         try {
             productoService.borrarProductoPorId(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204

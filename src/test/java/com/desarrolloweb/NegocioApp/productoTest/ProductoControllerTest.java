@@ -17,20 +17,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.desarrolloweb.NegocioApp.controller.ProductoController;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.MetaDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.service.ProductoService;
+import com.desarrolloweb.NegocioApp.service.AccessGuard;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductoControllerTest {
 
     @Mock
     ProductoService productoService;
+
+    @Mock
+    AccessGuard guard; // Simulación en test unitario; seguridad real permanece intacta
 
     @InjectMocks
     ProductoController productoController;

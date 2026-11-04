@@ -15,13 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.desarrolloweb.NegocioApp.dto.ValoracionNegocioResponse;
+import com.desarrolloweb.NegocioApp.dto.valoracionNegocio.ValoracionNegocioResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.valoracionNegocio.ValoracionNegocioRequestDTO;
 import com.desarrolloweb.NegocioApp.entity.ValoracionNegocio;
 import com.desarrolloweb.NegocioApp.service.ValoracionNegocioService;
 
 @RestController
 @RequestMapping("/api/v1/valoraciones-negocio")
 public class ValoracionNegocioController {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
+
 
     private final ValoracionNegocioService valoracionService;
 
@@ -29,39 +33,48 @@ public class ValoracionNegocioController {
         this.valoracionService = valoracionService;
     }
 
-    @GetMapping("/valoraciones-negocios")
-    public ResponseEntity<List<ValoracionNegocioResponse>> obtenerTodasLasValoraciones() {
+    @GetMapping
+    public ResponseEntity<List<ValoracionNegocioResponseDTO>> obtenerTodasLasValoraciones() {
         return ResponseEntity.ok(valoracionService.obtenerTodas().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList()));
     }
 
-    @GetMapping("/valoraciones-negocios/{id}")
-    public ResponseEntity<ValoracionNegocioResponse> obtenerValoracionPorId(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ValoracionNegocioResponseDTO> obtenerValoracionPorId(@PathVariable Long id) {
         return valoracionService.obtenerPorId(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/valoraciones-negocios")
-    public ResponseEntity<ValoracionNegocioResponse> crearValoracion(
-            @RequestBody ValoracionNegocio valoracion) {
+    @PostMapping
+    public ResponseEntity<ValoracionNegocioResponseDTO> crearValoracion(
+            @RequestBody ValoracionNegocioRequestDTO request) {
+        guard.customerOnly();
+        if (request == null) throw new IllegalArgumentException("Valoracion obligatoria");
+        if (request.getClienteId() != null && !request.getClienteId().equals(guard.uid())) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.FORBIDDEN, "No autorizado");
+        }
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(toResponse(valoracionService.crear(valoracion)));
+                .body(toResponse(valoracionService.crear(request, guard.uid())));
     }
 
-    @PatchMapping("/valoraciones-negocios/{id}")
-    public ResponseEntity<ValoracionNegocioResponse> actualizarValoracion(
-            @PathVariable Long id, @RequestBody ValoracionNegocio valoracionActualizada) {
-        return valoracionService.actualizar(id, valoracionActualizada)
+    @PatchMapping("/{id}")
+    public ResponseEntity<ValoracionNegocioResponseDTO> actualizarValoracion(
+            @PathVariable Long id, @RequestBody ValoracionNegocioRequestDTO request) {
+        guard.updatesBusinessRating(id);
+        if (request == null) throw new IllegalArgumentException("Valoracion obligatoria");
+        return valoracionService.actualizar(id, request)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/valoraciones-negocios/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarValoracion(@PathVariable Long id) {
+        guard.updatesBusinessRating(id);
+
         if (!valoracionService.existe(id)) {
             return ResponseEntity.notFound().build();
         }
@@ -70,7 +83,7 @@ public class ValoracionNegocioController {
     }
 
     @GetMapping("/negocios/{id}/valoraciones")
-    public ResponseEntity<List<ValoracionNegocioResponse>> obtenerValoracionesPorNegocio(
+    public ResponseEntity<List<ValoracionNegocioResponseDTO>> obtenerValoracionesPorNegocio(
             @PathVariable Long id) {
         return ResponseEntity.ok(valoracionService.obtenerPorNegocio(id).stream()
                 .map(this::toResponse)
@@ -78,14 +91,16 @@ public class ValoracionNegocioController {
     }
 
     @GetMapping("/clientes/{id}/valoraciones-negocios")
-    public ResponseEntity<List<ValoracionNegocioResponse>> obtenerValoracionesPorCliente(
+    public ResponseEntity<List<ValoracionNegocioResponseDTO>> obtenerValoracionesPorCliente(
             @PathVariable Long id) {
+        guard.selfOrAdmin(id);
+
         return ResponseEntity.ok(valoracionService.obtenerPorCliente(id).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList()));
     }
 
-    @GetMapping("/valoraciones-negocios/estrellas/{estrellas}")
+    @GetMapping("/estrellas/{estrellas}")
     public ResponseEntity<?> obtenerValoracionesPorEstrellas(@PathVariable Integer estrellas) {
         if (estrellas < 1 || estrellas > 5) {
             return ResponseEntity.badRequest().build();
@@ -95,8 +110,8 @@ public class ValoracionNegocioController {
                 .collect(Collectors.toList())));
     }
 
-    private ValoracionNegocioResponse toResponse(ValoracionNegocio valoracion) {
-        return new ValoracionNegocioResponse(
+    private ValoracionNegocioResponseDTO toResponse(ValoracionNegocio valoracion) {
+        return new ValoracionNegocioResponseDTO(
                 valoracion.getId(),
                 valoracion.getNegocio().getId(),
                 valoracion.getCliente().getId(),

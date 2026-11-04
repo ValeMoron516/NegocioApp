@@ -1,6 +1,6 @@
 package com.desarrolloweb.NegocioApp;
 
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.valoracionProducto.ValoracionProductoRequestDTO;
 import com.desarrolloweb.NegocioApp.entity.Producto;
 import com.desarrolloweb.NegocioApp.entity.Usuario;
 import com.desarrolloweb.NegocioApp.entity.ValoracionProducto;

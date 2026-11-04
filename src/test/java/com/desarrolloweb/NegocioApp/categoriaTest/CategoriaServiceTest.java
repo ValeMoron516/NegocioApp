@@ -1,10 +1,10 @@
 package com.desarrolloweb.NegocioApp.categoriaTest;
 
 import com.desarrolloweb.NegocioApp.entity.Categoria;
-import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.categoria.CategoriaRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.categoria.CategoriaResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.MetaDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
@@ -174,7 +174,6 @@ public class CategoriaServiceTest {
     @CsvSource(
         value = {
             "Hogar, Productos para el hogar",
-            "'', Productos para el hogar",
             "null, Productos para el hogar",
             "Hogar, ''",
             "Hogar, null"
@@ -233,6 +232,17 @@ public class CategoriaServiceTest {
 	}
 	
 	
+    @Test
+    void actualizarCategoria_NombreVacio_Rechazado() {
+        CategoriaRequestDTO peticion = new CategoriaRequestDTO("", "Productos para el hogar");
+
+        assertThrows(BadRequestException.class, () ->
+            categoriaService.actualizarCategoriaPorId(1L, peticion)
+        );
+
+        verify(categoriaRepository, never()).save(any(Categoria.class));
+    }
+
 	@Test
 	void actualizarCategoria_IdNoExistente() {
 	    Long id = 1L;

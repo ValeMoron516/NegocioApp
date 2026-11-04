@@ -15,6 +15,7 @@ import jakarta.persistence.LockModeType;
 public interface VentaRepository extends JpaRepository<Venta, Long> {
     List<Venta> findByFechaVentaBetween(LocalDateTime fechaDesde, LocalDateTime fechaHasta);
     List<Venta> findByUsuarioId(Long usuarioId);
+    List<Venta> findByNegocioId(Long negocioId);
     Long countByNegocioId(Long negocioId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

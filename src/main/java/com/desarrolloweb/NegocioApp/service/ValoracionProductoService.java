@@ -7,9 +7,9 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoRequestDTO;
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoResponseDTO;
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoPromedioDTO;
+import com.desarrolloweb.NegocioApp.dto.valoracionProducto.ValoracionProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.valoracionProducto.ValoracionProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.valoracionProducto.ValoracionProductoPromedioDTO;
 import com.desarrolloweb.NegocioApp.entity.Producto;
 import com.desarrolloweb.NegocioApp.entity.Usuario;
 import com.desarrolloweb.NegocioApp.entity.ValoracionProducto;

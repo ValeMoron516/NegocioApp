@@ -3,10 +3,10 @@ package com.desarrolloweb.NegocioApp.service;
 import com.desarrolloweb.NegocioApp.entity.Categoria;
 import com.desarrolloweb.NegocioApp.entity.Negocio;
 import com.desarrolloweb.NegocioApp.entity.Producto;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.MetaDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoResponseDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
@@ -179,8 +179,12 @@ public class ProductoService {
                 || (dto.getNombre() != null && dto.getNombre().isBlank())) {
             throw new BadRequestException("Nombre invalido");
         }
-        if (crear && (dto.getDescripcion() == null || dto.getDescripcion().isBlank())) {
+        if ((crear && dto.getDescripcion() == null)
+                || (dto.getDescripcion() != null && dto.getDescripcion().isBlank())) {
             throw new BadRequestException("Descripcion invalida");
+        }
+        if (dto.getNombre() != null && dto.getNombre().trim().length() > 150) {
+            throw new BadRequestException("Nombre de producto demasiado largo");
         }
         if (crear && dto.getPrecio() == null) throw new BadRequestException("Precio invalido");
         if (dto.getPrecio() != null) precioValido(dto.getPrecio());

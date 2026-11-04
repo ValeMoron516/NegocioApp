@@ -13,10 +13,11 @@ import java.util.Set;
 import java.util.Locale;
 
 import org.springframework.stereotype.Service;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.desarrolloweb.NegocioApp.dto.VentaRequestDto;
-import com.desarrolloweb.NegocioApp.dto.VentaResponseDto;
+import com.desarrolloweb.NegocioApp.dto.venta.VentaRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.venta.VentaResponseDTO;
 
 import com.desarrolloweb.NegocioApp.entity.DetalleVenta;
 import com.desarrolloweb.NegocioApp.entity.Direccion;
@@ -60,7 +61,7 @@ public class VentaService {
 
     // CREAR VENTA CON PRODUCTOS
     @Transactional
-    public VentaResponseDto crear(VentaRequestDto request) {
+    public VentaResponseDTO crear(VentaRequestDTO request) {
 
         if (request == null
                 || request.getUsuarioId() == null
@@ -87,7 +88,7 @@ public class VentaService {
 
         Set<Long> ids = new HashSet<>();
 
-        for (VentaRequestDto.ProductoCompraDto item :
+        for (VentaRequestDTO.ProductoCompraDTO item :
                 request.getProductos()) {
 
             if (item == null
@@ -129,18 +130,18 @@ public class VentaService {
         }
 
         // Ordenar los productos para evitar bloqueos cruzados
-        List<VentaRequestDto.ProductoCompraDto> items =
+        List<VentaRequestDTO.ProductoCompraDTO> items =
                 new ArrayList<>(request.getProductos());
 
         items.sort(Comparator.comparing(
-                VentaRequestDto.ProductoCompraDto::productoId));
+                VentaRequestDTO.ProductoCompraDTO::productoId));
 
         List<Producto> productos = new ArrayList<>();
 
         BigDecimal total = BigDecimal.ZERO;
 
         // COMPROBAR PRODUCTOS Y STOCK
-        for (VentaRequestDto.ProductoCompraDto item : items) {
+        for (VentaRequestDTO.ProductoCompraDTO item : items) {
 
             Producto producto = productoRepository
                     .buscarParaVenta(item.productoId())
@@ -201,7 +202,7 @@ public class VentaService {
         // GUARDAR DETALLES Y DESCONTAR STOCK
         for (int i = 0; i < items.size(); i++) {
 
-            VentaRequestDto.ProductoCompraDto item = items.get(i);
+            VentaRequestDTO.ProductoCompraDTO item = items.get(i);
             Producto producto = productos.get(i);
 
             DetalleVenta detalle = new DetalleVenta();
@@ -226,7 +227,7 @@ public class VentaService {
 
     // BUSCAR VENTA POR ID
     @Transactional(readOnly = true)
-    public VentaResponseDto buscarPorId(Long id) {
+    public VentaResponseDTO buscarPorId(Long id) {
 
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() ->
@@ -241,7 +242,7 @@ public class VentaService {
 
     // BUSCAR VENTAS POR FECHAS
     @Transactional(readOnly = true)
-    public List<VentaResponseDto> buscarPorFechas(
+    public List<VentaResponseDTO> buscarPorFechas(
             LocalDate fechaDesde,
             LocalDate fechaHasta) {
 
@@ -267,25 +268,31 @@ public class VentaService {
 
     // BUSCAR VENTAS POR USUARIO
     @Transactional(readOnly = true)
-    public List<VentaResponseDto> buscarPorUsuario(Long usuarioId) {
+    public List<VentaResponseDTO> buscarPorUsuario(Long usuarioId) {
 
         return convertirLista(
                 ventaRepository.findByUsuarioId(usuarioId)
         );
     }
 
+    // LISTAR VENTAS DE UN COMERCIO (la autorizacion ocurre en el controlador)
+    @Transactional(readOnly = true)
+    public List<VentaResponseDTO> listarPorNegocio(Long negocioId) {
+        return convertirLista(ventaRepository.findByNegocioId(negocioId));
+    }
+
     // LISTAR TODAS LAS VENTAS
     @Transactional(readOnly = true)
-    public List<VentaResponseDto> listarTodo() {
+    public List<VentaResponseDTO> listarTodo() {
 
         return convertirLista(ventaRepository.findAll());
     }
 
     // ACTUALIZAR METADATOS DE LA VENTA
     @Transactional
-    public VentaResponseDto actualizar(
+    public VentaResponseDTO actualizar(
             Long id,
-            VentaRequestDto request) {
+            VentaRequestDTO request) {
 
         if (request == null) {
             throw new IllegalArgumentException(
@@ -404,7 +411,7 @@ public class VentaService {
         if (!"PENDIENTE".equals(estado)
                 && !"CANCELADO".equals(estado)) {
 
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "No se pueden eliminar ventas pagadas, enviadas o entregadas");
         }
 
@@ -434,7 +441,7 @@ public class VentaService {
     // Normalizar registros históricos sin alterar los demás campos de la venta.
     private String normalizarEstado(String estado) {
         if (estado == null || estado.isBlank()) {
-            throw new IllegalStateException("La venta no tiene un estado valido");
+            throw new ConflictException("La venta no tiene un estado valido");
         }
         return estado.trim().toUpperCase(Locale.ROOT);
     }
@@ -465,7 +472,7 @@ public class VentaService {
         };
 
         if (!permitido) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Cambio de estado no permitido: "
                             + actual + " a " + nuevo);
         }
@@ -501,10 +508,10 @@ public class VentaService {
     }
 
     // CONVERTIR LISTA DE VENTAS A DTO
-    private List<VentaResponseDto> convertirLista(
+    private List<VentaResponseDTO> convertirLista(
             List<Venta> ventas) {
 
-        List<VentaResponseDto> resultado =
+        List<VentaResponseDTO> resultado =
                 new ArrayList<>();
 
         for (Venta venta : ventas) {
@@ -522,11 +529,11 @@ public class VentaService {
     }
 
     // CONVERTIR VENTA Y DETALLES A DTO
-    private VentaResponseDto convertirConDetalles(
+    private VentaResponseDTO convertirConDetalles(
             Venta venta,
             List<DetalleVenta> detalles) {
 
-        VentaResponseDto dto = new VentaResponseDto(
+        VentaResponseDTO dto = new VentaResponseDTO(
                 venta.getId(),
                 venta.getUsuario().getId(),
                 venta.getDireccion().getId(),
@@ -536,13 +543,13 @@ public class VentaService {
                 venta.getTotal()
         );
 
-        List<VentaResponseDto.ProductoVendidoDto> productos =
+        List<VentaResponseDTO.ProductoVendidoDto> productos =
                 new ArrayList<>();
 
         for (DetalleVenta detalle : detalles) {
 
             productos.add(
-                    new VentaResponseDto.ProductoVendidoDto(
+                    new VentaResponseDTO.ProductoVendidoDto(
                             detalle.getProducto().getId(),
                             detalle.getProducto().getNombre(),
                             detalle.getCantidad(),

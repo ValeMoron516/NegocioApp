@@ -6,10 +6,11 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.desarrolloweb.NegocioApp.dto.DetalleVentaRequest;
-import com.desarrolloweb.NegocioApp.dto.DetalleVentaResponse;
+import com.desarrolloweb.NegocioApp.dto.detalleVenta.DetalleVentaRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.detalleVenta.DetalleVentaResponseDTO;
 import com.desarrolloweb.NegocioApp.entity.DetalleVenta;
 import com.desarrolloweb.NegocioApp.entity.Producto;
 import com.desarrolloweb.NegocioApp.entity.Venta;
@@ -32,22 +33,22 @@ public class DetalleVentaService {
     }
 
     @Transactional(readOnly = true)
-    public List<DetalleVentaResponse> obtenerTodos() {
+    public List<DetalleVentaResponseDTO> obtenerTodos() {
         return detalleVentaRepository.findAll().stream().map(this::convertir).toList();
     }
 
     @Transactional(readOnly = true)
-    public Optional<DetalleVentaResponse> obtenerPorId(Long id) {
+    public Optional<DetalleVentaResponseDTO> obtenerPorId(Long id) {
         return detalleVentaRepository.findById(id).map(this::convertir);
     }
 
     @Transactional(readOnly = true)
-    public List<DetalleVentaResponse> obtenerPorVenta(Long ventaId) {
+    public List<DetalleVentaResponseDTO> obtenerPorVenta(Long ventaId) {
         return detalleVentaRepository.findByVentaId(ventaId).stream().map(this::convertir).toList();
     }
 
     @Transactional(readOnly = true)
-    public List<DetalleVentaResponse> obtenerPorProducto(Long productoId) {
+    public List<DetalleVentaResponseDTO> obtenerPorProducto(Long productoId) {
         return detalleVentaRepository.findByProductoId(productoId).stream().map(this::convertir).toList();
     }
 
@@ -57,7 +58,7 @@ public class DetalleVentaService {
 
     // Agregar un producto a una venta pendiente (sin aceptar entidades ni precios del cliente).
     @Transactional
-    public DetalleVentaResponse crear(DetalleVentaRequest request) {
+    public DetalleVentaResponseDTO crear(DetalleVentaRequestDTO request) {
         if (request == null || request.getVentaId() == null || request.getProductoId() == null) {
             throw new IllegalArgumentException("ventaId y productoId son obligatorios");
         }
@@ -90,7 +91,7 @@ public class DetalleVentaService {
 
     // Ajustar la cantidad conservando el precio histórico de la compra.
     @Transactional
-    public Optional<DetalleVentaResponse> actualizarCantidad(Long id, Integer cantidad) {
+    public Optional<DetalleVentaResponseDTO> actualizarCantidad(Long id, Integer cantidad) {
         validarCantidad(cantidad);
         Optional<DetalleVenta> inicial = detalleVentaRepository.findById(id);
         if (inicial.isEmpty()) {
@@ -109,7 +110,7 @@ public class DetalleVentaService {
         BigDecimal nuevoTotal = venta.getTotal().add(detalle.getPrecioUnitario()
                 .multiply(BigDecimal.valueOf(diferencia)));
         if (nuevoTotal.signum() < 0) {
-            throw new IllegalStateException("El total de la venta quedaria negativo");
+            throw new ConflictException("El total de la venta quedaria negativo");
         }
         producto.setStock(producto.getStock() - diferencia);
         detalle.setCantidad(cantidad);
@@ -130,14 +131,14 @@ public class DetalleVentaService {
                 .orElseThrow(() -> new NoSuchElementException("Detalle no encontrado"));
         // No permitir ventas pendientes vacías: para eso se elimina la venta completa.
         if (detalleVentaRepository.findByVentaId(venta.getId()).size() <= 1) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "No se puede dejar la venta sin productos; elimina la venta pendiente completa");
         }
         Producto producto = obtenerProductoBloqueado(detalle.getProducto().getId());
         BigDecimal nuevoTotal = venta.getTotal().subtract(detalle.getPrecioUnitario()
                 .multiply(BigDecimal.valueOf(detalle.getCantidad())));
         if (nuevoTotal.signum() < 0) {
-            throw new IllegalStateException("El total de la venta quedaria negativo");
+            throw new ConflictException("El total de la venta quedaria negativo");
         }
         producto.setStock(Math.addExact(producto.getStock(), detalle.getCantidad()));
         venta.setTotal(nuevoTotal);
@@ -159,7 +160,7 @@ public class DetalleVentaService {
     private void exigirPendiente(Venta venta) {
         if (venta.getEstado() == null
                 || !"PENDIENTE".equalsIgnoreCase(venta.getEstado().trim())) {
-            throw new IllegalStateException("Solo se pueden modificar detalles de ventas PENDIENTES");
+            throw new ConflictException("Solo se pueden modificar detalles de ventas PENDIENTES");
         }
     }
 
@@ -187,8 +188,8 @@ public class DetalleVentaService {
         }
     }
 
-    private DetalleVentaResponse convertir(DetalleVenta detalle) {
-        DetalleVentaResponse dto = new DetalleVentaResponse(
+    private DetalleVentaResponseDTO convertir(DetalleVenta detalle) {
+        DetalleVentaResponseDTO dto = new DetalleVentaResponseDTO(
                 detalle.getId(), detalle.getVenta().getId(), detalle.getProducto().getId(),
                 detalle.getCantidad(), detalle.getPrecioUnitario());
         dto.setNombreProducto(detalle.getProducto().getNombre());

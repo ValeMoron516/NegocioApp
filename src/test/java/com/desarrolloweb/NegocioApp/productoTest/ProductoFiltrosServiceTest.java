@@ -1,7 +1,7 @@
 package com.desarrolloweb.NegocioApp.productoTest;
 
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoResponseDTO;
 import com.desarrolloweb.NegocioApp.entity.Producto;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
