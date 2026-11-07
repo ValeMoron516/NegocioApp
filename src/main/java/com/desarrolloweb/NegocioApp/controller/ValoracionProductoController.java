@@ -36,6 +36,7 @@ public class ValoracionProductoController {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "No autorizado");
         }
         dto.setUsuarioId(guard.uid());
+        guard.createsProductRating(dto);
 
         ValoracionProductoResponseDTO creada = valoracionProductoService.crearValoracion(dto);
 

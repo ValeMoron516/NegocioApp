@@ -43,13 +43,21 @@ public class AuthService {
     usuarios.save(usuario);
     return crearRespuesta(usuario);
   }
-  @Transactional(readOnly=true)
+  @Transactional
   public Map<String,Object> iniciar(String email, String password) {
     if (email==null || password==null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Credenciales inválidas");
     Usuario usuario=usuarios.findByEmail(email.trim().toLowerCase(Locale.ROOT))
       .orElseThrow(()->new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Credenciales inválidas"));
     if (!encoder.matches(password,usuario.getPassword()))
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Credenciales inválidas");
+    // Normalizacion de cuentas comerciales anteriores: toda cuenta NEGOCIO tambien compra como CLIENTE.
+    boolean comerciante=usuario.getRoles().stream().anyMatch(r->"NEGOCIO".equalsIgnoreCase(r.getNombre()));
+    boolean cliente=usuario.getRoles().stream().anyMatch(r->"CLIENTE".equalsIgnoreCase(r.getNombre()));
+    if(comerciante && !cliente){
+      Rol basico=roles.findByNombre("CLIENTE").orElseGet(()->roles.save(new Rol(null,"CLIENTE")));
+      usuario.getRoles().add(basico);
+      usuarios.save(usuario);
+    }
     return crearRespuesta(usuario);
   }
   private Map<String,Object> crearRespuesta(Usuario usuario) {

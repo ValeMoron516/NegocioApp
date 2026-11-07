@@ -52,8 +52,9 @@ public class AccessGuard {
   public void adminOnly(){check(admin());}
   public void customerOnly(){check(customer());}
   public void selfOrAdmin(Long id){check(id!=null && (admin()||uid().equals(id)));}
-  public void ownsBusiness(Long id){check(id!=null && (admin() || merchant() && business.findById(id).map(x->x.getUsuario().getId().equals(uid())).orElse(false)));}
-  public void createsBusiness(NegocioRequestDTO req){check(req!=null && req.getUsuarioId()!=null && (admin() || merchant() && uid().equals(req.getUsuarioId())));}
+  public void ownsBusiness(Long id){check(id!=null && business.findById(id).map(n -> n.estaAprobado() && (admin() || merchant() && n.getUsuario().getId().equals(uid()))).orElse(false));}
+  // Los negocios nuevos solo se crean tras la aprobacion; clientes y comerciantes solicitan, no crean directamente.
+  public void createsBusiness(NegocioRequestDTO req){adminOnly();check(req!=null && req.getUsuarioId()!=null);}
   public void updatesBusiness(Long id, NegocioRequestDTO req){ownsBusiness(id);check(req!=null && (req.getUsuarioId()==null || business.findById(id).map(x->x.getUsuario().getId().equals(req.getUsuarioId())).orElse(false)));}
   public void ownsProduct(Long id){check(id!=null && products.findById(id).map(p-> {try{ownsBusiness(p.getNegocio().getId());return true;}catch(ResponseStatusException e){return false;}}).orElse(false));}
   public void createsProduct(ProductoRequestDTO dto){check(dto!=null);ownsBusiness(dto.getNegocioId());}
@@ -62,6 +63,11 @@ public class AccessGuard {
     Venta v=sales.findById(id).orElseThrow(this::forbidden);
     if(admin() || customer() && v.getUsuario().getId().equals(uid()))return;
     ownsBusiness(v.getNegocio().getId());
+  }
+  public void ownsSaleBusiness(Long ventaId){
+    if(ventaId==null)throw forbidden();
+    Venta venta=sales.findById(ventaId).orElseThrow(this::forbidden);
+    ownsBusiness(venta.getNegocio().getId());
   }
   public void saleOwner(Long id){
     Venta v=sales.findById(id).orElseThrow(this::forbidden);
@@ -84,12 +90,38 @@ public class AccessGuard {
   public void managesDetail(Long id){ DetalleVenta d=lines.findById(id).orElseThrow(this::forbidden);saleOwner(d.getVenta().getId()); }
   public void createsDetail(DetalleVentaRequestDTO req){check(req!=null);saleOwner(req.getVentaId());}
   public void viewsProductDetails(Long id){ownsProduct(id);}
-  public void createsProductRating(ValoracionProductoRequestDTO req){check(req!=null);selfOrAdmin(req.getUsuarioId());customerOnly();}
+  public void createsProductRating(ValoracionProductoRequestDTO req){
+    check(req != null && req.getUsuarioId() != null && req.getProductoId() != null);
+    customerOnly();
+    // La identidad proviene del JWT, no de un ID elegido por el cliente.
+    check(uid().equals(req.getUsuarioId()));
+    // Solo se puede valorar un producto de un pedido propio entregado.
+    boolean entregado = sales.findByUsuarioId(uid()).stream()
+      .anyMatch(v -> "ENTREGADO".equalsIgnoreCase(v.getEstado()) &&
+        lines.existsByVentaIdAndProductoId(v.getId(), req.getProductoId()));
+    check(entregado);
+    // Una valoración por usuario y producto (independiente del número de compras).
+    boolean repetida = productRatings.findByProductoId_Id(req.getProductoId()).stream()
+      .anyMatch(r -> r.getUsuarioId() != null && uid().equals(r.getUsuarioId().getId()));
+    if (repetida) throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya valoraste este producto");
+  }
   public void deletesProductRating(Long id){
     check(id!=null && productRatings.findById(id).map(v->admin()||uid().equals(v.getUsuarioId().getId())).orElse(false));
   }
   public void createsBusinessRating(ValoracionNegocio req){
-    check(req!=null && req.getCliente()!=null);selfOrAdmin(req.getCliente().getId());customerOnly();
+    check(req != null && req.getCliente() != null && req.getNegocio() != null);
+    createsBusinessRating(req.getNegocio().getId(), req.getCliente().getId());
+  }
+  public void createsBusinessRating(Long negocioId, Long clienteId){
+    check(negocioId != null && clienteId != null);customerOnly();
+    check(uid().equals(clienteId));
+    boolean entregado = sales.findByUsuarioId(uid()).stream()
+      .anyMatch(v -> "ENTREGADO".equalsIgnoreCase(v.getEstado()) &&
+        negocioId.equals(v.getNegocio().getId()));
+    check(entregado);
+    boolean repetida = businessRatings.findByNegocioId(negocioId).stream()
+      .anyMatch(r -> r.getCliente() != null && uid().equals(r.getCliente().getId()));
+    if(repetida)throw new ResponseStatusException(HttpStatus.CONFLICT,"Ya valoraste este negocio");
   }
   public void updatesBusinessRating(Long id){
     check(id!=null && businessRatings.findById(id).map(v->admin()||uid().equals(v.getCliente().getId())).orElse(false));

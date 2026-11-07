@@ -124,6 +124,9 @@ public class VentaService {
                         new NoSuchElementException(
                                 "Negocio no encontrado"));
 
+        if (!negocio.estaAprobado()) {
+            throw new ConflictException("El negocio aun no esta aprobado para vender");
+        }
         if (!request.getUsuarioId().equals(direccion.getUsuarioId())) {
             throw new IllegalArgumentException(
                     "La direccion no pertenece al comprador");
@@ -394,6 +397,16 @@ public class VentaService {
                 actualizada,
                 detalleVentaRepository.findByVentaId(id)
         );
+    }
+
+    // Cambio controlado por un endpoint exclusivo. No permite editar importes ni compradores.
+    @Transactional
+    public VentaResponseDTO cambiarEstado(Long id, String nuevoEstado) {
+        if (nuevoEstado == null || nuevoEstado.isBlank())
+            throw new IllegalArgumentException("El estado es obligatorio");
+        VentaRequestDTO dto = new VentaRequestDTO();
+        dto.setEstado(nuevoEstado);
+        return actualizar(id, dto);
     }
 
     // ELIMINAR VENTA

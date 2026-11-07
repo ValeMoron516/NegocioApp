@@ -56,6 +56,7 @@ public class ValoracionNegocioController {
         if (request.getClienteId() != null && !request.getClienteId().equals(guard.uid())) {
             throw new org.springframework.web.server.ResponseStatusException(HttpStatus.FORBIDDEN, "No autorizado");
         }
+        guard.createsBusinessRating(request.getNegocioId(), guard.uid());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(toResponse(valoracionService.crear(request, guard.uid())));
     }

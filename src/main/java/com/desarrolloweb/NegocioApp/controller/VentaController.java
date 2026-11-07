@@ -95,4 +95,16 @@ public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         return ResponseEntity.ok(ventaService.listarPorNegocio(id));
     }
 
+    public record CambioEstadoRequest(String estado) {}
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<VentaResponseDTO> cambiarEstado(
+        @PathVariable Long id, @RequestBody CambioEstadoRequest request) {
+        // Puede cambiarla solo el propietario del negocio o un administrador.
+        guard.ownsSaleBusiness(id);
+        if (request == null || request.estado() == null || request.estado().isBlank())
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado obligatorio");
+        return ResponseEntity.ok(ventaService.cambiarEstado(id, request.estado()));
+    }
+
 }

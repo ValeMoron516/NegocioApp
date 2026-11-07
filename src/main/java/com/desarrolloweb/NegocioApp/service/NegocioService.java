@@ -27,6 +27,7 @@ public class NegocioService {
         negocio.setNombre(request.getNombre().trim());
         negocio.setDescripcion(request.getDescripcion() == null ? null : request.getDescripcion().trim());
         negocio.setUsuario(usuario);
+        negocio.setEstadoAprobacion("APROBADO"); // Alta directa exclusiva de Administrador
         Negocio guardada = negocioRepository.save(negocio);
         return new NegocioResponseDTO(
             guardada.getId(),
@@ -38,6 +39,7 @@ public class NegocioService {
     }
     public NegocioResponseDTO buscarPorId(Long id){
         Negocio negocio = negocioRepository.findById(id).orElseThrow(()->new NotFoundException("Negocio no encontrado"));
+        if(!negocio.estaAprobado())throw new NotFoundException("Negocio no disponible");
         return new NegocioResponseDTO(
             negocio.getId(),
             negocio.getUsuario().getId(),
@@ -46,7 +48,7 @@ public class NegocioService {
         );
     }
     public List<NegocioResponseDTO> buscarPorNombre(String nombre) {
-    List<Negocio> negocios = negocioRepository.findByNombreContainingIgnoreCase(nombre);
+    List<Negocio> negocios = negocioRepository.findByNombreContainingIgnoreCase(nombre).stream().filter(Negocio::estaAprobado).toList();
     List<NegocioResponseDTO> resultado = new ArrayList<>();
 
     for (Negocio negocio : negocios) {
@@ -60,7 +62,7 @@ public class NegocioService {
     return resultado;
     }
     public List<NegocioResponseDTO> buscarPorProducto(String productoNombre){
-        List<Negocio> negocios =negocioRepository.findByProductoNombre(productoNombre);
+        List<Negocio> negocios =negocioRepository.findByProductoNombre(productoNombre).stream().filter(Negocio::estaAprobado).toList();
         List<NegocioResponseDTO> resultado = new ArrayList<>();
         for(Negocio negocio : negocios){
             resultado.add( new NegocioResponseDTO(
@@ -75,6 +77,7 @@ public class NegocioService {
     public NegocioResponseDTO actualizar(Long id, NegocioRequestDTO request){
         validar(request, false);
         Negocio negocio = negocioRepository.findById(id).orElseThrow(()-> new NotFoundException("Negocio no encontrado"));
+        if(!negocio.estaAprobado())throw new NotFoundException("Negocio no habilitado");
         if (request.getNombre() != null) negocio.setNombre(request.getNombre().trim());
         if (request.getDescripcion() != null) negocio.setDescripcion(request.getDescripcion().trim());
         Negocio actualizado = negocioRepository.save(negocio);
@@ -92,7 +95,7 @@ public class NegocioService {
     }
 
      public List<NegocioResponseDTO> buscarPorUsuario(Long usuarioId) {
-    List<Negocio> negocios = negocioRepository.findByUsuarioId(usuarioId);
+    List<Negocio> negocios = negocioRepository.findByUsuarioId(usuarioId).stream().filter(Negocio::estaAprobado).toList();
     List<NegocioResponseDTO> resultado = new ArrayList<>();
 
     for (Negocio negocio : negocios) {
