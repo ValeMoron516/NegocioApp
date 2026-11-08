@@ -5,9 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import com.desarrolloweb.NegocioApp.service.ValoracionProductoService;
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoRequestDTO;
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoResponseDTO;
-import com.desarrolloweb.NegocioApp.dto.ValoracionProductoPromedioDTO;
+import com.desarrolloweb.NegocioApp.dto.valoracionProducto.ValoracionProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.valoracionProducto.ValoracionProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.valoracionProducto.ValoracionProductoPromedioDTO;
 
 import java.util.List;
 
@@ -17,6 +17,9 @@ import java.util.List;
 
 
 public class ValoracionProductoController {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
+
 
     private final ValoracionProductoService valoracionProductoService;
 
@@ -26,6 +29,15 @@ public class ValoracionProductoController {
 
     @PostMapping
     public ResponseEntity<ValoracionProductoResponseDTO> crearValoracion(@RequestBody ValoracionProductoRequestDTO dto) {
+        guard.customerOnly();
+        // Nunca confiar en usuarioId proporcionado por el cliente.
+        if (dto == null) throw new IllegalArgumentException("Valoracion obligatoria");
+        if (dto.getUsuarioId() != null && !dto.getUsuarioId().equals(guard.uid())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "No autorizado");
+        }
+        dto.setUsuarioId(guard.uid());
+        guard.createsProductRating(dto);
+
         ValoracionProductoResponseDTO creada = valoracionProductoService.crearValoracion(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(creada);
@@ -50,6 +62,8 @@ public class ValoracionProductoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarValoracion(@PathVariable Long id) {
+        guard.deletesProductRating(id);
+
     valoracionProductoService.eliminarValoracion(id);
     return ResponseEntity.noContent().build();
     }

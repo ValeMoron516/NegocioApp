@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ValoracionProductoRepository extends JpaRepository<ValoracionProducto, Long> {
     List<ValoracionProducto> findByProductoId_Id(Long productoId);
+    boolean existsByProductoId_Id(Long productoId);
 }

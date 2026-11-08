@@ -1,10 +1,10 @@
 package com.desarrolloweb.NegocioApp.service;
  
 import com.desarrolloweb.NegocioApp.entity.Categoria;
-import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.categoria.CategoriaRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.categoria.CategoriaResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.MetaDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
@@ -35,7 +35,10 @@ public class CategoriaService {
 
     // Obtener lista de categorías (paginadas)
     public PaginacionDTO<CategoriaResponseDTO> obtenerTodasCategorias(Integer page, Integer limit) { 
-        
+        if (page == null || page < 1 || limit == null || limit < 1 || limit > 100) {
+            throw new BadRequestException("Parametros de paginacion invalidos");
+        }
+
         Pageable pageable = PageRequest.of(page - 1, limit);
         Page<Categoria> paginaCategorias = categoriaRepository.findAll(pageable);
         List<Categoria> categorias = paginaCategorias.getContent();
@@ -83,9 +86,10 @@ public class CategoriaService {
 
     // Crear nueva Categoria
     public CategoriaResponseDTO crearCategoria(CategoriaRequestDTO cDTO) {
+        if (cDTO == null) throw new BadRequestException("Datos de categoria obligatorios");
 
         // Verificar nombre
-        if (cDTO.getNombre() == null || cDTO.getNombre().isEmpty()) { 
+        if (cDTO.getNombre() == null || cDTO.getNombre().isBlank() || cDTO.getNombre().trim().length() > 100) { 
             throw new BadRequestException("Nombre invalido"); 
         }
         
@@ -95,7 +99,7 @@ public class CategoriaService {
         } 
         
         // Verificar descripcion
-        if (cDTO.getDescripcion() == null || cDTO.getDescripcion().isEmpty()) { 
+        if (cDTO.getDescripcion() == null || cDTO.getDescripcion().isBlank() || cDTO.getDescripcion().length() > 255) { 
             throw new BadRequestException("Descripcion invalida"); 
         }
         
@@ -116,6 +120,13 @@ public class CategoriaService {
 
     // Actualizar Categoria por ID
     public CategoriaResponseDTO actualizarCategoriaPorId(Long id, CategoriaRequestDTO cDTO) {
+        if (cDTO == null) throw new BadRequestException("Datos de categoria obligatorios");
+        if (cDTO.getNombre() != null && (cDTO.getNombre().isBlank() || cDTO.getNombre().trim().length() > 100)) {
+            throw new BadRequestException("Nombre invalido");
+        }
+        if (cDTO.getDescripcion() != null && cDTO.getDescripcion().length() > 255) {
+            throw new BadRequestException("Descripcion demasiado larga");
+        }
 
         // Verificar si existe la categoria
         Optional<Categoria> optC = categoriaRepository.findById(id);

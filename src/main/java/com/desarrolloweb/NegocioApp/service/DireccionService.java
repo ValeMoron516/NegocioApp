@@ -2,10 +2,12 @@ package com.desarrolloweb.NegocioApp.service;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-import com.desarrolloweb.NegocioApp.dto.DireccionResponseDTO;
-import com.desarrolloweb.NegocioApp.dto.DireccionRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.direccion.DireccionResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.direccion.DireccionRequestDTO;
 import com.desarrolloweb.NegocioApp.repository.DireccionRepository;
-import com.desarrolloweb.NegocioApp.entity.Direccion; 
+import com.desarrolloweb.NegocioApp.entity.Direccion;
+import com.desarrolloweb.NegocioApp.exception.BadRequestException;
+import com.desarrolloweb.NegocioApp.exception.NotFoundException; 
 
 
 @Service
@@ -18,6 +20,7 @@ public class DireccionService {
     }
 
     public DireccionResponseDTO crearDireccion (DireccionRequestDTO dto){
+        validar(dto);
         Direccion direccion = new Direccion();
         direccion.setCalle(dto.getCalle());
         direccion.setUsuarioId(dto.getUsuarioId());
@@ -55,7 +58,7 @@ public class DireccionService {
      public DireccionResponseDTO obtenerDireccionPorId (Long id){
 
         Direccion direccion = direccionRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Dirección no encontrada con el ID: " + id));
+            .orElseThrow(() -> new NotFoundException("Dirección no encontrada con el ID: " + id));
 
       return new DireccionResponseDTO(
         direccion.getId(),
@@ -85,9 +88,9 @@ public class DireccionService {
     }
 
     public DireccionResponseDTO actualizarDireccion (Long id, DireccionRequestDTO dto){
-
+        validar(dto);
         Direccion direccion = direccionRepository.findById(id)
-        .orElseThrow (()-> new RuntimeException("Direccion no encontrada con el id: " + id));
+        .orElseThrow (()-> new NotFoundException("Direccion no encontrada con el id: " + id));
 
         direccion.setCalle(dto.getCalle());
         direccion.setNumero(dto.getNumero());
@@ -112,14 +115,24 @@ public class DireccionService {
     public void eliminarDireccion (Long id){
 
         if(!direccionRepository.existsById(id)){
-            throw new RuntimeException("No se puede eliminar, direccion con el id " + id + " no encontrada.");
+            throw new NotFoundException("No se puede eliminar, direccion con el id " + id + " no encontrada.");
         }
         direccionRepository.deleteById(id);
     }
 
 
 
- }
+     private void validar(DireccionRequestDTO dto) {
+        if (dto == null || dto.getUsuarioId() == null)
+            throw new BadRequestException("Direccion y usuario son obligatorios");
+        if (dto.getCalle() == null || dto.getCalle().isBlank() || dto.getCalle().length() > 150
+                || dto.getNumero() == null || dto.getNumero().isBlank() || dto.getNumero().length() > 50
+                || dto.getCiudad() == null || dto.getCiudad().isBlank() || dto.getCiudad().length() > 100
+                || dto.getCodigoPostal() == null || dto.getCodigoPostal().isBlank() || dto.getCodigoPostal().length() > 50) {
+            throw new BadRequestException("Calle, numero, ciudad y codigo postal son obligatorios");
+        }
+    }
+}
 
 
 

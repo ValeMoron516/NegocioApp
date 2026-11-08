@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.rolDTO.RolRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.rolDTO.RolResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.rol.RolRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.rol.RolResponseDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
@@ -23,6 +23,9 @@ import com.desarrolloweb.NegocioApp.service.RolService;
 @RestController
 @RequestMapping("api/v1/roles")
 public class RolController {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
+
 
     private final RolService rolService;
 
@@ -37,6 +40,8 @@ public class RolController {
     public ResponseEntity<PaginacionDTO<RolResponseDTO>> obtenerTodosRoles(
         @RequestParam(defaultValue = "1") Integer page,
         @RequestParam(defaultValue = "20") Integer limit) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(rolService.obtenerTodosRoles(page, limit)); // 200
@@ -50,6 +55,8 @@ public class RolController {
     // Leer por ID
     @GetMapping("/{id}")
     public ResponseEntity<RolResponseDTO> obtenerRolPorId(@PathVariable Long id) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(rolService.obtenerRolPorId(id)); // 200
@@ -63,6 +70,8 @@ public class RolController {
     // Crear nuevo
     @PostMapping
     public ResponseEntity<RolResponseDTO> crearRol(@RequestBody RolRequestDTO dto) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
             .body(rolService.crearRol(dto)); // 201
@@ -81,6 +90,8 @@ public class RolController {
     @PutMapping("/{id}")
     public ResponseEntity<RolResponseDTO> actualizarRolPorId(
         @PathVariable Long id, @RequestBody RolRequestDTO dto) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(rolService.actualizarRolPorId(id, dto)); // 200
@@ -101,6 +112,8 @@ public class RolController {
     // Borrar por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> borrarRolPorId(@PathVariable Long id) {
+        guard.adminOnly();
+
         try {
             rolService.borrarRolPorId(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204

@@ -3,9 +3,9 @@ package com.desarrolloweb.NegocioApp.controller;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
-import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.categoriaDTO.CategoriaResponseDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.categoria.CategoriaRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.categoria.CategoriaResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.service.CategoriaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/categorias")
 public class CategoriaController {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
+
 
     @Autowired
     private CategoriaService categoriaService;
@@ -58,6 +61,8 @@ public class CategoriaController {
     @PostMapping
     public ResponseEntity<CategoriaResponseDTO> crearCategoria(
         @RequestBody CategoriaRequestDTO c) {
+        guard.adminOnly();
+
         
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -77,6 +82,8 @@ public class CategoriaController {
     @PutMapping("{id}")
     public ResponseEntity<CategoriaResponseDTO> actualizarCategoriaPorId(
         @PathVariable Long id, @RequestBody CategoriaRequestDTO c) {
+        guard.adminOnly();
+
         try {
             return ResponseEntity.status(HttpStatus.OK)
             .body(categoriaService.actualizarCategoriaPorId(id, c)); // 200
@@ -94,6 +101,8 @@ public class CategoriaController {
     // Borrar por ID
     @DeleteMapping("{id}")
     public ResponseEntity<Void> borrarCategoriaPorId(@PathVariable Long id) {
+        guard.adminOnly();
+
         try {
             categoriaService.borrarCategoriaPorId(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204

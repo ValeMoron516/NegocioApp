@@ -3,13 +3,18 @@ package com.desarrolloweb.NegocioApp.productoTest;
 import com.desarrolloweb.NegocioApp.entity.Categoria;
 import com.desarrolloweb.NegocioApp.entity.Negocio;
 import com.desarrolloweb.NegocioApp.entity.Producto;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.MetaDTO;
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.MetaDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.repository.ProductoRepository;
+import com.desarrolloweb.NegocioApp.repository.NegocioRepository;
+import com.desarrolloweb.NegocioApp.repository.CategoriaRepository;
+import com.desarrolloweb.NegocioApp.repository.DetalleVentaRepository;
+import com.desarrolloweb.NegocioApp.repository.ValoracionProductoRepository;
+import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.service.ProductoService;
 
 import org.junit.jupiter.api.Test;
@@ -42,6 +47,11 @@ public class ProductoServiceTest {
 
     @Mock
     ProductoRepository productoRepository; // Módulo simulado
+
+    @Mock NegocioRepository negocioRepository;
+    @Mock CategoriaRepository categoriaRepository;
+    @Mock DetalleVentaRepository detalleVentaRepository;
+    @Mock ValoracionProductoRepository valoracionProductoRepository;
 
     @InjectMocks
     ProductoService productoService; // Módulo principal
@@ -138,8 +148,18 @@ public class ProductoServiceTest {
         );
         
         Producto pGuardado = crearProductoMock(1L, "Webcam", 25000.0);
-        
-        when(productoRepository.save(any(Producto.class))).thenReturn(pGuardado);
+        when(negocioRepository.findById(1L)).thenReturn(Optional.of(pGuardado.getNegocio()));
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(pGuardado.getCategoria()));
+        when(productoRepository.save(any(Producto.class))).thenAnswer(inv -> {
+            Producto nuevo = inv.getArgument(0);
+            assertNotNull(nuevo.getNegocio());
+            assertNotNull(nuevo.getCategoria());
+            assertEquals("Webcam", nuevo.getNombre());
+            assertEquals(5, nuevo.getStock());
+            assertEquals(new BigDecimal("25000.00"), nuevo.getPrecio());
+            nuevo.setId(1L);
+            return nuevo;
+        });
         
         ProductoResponseDTO respuestaService = productoService.crearProducto(peticion);
         
@@ -220,6 +240,38 @@ public class ProductoServiceTest {
         verify(productoRepository, never()).save(any(Producto.class));
     }
     
+    @Test
+    void listarProductosDevuelveCategoriaCorrecta() {
+        Producto p = crearProductoMock(4L, "Mouse", 1200.0);
+        p.getCategoria().setId(7L);
+        Page<Producto> pagina = new PageImpl<>(List.of(p), PageRequest.of(0, 20), 1);
+        when(productoRepository.findAll(any(Pageable.class))).thenReturn(pagina);
+        var resultado = productoService.obtenerTodosProductos(1, 20);
+        assertEquals(7L, resultado.getData().get(0).getCategoriaId());
+    }
+
+    @Test
+    void listarProductosToleraCategoriaNula() {
+        Producto p = crearProductoMock(4L, "Mouse", 1200.0);
+        p.setCategoria(null);
+        Page<Producto> pagina = new PageImpl<>(List.of(p), PageRequest.of(0, 20), 1);
+        when(productoRepository.findAll(any(Pageable.class))).thenReturn(pagina);
+        var resultado = productoService.obtenerTodosProductos(1, 20);
+        assertEquals(null, resultado.getData().get(0).getCategoriaId());
+    }
+
+    @Test
+    void actualizarProductoNoRenombraCategoriaCompartida() {
+        Producto p = crearProductoMock(3L, "Monitor", 10000.0);
+        when(productoRepository.findById(3L)).thenReturn(Optional.of(p));
+        ProductoRequestDTO dto = new ProductoRequestDTO();
+        dto.setNombreCategoria("Otro nombre");
+        assertThrows(BadRequestException.class,
+                () -> productoService.actualizarProductoPorId(3L, dto));
+        assertEquals("Electrónica", p.getCategoria().getNombre());
+        verify(productoRepository, never()).save(any(Producto.class));
+    }
+
     // ##################################################
 
     @Test
@@ -248,4 +300,14 @@ public class ProductoServiceTest {
         verify(productoRepository, times(1)).findById(id);
         verify(productoRepository, never()).deleteById(anyLong());
     }
+
+    @Test
+    void noPermiteBorrarProductoConVentasAsociadas() {
+        Producto p = crearProductoMock(9L, "Mouse", 1200.0);
+        when(productoRepository.findById(9L)).thenReturn(Optional.of(p));
+        when(detalleVentaRepository.existsByProductoId(9L)).thenReturn(true);
+        assertThrows(ConflictException.class, () -> productoService.borrarProductoPorId(9L));
+        verify(productoRepository, never()).deleteById(9L);
+    }
+
 }

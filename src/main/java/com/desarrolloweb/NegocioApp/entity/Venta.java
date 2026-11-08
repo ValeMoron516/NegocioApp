@@ -39,13 +39,13 @@ public class Venta {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Negocio negocio;
 
-    @Column(name = "fecha_venta", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "fecha_venta", nullable = false)
     private LocalDateTime fechaVenta;
 
-    @Column(name = "estado", length = 50, nullable = false, columnDefinition = "VARCHAR(50) NOT NULL DEFAULT 'PENDIENTE'")
+    @Column(name = "estado", length = 50, nullable = false)
     private String estado;
 
-    @Column(name = "total", nullable = false, columnDefinition = "DECIMAL(10,2) DEFAULT 0.0 CHECK (total >= 0)")
+    @Column(name = "total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
     public Venta() {}

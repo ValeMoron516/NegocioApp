@@ -2,10 +2,10 @@ package com.desarrolloweb.NegocioApp.controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.desarrolloweb.NegocioApp.dto.DireccionResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.direccion.DireccionResponseDTO;
 import com.desarrolloweb.NegocioApp.service.DireccionService;
 import org.springframework.web.bind.annotation.RequestBody;
-import com.desarrolloweb.NegocioApp.dto.DireccionRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.direccion.DireccionRequestDTO;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +18,9 @@ import java.util.List;
 
 
 public class DireccionController {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
+
     private final DireccionService direccionService;
 
     public DireccionController (DireccionService direccionService){
@@ -25,8 +28,10 @@ public class DireccionController {
     }
 
     @PostMapping
-
+    @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.CREATED)
     public DireccionResponseDTO crearDireccion (@RequestBody DireccionRequestDTO dto){
+        guard.createsAddress(dto);
+
 
         return direccionService.crearDireccion(dto);
     }
@@ -34,6 +39,8 @@ public class DireccionController {
     @DeleteMapping("/{id}")
 
     public void eliminarDireccion(@PathVariable Long id){
+        guard.readsAddress(id);
+
         direccionService.eliminarDireccion(id);
     }
 
@@ -42,6 +49,8 @@ public class DireccionController {
     @GetMapping
     public List<DireccionResponseDTO> listarDirecciones(
             @RequestParam(required = false) Long usuarioId) {
+        if(usuarioId == null)guard.adminOnly();else guard.selfOrAdmin(usuarioId);
+
         return (usuarioId == null)
                 ? direccionService.listarDirecciones()
                 : direccionService.obtenerDireccionPorUsuario(usuarioId);
@@ -50,6 +59,8 @@ public class DireccionController {
     @GetMapping("/{id}")
 
     public DireccionResponseDTO obtenerDireccionPorId (@PathVariable Long id){
+        guard.readsAddress(id);
+
 
         return direccionService.obtenerDireccionPorId(id);
     }
@@ -57,6 +68,8 @@ public class DireccionController {
      @PutMapping("/{id}")
 
     public DireccionResponseDTO actualizarDireccion (@PathVariable Long id, @RequestBody DireccionRequestDTO dto){
+        guard.updatesAddress(id,dto);
+
 
         return direccionService.actualizarDireccion(id, dto);
 

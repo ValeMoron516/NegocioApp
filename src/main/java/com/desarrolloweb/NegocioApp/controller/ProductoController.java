@@ -1,8 +1,8 @@
 package com.desarrolloweb.NegocioApp.controller;
  
-import com.desarrolloweb.NegocioApp.dtos.paginacionDTO.PaginacionDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoRequestDTO;
-import com.desarrolloweb.NegocioApp.dtos.productoDTO.ProductoResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.paginacion.PaginacionDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoRequestDTO;
+import com.desarrolloweb.NegocioApp.dto.producto.ProductoResponseDTO;
 import com.desarrolloweb.NegocioApp.exception.BadRequestException;
 import com.desarrolloweb.NegocioApp.exception.ConflictException;
 import com.desarrolloweb.NegocioApp.exception.NotFoundException;
@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/productos")
 public class ProductoController {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
+
 
     @Autowired
     private ProductoService productoService;
@@ -33,10 +36,14 @@ public class ProductoController {
     // Leer todos los productos (paginadas)
     @GetMapping
     public ResponseEntity<PaginacionDTO<ProductoResponseDTO>> obtenerTodosProductos(
-        @RequestParam(defaultValue = "1") Integer page, 
-        @RequestParam(defaultValue = "20") Integer limit) {
-        return ResponseEntity.status(HttpStatus.OK)
-        .body(productoService.obtenerTodosProductos(page, limit)); // 200
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer limit,
+            @RequestParam(name = "texto", required = false) String texto,
+            @RequestParam(name = "categoria", required = false) Long categoria,
+            @RequestParam(name = "precio_min", required = false) java.math.BigDecimal precioMin,
+            @RequestParam(name = "precio_max", required = false) java.math.BigDecimal precioMax) {
+        return ResponseEntity.ok(productoService.obtenerTodosProductos(
+                page, limit, texto, categoria, precioMin, precioMax));
     }
 
     // ##################################################
@@ -59,6 +66,8 @@ public class ProductoController {
     @PostMapping
     public ResponseEntity<ProductoResponseDTO> crearProducto(
         @RequestBody ProductoRequestDTO p) {
+        guard.createsProduct(p);
+
         
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -70,6 +79,9 @@ public class ProductoController {
         catch (ConflictException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
         }
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
     }
 
     // ##################################################
@@ -77,6 +89,8 @@ public class ProductoController {
     // Actualizar producto por id
     @PutMapping("{id}")
     public ResponseEntity<ProductoResponseDTO> actualizarProductoPorId(@PathVariable Long id, @RequestBody ProductoRequestDTO p) {
+        guard.updatesProduct(id,p);
+
         
         try {
             return ResponseEntity.status(HttpStatus.OK)
@@ -85,6 +99,9 @@ public class ProductoController {
         catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
         }
+        catch (BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400
+        }
     }
     
     // ##################################################
@@ -92,12 +109,17 @@ public class ProductoController {
     // Borrar por ID
     @DeleteMapping("{id}")
     public ResponseEntity<Void> borrarProductoPorId(@PathVariable Long id) {
+        guard.ownsProduct(id);
+
         try {
             productoService.borrarProductoPorId(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204
         }
         catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
+        catch (ConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
         }
     }
 }
