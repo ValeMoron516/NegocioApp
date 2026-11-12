@@ -18,7 +18,7 @@ import com.desarrolloweb.NegocioApp.dto.detalleVenta.DetalleVentaResponseDTO;
 import com.desarrolloweb.NegocioApp.service.DetalleVentaService;
 
 @RestController
-@RequestMapping("/api/v1/detalles-ventas")
+@RequestMapping("/detalles-ventas")
 public class DetalleVentaController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.desarrolloweb.NegocioApp.service.AccessGuard guard;

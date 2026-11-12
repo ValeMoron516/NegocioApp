@@ -1,6 +1,5 @@
 package com.desarrolloweb.NegocioApp.controller;
 
-import com.desarrolloweb.NegocioApp.entity.Negocio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,7 @@ import com.desarrolloweb.NegocioApp.service.NegocioService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/negocio")
+@RequestMapping("/negocio")
 public class NegocioController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.desarrolloweb.NegocioApp.service.AccessGuard guard;

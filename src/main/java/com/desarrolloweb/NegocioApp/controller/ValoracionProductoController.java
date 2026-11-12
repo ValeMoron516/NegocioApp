@@ -13,9 +13,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v1/valoraciones")
-
-
+@RequestMapping("/valoraciones")
 public class ValoracionProductoController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.desarrolloweb.NegocioApp.service.AccessGuard guard;

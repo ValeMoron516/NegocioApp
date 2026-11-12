@@ -21,7 +21,7 @@ import com.desarrolloweb.NegocioApp.entity.ValoracionNegocio;
 import com.desarrolloweb.NegocioApp.service.ValoracionNegocioService;
 
 @RestController
-@RequestMapping("/api/v1/valoraciones-negocio")
+@RequestMapping("/valoraciones-negocio")
 public class ValoracionNegocioController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.desarrolloweb.NegocioApp.service.AccessGuard guard;

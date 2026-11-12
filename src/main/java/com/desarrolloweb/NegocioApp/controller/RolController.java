@@ -21,7 +21,7 @@ import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.service.RolService;
 
 @RestController
-@RequestMapping("api/v1/roles")
+@RequestMapping("/roles")
 public class RolController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
