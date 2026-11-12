@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/direcciones")
-
-
+@RequestMapping("/direcciones")
 public class DireccionController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.desarrolloweb.NegocioApp.service.AccessGuard guard;

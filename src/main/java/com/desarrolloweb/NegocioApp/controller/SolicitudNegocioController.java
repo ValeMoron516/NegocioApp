@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/solicitudes-negocio")
+@RequestMapping("/solicitudes-negocio")
 public class SolicitudNegocioController {
     private final SolicitudNegocioService servicio;
     public SolicitudNegocioController(SolicitudNegocioService servicio){this.servicio=servicio;}

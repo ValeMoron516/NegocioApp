@@ -477,6 +477,21 @@ Antes de iniciar la aplicación, revisá:
 
 ### 5. Ejecutar el backend
 
+Primero debemos crear la llave que usara la aplicación para generar los tokens:
+
+> [!NOTE]
+> Esta llave debe crearse una única vez por cada sesión de consola utilizada.
+
+```bash
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$bytes = New-Object 'System.Byte[]' 32
+$rng.GetBytes($bytes)
+$env:NEGOCIOAPP_JWT_SECRET = [Convert]::ToBase64String($bytes)
+$rng.Dispose()
+```
+
+Ejecutar la aplicación:
+
 ```bash
 mvn spring-boot:run
 ```
@@ -488,7 +503,7 @@ Consultá los registros de inicio para comprobar que Spring Boot haya arrancado 
 La URL local habitual es:
 
 ```text
-http://localhost:8080/api/v1/categorias
+http://localhost:8000/api/v1/categorias
 ```
 
 ## Endpoints de la API

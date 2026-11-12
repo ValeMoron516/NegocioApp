@@ -53,15 +53,15 @@ public class SecurityConfig {
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
             .authorizeHttpRequests(a -> a
-                .requestMatchers(HttpMethod.POST,"/api/v1/auth/login","/api/v1/auth/registro").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/negocio/mios").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/v1/productos", "/api/v1/productos/**",
-                    "/api/v1/negocio/*", "/api/v1/negocio/buscarPorNombre",
-                    "/api/v1/negocio/buscarPorProducto", "/api/v1/categorias", "/api/v1/categorias/**",
-                    "/api/v1/valoraciones", "/api/v1/valoraciones/promedio",
-                    "/api/v1/valoraciones-negocio", "/api/v1/valoraciones-negocio/*",
-                    "/api/v1/valoraciones-negocio/negocios/*/valoraciones",
-                    "/api/v1/valoraciones-negocio/estrellas/*"
+                .requestMatchers(HttpMethod.POST,"/auth/login","/auth/registro").permitAll()
+                .requestMatchers(HttpMethod.GET, "/negocio/mios").authenticated()
+                .requestMatchers(HttpMethod.GET, "/productos", "/productos/**",
+                    "/negocio/*", "/negocio/buscarPorNombre",
+                    "/negocio/buscarPorProducto", "/categorias", "/categorias/**",
+                    "/valoraciones", "/valoraciones/promedio",
+                    "/valoraciones-negocio", "/valoraciones-negocio/*",
+                    "/valoraciones-negocio/negocios/*/valoraciones",
+                    "/valoraciones-negocio/estrellas/*"
                 ).permitAll()
                 .anyRequest().authenticated())
             .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()));

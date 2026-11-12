@@ -21,7 +21,7 @@ import com.desarrolloweb.NegocioApp.exception.NotFoundException;
 import com.desarrolloweb.NegocioApp.service.UsuarioService;
 
 @RestController
-@RequestMapping("api/v1/usuarios")
+@RequestMapping("/usuarios")
 public class UsuarioController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.desarrolloweb.NegocioApp.service.AccessGuard guard;

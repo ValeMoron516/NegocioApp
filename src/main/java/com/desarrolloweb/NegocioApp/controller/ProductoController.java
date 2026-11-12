@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/v1/productos")
+@RequestMapping("/productos")
 public class ProductoController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.desarrolloweb.NegocioApp.service.AccessGuard guard;

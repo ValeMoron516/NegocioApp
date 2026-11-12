@@ -6,22 +6,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.desarrolloweb.NegocioApp.dto.venta.VentaRequestDTO;
 import com.desarrolloweb.NegocioApp.dto.venta.VentaResponseDTO;
+import com.desarrolloweb.NegocioApp.service.AccessGuard;
 import com.desarrolloweb.NegocioApp.service.VentaService;
 import java.util.List;
 import java.time.LocalDate;
+
 @RestController
-@RequestMapping("/api/v1/ventas")
+@RequestMapping("/ventas")
 public class VentaController {
-    @org.springframework.beans.factory.annotation.Autowired
-    private com.desarrolloweb.NegocioApp.service.AccessGuard guard;
-
-
-    private final VentaService ventaService;
+    @Autowired
+    private AccessGuard guard;
 
     @Autowired
-    public VentaController(VentaService ventaService) {
-        this.ventaService = ventaService;
-    }
+    private VentaService ventaService;
 
     @PostMapping
     public ResponseEntity<VentaResponseDTO> crear(@RequestBody VentaRequestDTO request) {
@@ -46,43 +43,42 @@ public class VentaController {
         List<VentaResponseDTO> ventas = ventaService.buscarPorUsuario(id);
         return new ResponseEntity<>(ventas, HttpStatus.OK);
     }
-@GetMapping
-public ResponseEntity<List<VentaResponseDTO>> listarTodas() {
-        guard.adminOnly();
 
-    List<VentaResponseDTO> ventas = ventaService.listarTodo();
-    return new ResponseEntity<>(ventas, HttpStatus.OK);
-}
-@GetMapping("/buscar")
-public ResponseEntity<List<VentaResponseDTO>> buscarPorFechas(@RequestParam(name="fecha_desde") LocalDate fechaDesde, @RequestParam(name="fecha_hasta") LocalDate fechaHasta) {
-        guard.adminOnly();
+    @GetMapping
+    public ResponseEntity<List<VentaResponseDTO>> listarTodas() {
+            guard.adminOnly();
 
-    List<VentaResponseDTO> ventas = ventaService.buscarPorFechas(fechaDesde, fechaHasta);
-    return new ResponseEntity<>(ventas, HttpStatus.OK);
-}
-@GetMapping("/negocio/{id}/total")
-public ResponseEntity<Long> contarPorNegocio(@PathVariable Long id) {
-        guard.ownsBusiness(id);
+        List<VentaResponseDTO> ventas = ventaService.listarTodo();
+        return new ResponseEntity<>(ventas, HttpStatus.OK);
+    }
+    @GetMapping("/buscar")
+    public ResponseEntity<List<VentaResponseDTO>> buscarPorFechas(@RequestParam(name="fecha_desde") LocalDate fechaDesde, @RequestParam(name="fecha_hasta") LocalDate fechaHasta) {
+            guard.adminOnly();
 
-    Long total = ventaService.contarPorNegocio(id);
-    return new ResponseEntity<>(total, HttpStatus.OK);
-}
-@PutMapping("/{id}")
-public ResponseEntity<VentaResponseDTO> actualizar(@PathVariable Long id, @RequestBody VentaRequestDTO request) {
-        guard.adminOnly();
+        List<VentaResponseDTO> ventas = ventaService.buscarPorFechas(fechaDesde, fechaHasta);
+        return new ResponseEntity<>(ventas, HttpStatus.OK);
+    }
+    @GetMapping("/negocio/{id}/total")
+    public ResponseEntity<Long> contarPorNegocio(@PathVariable Long id) {
+            guard.ownsBusiness(id);
 
-    VentaResponseDTO actualizada = ventaService.actualizar(id, request);
-    return new ResponseEntity<>(actualizada, HttpStatus.OK);
-}
-@DeleteMapping("/{id}")
-public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        guard.adminOnly();
+        Long total = ventaService.contarPorNegocio(id);
+        return new ResponseEntity<>(total, HttpStatus.OK);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<VentaResponseDTO> actualizar(@PathVariable Long id, @RequestBody VentaRequestDTO request) {
+            guard.adminOnly();
 
-    ventaService.eliminar(id);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-}
+        VentaResponseDTO actualizada = ventaService.actualizar(id, request);
+        return new ResponseEntity<>(actualizada, HttpStatus.OK);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+            guard.adminOnly();
 
-
+        ventaService.eliminar(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
     @GetMapping("/mias")
     public ResponseEntity<List<VentaResponseDTO>> misCompras() {
