@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 @EnableMethodSecurity
 public class SecurityConfig {
     @Bean
-    public SecretKey jwtSecret(@Value("${NEGOCIOAPP_JWT_SECRET:}") String encoded) {
+    public SecretKey jwtSecret(@Value("${jwt.secret:}") String encoded) {
         if (encoded == null || encoded.isBlank()) {
             throw new IllegalStateException("Configure NEGOCIOAPP_JWT_SECRET con 32+ bytes aleatorios Base64. Consultar INSTRUCCIONES_AUTH.md");
         }
