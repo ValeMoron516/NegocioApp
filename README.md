@@ -453,10 +453,9 @@ Configurá la conexión de la aplicación con la base de datos.
 El proyecto utiliza `application-secret.properties` en `src/main/resources`, una configuración típica sería:
 
 ```properties
-spring.datasource.url=jdbc:{DB_URL}
+spring.datasource.url=jdbc:${DB_URL}
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
-
 spring.datasource.driver-class-name=org.postgresql.Driver
 ```
 
@@ -477,17 +476,20 @@ Antes de iniciar la aplicación, revisá:
 
 ### 5. Ejecutar el backend
 
-Primero debemos crear la llave que usara la aplicación para generar los tokens:
+Primero debemos crear la llave que usará la aplicación para generar los tokens y guardarla en `src/main/resources/application-secret.properties`:
 
-> [!NOTE]
-> Esta llave debe crearse una única vez por cada sesión de consola utilizada.
-
-```bash
+```PowerShell
 $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+
 $bytes = New-Object 'System.Byte[]' 32
+
 $rng.GetBytes($bytes)
+
 $env:NEGOCIOAPP_JWT_SECRET = [Convert]::ToBase64String($bytes)
+
 $rng.Dispose()
+
+$file = "src/main/resources/application-secret.properties"; if (!(Test-Path $file) -or !(Select-String -Path $file -Pattern "^jwt\.secret\s*=" -Quiet)) { Add-Content -Path $file -Value "`njwt.secret=$env:NEGOCIOAPP_JWT_SECRET" }
 ```
 
 Ejecutar la aplicación:
