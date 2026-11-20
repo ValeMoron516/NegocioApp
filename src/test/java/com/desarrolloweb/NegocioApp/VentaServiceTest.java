@@ -56,6 +56,7 @@ class VentaServiceTest {
         when(direccion.getId()).thenReturn(1L);
         when(direccion.getUsuarioId()).thenReturn(3L);
         when(negocio.getId()).thenReturn(1L);
+        when(negocio.estaAprobado()).thenReturn(true);
 
         Producto producto = new Producto(
                 1L,
@@ -127,6 +128,7 @@ void crearVentaSinStockDebeFallar() {
     Negocio negocio = mock(Negocio.class);
 
     when(negocio.getId()).thenReturn(1L);
+        when(negocio.estaAprobado()).thenReturn(true);
     when(direccion.getUsuarioId()).thenReturn(3L);
 
     Producto producto = new Producto(
