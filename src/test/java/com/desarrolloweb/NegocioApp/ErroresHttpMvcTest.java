@@ -29,7 +29,7 @@ class ErroresHttpMvcTest {
 
     @Test
     void loginConJsonNuloDevuelve400() throws Exception {
-        mvc(mock(AuthService.class)).perform(post("/api/v1/auth/login")
+        mvc(mock(AuthService.class)).perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("null"))
                 .andExpect(status().isBadRequest());
@@ -37,7 +37,7 @@ class ErroresHttpMvcTest {
 
     @Test
     void loginConJsonInvalidoDevuelve400() throws Exception {
-        mvc(mock(AuthService.class)).perform(post("/api/v1/auth/login")
+        mvc(mock(AuthService.class)).perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{esto no es json"))
                 .andExpect(status().isBadRequest());
@@ -48,7 +48,7 @@ class ErroresHttpMvcTest {
         AuthService auth = mock(AuthService.class);
         when(auth.registrar(any(UsuarioRequestDTO.class)))
                 .thenThrow(new BadRequestException("secreto-interno-de-prueba"));
-        var result = mvc(auth).perform(post("/api/v1/auth/registro")
+        var result = mvc(auth).perform(post("/auth/registro")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
                 .andExpect(status().isBadRequest())
