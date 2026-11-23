@@ -100,6 +100,10 @@ public class AccessGuard {
       .anyMatch(v -> "ENTREGADO".equalsIgnoreCase(v.getEstado()) &&
         lines.existsByVentaIdAndProductoId(v.getId(), req.getProductoId()));
     check(entregado);
+    // Un comerciante no puede valorar sus propios artículos aunque exista una venta histórica.
+    Producto producto = products.findById(req.getProductoId()).orElseThrow(this::forbidden);
+    check(producto.getNegocio() != null && producto.getNegocio().getUsuario() != null
+      && !uid().equals(producto.getNegocio().getUsuario().getId()));
     // Una valoración por usuario y producto (independiente del número de compras).
     boolean repetida = productRatings.findByProductoId_Id(req.getProductoId()).stream()
       .anyMatch(r -> r.getUsuarioId() != null && uid().equals(r.getUsuarioId().getId()));
@@ -119,6 +123,8 @@ public class AccessGuard {
       .anyMatch(v -> "ENTREGADO".equalsIgnoreCase(v.getEstado()) &&
         negocioId.equals(v.getNegocio().getId()));
     check(entregado);
+    Negocio negocio = business.findById(negocioId).orElseThrow(this::forbidden);
+    check(negocio.getUsuario() != null && !uid().equals(negocio.getUsuario().getId()));
     boolean repetida = businessRatings.findByNegocioId(negocioId).stream()
       .anyMatch(r -> r.getCliente() != null && uid().equals(r.getCliente().getId()));
     if(repetida)throw new ResponseStatusException(HttpStatus.CONFLICT,"Ya valoraste este negocio");

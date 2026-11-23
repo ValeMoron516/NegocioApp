@@ -496,6 +496,7 @@ Ejecutar la aplicación:
 
 ```bash
 mvn spring-boot:run
+
 ```
 
 ### 6. Comprobar que la aplicación funciona
