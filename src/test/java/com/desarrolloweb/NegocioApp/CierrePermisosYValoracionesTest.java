@@ -69,6 +69,7 @@ class CierrePermisosYValoracionesTest {
     Venta venta = venta(80L,"ENTREGADO",77L);
     when(sales.findByUsuarioId(90001L)).thenReturn(List.of(venta));
     when(lines.existsByVentaIdAndProductoId(80L,44L)).thenReturn(true);
+    productoDeOtroComerciante();
     when(productRatings.findByProductoId_Id(44L)).thenReturn(List.of());
     ValoracionProductoRequestDTO dto = new ValoracionProductoRequestDTO();
     dto.setUsuarioId(90001L); dto.setProductoId(44L);
@@ -77,6 +78,7 @@ class CierrePermisosYValoracionesTest {
   @Test void noPuedeValorarDosVecesElProducto() {
     when(sales.findByUsuarioId(90001L)).thenReturn(List.of(venta(80L,"ENTREGADO",77L)));
     when(lines.existsByVentaIdAndProductoId(80L,44L)).thenReturn(true);
+    productoDeOtroComerciante();
     ValoracionProducto previa = new ValoracionProducto(); previa.setUsuarioId(cliente);
     when(productRatings.findByProductoId_Id(44L)).thenReturn(List.of(previa));
     ValoracionProductoRequestDTO dto = new ValoracionProductoRequestDTO();
@@ -92,16 +94,46 @@ class CierrePermisosYValoracionesTest {
   }
   @Test void puedeValorarNegocioTrasEntrega() {
     when(sales.findByUsuarioId(90001L)).thenReturn(List.of(venta(80L,"ENTREGADO",77L)));
+    negocioDeOtroComerciante();
     when(businessRatings.findByNegocioId(77L)).thenReturn(List.of());
     assertDoesNotThrow(()->guard.createsBusinessRating(77L,90001L));
   }
   @Test void noPuedeValorarDosVecesElNegocio() {
     when(sales.findByUsuarioId(90001L)).thenReturn(List.of(venta(80L,"ENTREGADO",77L)));
+    negocioDeOtroComerciante();
     ValoracionNegocio previa = new ValoracionNegocio(); previa.setCliente(cliente);
     when(businessRatings.findByNegocioId(77L)).thenReturn(List.of(previa));
     ResponseStatusException ex = assertThrows(ResponseStatusException.class,
         ()->guard.createsBusinessRating(77L,90001L));
     assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+  }
+  @Test void noPuedeValorarSuPropioProducto() {
+    when(sales.findByUsuarioId(90001L)).thenReturn(List.of(venta(80L,"ENTREGADO",77L)));
+    when(lines.existsByVentaIdAndProductoId(80L,44L)).thenReturn(true);
+    Producto p = new Producto(); Negocio n = new Negocio(); n.setUsuario(cliente); p.setNegocio(n);
+    when(products.findById(44L)).thenReturn(Optional.of(p));
+    ValoracionProductoRequestDTO dto = new ValoracionProductoRequestDTO();
+    dto.setUsuarioId(90001L); dto.setProductoId(44L);
+    assertEquals(HttpStatus.FORBIDDEN, assertThrows(ResponseStatusException.class,
+        () -> guard.createsProductRating(dto)).getStatusCode());
+  }
+  @Test void noPuedeValorarSuPropioNegocio() {
+    when(sales.findByUsuarioId(90001L)).thenReturn(List.of(venta(80L,"ENTREGADO",77L)));
+    Negocio n = new Negocio(); n.setUsuario(cliente);
+    when(businesses.findById(77L)).thenReturn(Optional.of(n));
+    assertEquals(HttpStatus.FORBIDDEN, assertThrows(ResponseStatusException.class,
+        () -> guard.createsBusinessRating(77L, 90001L)).getStatusCode());
+  }
+  private void negocioDeOtroComerciante() {
+    Usuario dueno = new Usuario(); dueno.setId(91000L);
+    Negocio n = new Negocio(); n.setUsuario(dueno);
+    when(businesses.findById(77L)).thenReturn(Optional.of(n));
+  }
+  private void productoDeOtroComerciante() {
+    Usuario dueno = new Usuario(); dueno.setId(91000L);
+    Negocio n = new Negocio(); n.setUsuario(dueno);
+    Producto p = new Producto(); p.setNegocio(n);
+    when(products.findById(44L)).thenReturn(Optional.of(p));
   }
   private Venta venta(Long id, String estado, Long negocioId) {
     Venta v = new Venta(); v.setId(id); v.setEstado(estado);

@@ -479,6 +479,7 @@ Antes de iniciar la aplicación, revisá:
 
 ```bash
 mvn spring-boot:run
+
 ```
 
 ### 6. Comprobar que la aplicación funciona
