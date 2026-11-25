@@ -102,7 +102,7 @@ public class ProductoControllerTest {
                 "Monitor 24 pulgadas",
                 "Monitor de 24 pulgadas 1920x1080 OLED",
                 149999.0, 10
-        );
+        , null);
 
         when(productoService.obtenerProductoPorId(id))
                 .thenReturn(respuestaService);
@@ -137,14 +137,14 @@ public class ProductoControllerTest {
                 "Monitor 24 pulgadas",
                 "Monitor de 24 pulgadas 1920x1080 OLED",
                 149999.0, 10
-        );
+        , null);
 
         ProductoResponseDTO respuestaService = new ProductoResponseDTO(
                 1L, 1L, "Negocio Pablito", 1L, "Electronica",
                 "Monitor 24 pulgadas",
                 "Monitor de 24 pulgadas 1920x1080 OLED",
                 149999.0, 10
-        );
+        , null);
 
         when(productoService.crearProducto(peticion))
                 .thenReturn(respuestaService);
@@ -164,7 +164,7 @@ public class ProductoControllerTest {
                 "Monitor 24 pulgadas",
                 "Monitor de 24 pulgadas 1920x1080 OLED",
                 149999.0, 10
-        );
+        , null);
 
         when(productoService.crearProducto(peticion))
                 .thenThrow(new BadRequestException());
@@ -183,7 +183,7 @@ public class ProductoControllerTest {
                 "Monitor 24 pulgadas",
                 "Monitor de 24 pulgadas 1920x1080 OLED",
                 149999.0, 10
-        );
+        , null);
 
         when(productoService.crearProducto(peticion))
                 .thenThrow(new ConflictException());
@@ -205,14 +205,14 @@ public class ProductoControllerTest {
                 "Monitor 24 pulgadas",
                 "Monitor de 24 pulgadas 1920x1080 OLED",
                 149999.0, 10
-        );
+        , null);
 
         ProductoResponseDTO respuesta = new ProductoResponseDTO(
                 id, 1L, "Negocio Pablito", 1L, "Electronica",
                 "Monitor 24 pulgadas",
                 "Monitor de 24 pulgadas 1920x1080 OLED",
                 149999.0, 10
-        );
+        , null);
 
         when(productoService.actualizarProductoPorId(id, peticion))
                 .thenReturn(respuesta);
@@ -233,7 +233,7 @@ public class ProductoControllerTest {
                 "Monitor 24 pulgadas",
                 "Monitor de 24 pulgadas 1920x1080 OLED",
                 149999.0, 10
-        );
+        , null);
 
         when(productoService.actualizarProductoPorId(id, peticion))
                 .thenThrow(new NotFoundException());

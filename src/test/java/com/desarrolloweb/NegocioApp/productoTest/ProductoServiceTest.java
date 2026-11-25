@@ -145,7 +145,7 @@ public class ProductoServiceTest {
     void crearProducto_Valido() {
         ProductoRequestDTO peticion = new ProductoRequestDTO(
             1L, "Negocio de Prueba", 1L, "Electrónica", "Webcam", "Cámara HD", 25000.0, 5
-        );
+        , null);
         
         Producto pGuardado = crearProductoMock(1L, "Webcam", 25000.0);
         when(negocioRepository.findById(1L)).thenReturn(Optional.of(pGuardado.getNegocio()));
@@ -174,7 +174,7 @@ public class ProductoServiceTest {
     void crearProducto_NombreInvalido() {
         ProductoRequestDTO peticion = new ProductoRequestDTO(
             1L, "Negocio", 1L, "Cat", "", "Desc", 10.0, 5
-        );
+        , null);
         
         Exception excepcion = assertThrows(BadRequestException.class, () -> {
             productoService.crearProducto(peticion);
@@ -188,7 +188,7 @@ public class ProductoServiceTest {
     void crearProducto_PrecioInvalido() {
         ProductoRequestDTO peticion = new ProductoRequestDTO(
             1L, "Negocio", 1L, "Cat", "Prod", "Desc", null, 5
-        );
+        , null);
         
         Exception excepcion = assertThrows(BadRequestException.class, () -> {
             productoService.crearProducto(peticion);
