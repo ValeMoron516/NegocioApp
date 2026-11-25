@@ -46,7 +46,7 @@ class DetalleVentaServiceTest {
 
     private Producto producto(Negocio n, int stock) {
         return new Producto(5L, n, null, "Auriculares", "Bluetooth",
-                new BigDecimal("45000.00"), stock);
+                new BigDecimal("45000.00"), stock, null);
     }
 
     @Test

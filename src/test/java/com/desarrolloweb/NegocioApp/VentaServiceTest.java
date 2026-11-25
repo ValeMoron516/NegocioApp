@@ -66,7 +66,7 @@ class VentaServiceTest {
                 "Auriculares Bluetooth",
                 new BigDecimal("45000.00"),
                 5
-        );
+        , null);
 
         when(usuarioRepository.findById(3L))
                 .thenReturn(Optional.of(usuario));
@@ -139,7 +139,7 @@ void crearVentaSinStockDebeFallar() {
             "Auriculares Bluetooth",
             new BigDecimal("45000.00"),
             1
-    );
+    , null);
 
     when(usuarioRepository.findById(3L))
             .thenReturn(Optional.of(usuario));
@@ -209,7 +209,7 @@ void crearVentaSinStockDebeFallar() {
         venta.setDireccion(direccion);
         venta.setNegocio(negocio);
         Producto producto = new Producto(1L, negocio, null, "Auriculares",
-                "Bluetooth", new BigDecimal("45000.00"), 3);
+                "Bluetooth", new BigDecimal("45000.00"), 3, null);
         DetalleVenta detalle = new DetalleVenta(5L, venta, producto, 2,
                 new BigDecimal("45000.00"));
         when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
@@ -273,7 +273,7 @@ void crearVentaSinStockDebeFallar() {
         venta.setId(4L);
         venta.setEstado("pendiente");
         Negocio negocio = new Negocio(); negocio.setId(1L);
-        Producto p = new Producto(5L, negocio, null, "Auriculares", "", new BigDecimal("10"), 3);
+        Producto p = new Producto(5L, negocio, null, "Auriculares", "", new BigDecimal("10"), 3, null);
         DetalleVenta detalle = new DetalleVenta(6L, venta, p, 2, new BigDecimal("10"));
         when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
         when(detalleVentaRepository.findByVentaId(4L)).thenReturn(List.of(detalle));

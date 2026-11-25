@@ -4,6 +4,8 @@ public class NegocioRequestDTO{
     private Long usuarioId;
     private String nombre;
     private String descripcion;
+    private String imagenUrl;
+    
     public NegocioRequestDTO(){
 }
     public Long getUsuarioId(){
@@ -24,6 +26,9 @@ public class NegocioRequestDTO{
     public void setDescripcion(String descripcion){
         this.descripcion = descripcion;
     }
+    
+    public String getImagenUrl() { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
 }
 
 

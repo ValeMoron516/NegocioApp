@@ -33,7 +33,8 @@ public class NegocioService {
             guardada.getId(),
             guardada.getUsuario().getId(),
             guardada.getNombre(),
-            guardada.getDescripcion()
+            guardada.getDescripcion(),
+            guardada.getImagenUrl()
 
         );
     }
@@ -44,7 +45,8 @@ public class NegocioService {
             negocio.getId(),
             negocio.getUsuario().getId(),
             negocio.getNombre(),
-            negocio.getDescripcion()
+            negocio.getDescripcion(),
+            negocio.getImagenUrl()
         );
     }
     public List<NegocioResponseDTO> buscarPorNombre(String nombre) {
@@ -56,7 +58,8 @@ public class NegocioService {
                 negocio.getId(),
                 negocio.getUsuario().getId(),
                 negocio.getNombre(),
-                negocio.getDescripcion()
+                negocio.getDescripcion(),
+                negocio.getImagenUrl()
             ));
         }
     return resultado;
@@ -69,7 +72,8 @@ public class NegocioService {
                 negocio.getId(),
                 negocio.getUsuario().getId(),
                 negocio.getNombre(),
-                negocio.getDescripcion()
+                negocio.getDescripcion(),
+                negocio.getImagenUrl()
             ));
             }
             return resultado;
@@ -86,7 +90,8 @@ public class NegocioService {
             actualizado.getId(),
             actualizado.getUsuario().getId(),
             actualizado.getNombre(),
-            actualizado.getDescripcion()
+            actualizado.getDescripcion(),
+            actualizado.getImagenUrl()
         );
     }
     public void eliminar(Long id){
@@ -103,7 +108,8 @@ public class NegocioService {
                 negocio.getId(),
                 negocio.getUsuario().getId(),
                 negocio.getNombre(),
-                negocio.getDescripcion()
+                negocio.getDescripcion(),
+                negocio.getImagenUrl()
             ));
         }
     return resultado;

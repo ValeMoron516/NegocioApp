@@ -43,10 +43,10 @@ public class ProductoRepositoryTest {
 		Categoria c = new Categoria(null, "Indumentaria", "Ropa, calzado y accesorios para todas las edades");
 		Categoria cP = categoriaRepository.save(c);
 
-		Negocio n = new Negocio(null, uP, "Sublime Ropa", "Moda urbana y tendencias actuales (Propiedad de María)");
+		Negocio n = new Negocio(null, uP, "Sublime Ropa", "Moda urbana y tendencias actuales (Propiedad de María)", null);
 		Negocio nP = negocioRepository.save(n);
 
-		Producto p = new Producto(null, nP, cP, "Pantalón Cargo Verde", "Pantalón resistente con múltiples bolsillos", new BigDecimal("35000.00"), 12);
+		Producto p = new Producto(null, nP, cP, "Pantalón Cargo Verde", "Pantalón resistente con múltiples bolsillos", new BigDecimal("35000.00"), 12, null);
 		productoRepository.save(p);
 
 		Long id = cP.getId();
