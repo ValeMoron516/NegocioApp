@@ -124,6 +124,7 @@ public class ProductoService {
         producto.setDescripcion(dto.getDescripcion());
         producto.setPrecio(precioValido(dto.getPrecio()));
         producto.setStock(dto.getStock());
+        producto.setImagenUrl(dto.getImagenUrl())
         return convertir(productoRepository.save(producto));
     }
 
@@ -154,6 +155,7 @@ public class ProductoService {
         if (dto.getDescripcion() != null) producto.setDescripcion(dto.getDescripcion());
         if (dto.getPrecio() != null) producto.setPrecio(precioValido(dto.getPrecio()));
         if (dto.getStock() != null) producto.setStock(dto.getStock());
+        if (dtoproducto.getImagenUrl() != null) producto.setImagenUrl(dto.getImagenUrl());
 
         return convertir(productoRepository.save(producto));
     }
@@ -209,6 +211,8 @@ public class ProductoService {
                 categoria == null ? null : categoria.getId(),
                 categoria == null ? null : categoria.getNombre(),
                 producto.getNombre(), producto.getDescripcion(),
-                producto.getPrecio().doubleValue(), producto.getStock());
+                producto.getPrecio().doubleValue(), producto.getStock(),
+                producto.getImagenUrl()
+        );
     }
 }
