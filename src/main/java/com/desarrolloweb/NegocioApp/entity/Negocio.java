@@ -40,7 +40,7 @@ public class Negocio {
     private Long revisadaPorId;
     @Column(name = "motivo_rechazo", length = 500)
     private String motivoRechazo;
-    @Column(name = "imagen_url", lengh = 30)
+    @Column(name = "imagen_url", length = 30)
     private String imagenUrl;
     
     public boolean estaAprobado(){ return "APROBADO".equals(estadoAprobacion); }
@@ -54,11 +54,13 @@ public class Negocio {
     public void setRevisadaPorId(Long id){ this.revisadaPorId=id; }
     public String getMotivoRechazo(){ return motivoRechazo; }
     public void setMotivoRechazo(String motivo){ this.motivoRechazo=motivo; }
-    public Negocio(Long id, Usuario usuario, String nombre, String descripcion) {
+    
+    public Negocio(Long id, Usuario usuario, String nombre, String descripcion, String imagenUrl) {
         this.id = id;
         this.usuario = usuario;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.imagenUrl = imagenUrl;
     }
     public Negocio() {
     }
@@ -86,5 +88,8 @@ public class Negocio {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+    
+    public String getImagenUrl() { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
 }
 

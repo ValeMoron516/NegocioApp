@@ -45,14 +45,14 @@ public class Producto {
     @Column(nullable = false)
     private Integer stock;
     
-    @Column(name = "imagen_url", lengh = 30)
+    @Column(name = "imagen_url", length = 30)
     private String imagenUrl;
 
     // Constructores
     public Producto() { }
 
     public Producto(Long id, Negocio negocio, Categoria categoria, String nombre,
-            String descripcion, BigDecimal precio, Integer stock) {
+            String descripcion, BigDecimal precio, Integer stock, String imagenUrl) {
         this.id = id;
         this.negocio = negocio;
         this.categoria = categoria;
@@ -60,6 +60,7 @@ public class Producto {
         this.descripcion = descripcion;
         this.precio = precio;
         this.stock = stock;
+        this.imagenUrl = imagenUrl;
     }
 
     // --- Getters y Setters ---
@@ -83,5 +84,8 @@ public class Producto {
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
+    
+    public String getImagenUrl() { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
     
 }
