@@ -294,7 +294,8 @@ CREATE TABLE negocios (
           id BIGSERIAL PRIMARY KEY,
           usuario_id BIGINT REFERENCES usuarios(id) ON DELETE CASCADE,
           nombre VARCHAR(150) NOT NULL,
-          descripcion TEXT
+          descripcion TEXT,
+          imagen_url VARCHAR(30)
 );
 
 CREATE TABLE direcciones (
@@ -315,7 +316,8 @@ CREATE TABLE productos (
           nombre VARCHAR(150) NOT NULL,
           descripcion TEXT,
           precio DECIMAL(10,2) NOT NULL CHECK (precio >= 0),
-          stock INTEGER NOT NULL CHECK (stock >= 0)
+          stock INTEGER NOT NULL CHECK (stock >= 0),
+          imagen_url VARCHAR(30)
 );
 
 CREATE TABLE ventas (
