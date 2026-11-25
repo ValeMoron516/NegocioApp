@@ -44,6 +44,9 @@ public class Producto {
 
     @Column(nullable = false)
     private Integer stock;
+    
+    @Column(name = "imagen_url", lengh = 30)
+    private String imagenUrl;
 
     // Constructores
     public Producto() { }

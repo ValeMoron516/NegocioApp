@@ -5,13 +5,16 @@ public class NegocioResponseDTO{
     private Long usuarioId;
     private String nombre;
     private String descripcion;
+    private String imagenUrl;
+    
     public NegocioResponseDTO(){
     }
-    public NegocioResponseDTO(Long id, Long usuarioId, String nombre, String descripcion){
+    public NegocioResponseDTO(Long id, Long usuarioId, String nombre, String descripcion, String imagenUrl){
         this.id = id;
         this.usuarioId = usuarioId;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.imagenUrl = imagenUrl;
     }
     public Long getId(){
         return id;
@@ -37,4 +40,7 @@ public class NegocioResponseDTO{
     public void setDescripcion(String descripcion){
         this.descripcion = descripcion;
     }
+    
+    public String getImagenUrl() { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
 }

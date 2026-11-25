@@ -13,13 +13,14 @@ public class ProductoRequestDTO {
     private String descripcion;
     private Double precio;
     private Integer stock;
+    private String imagenUrl;
 
     // Constructores
     public ProductoRequestDTO() { }
 
     public ProductoRequestDTO(Long negocioId, String nombreNegocio, 
             Long categoriaId, String nombreCategoria, String nombre,
-            String descripcion, Double precio, Integer stock) {
+            String descripcion, Double precio, Integer stock, String imagenUrl) {
         this.negocioId = negocioId;
         this.nombreNegocio = nombreNegocio;
         this.categoriaId = categoriaId;
@@ -28,6 +29,7 @@ public class ProductoRequestDTO {
         this.descripcion = descripcion;
         this.precio = precio;
         this.stock = stock;
+        this.imagenUrl = imagenUrl;
     }
 
     // --- Getters y Setters ---
@@ -55,4 +57,6 @@ public class ProductoRequestDTO {
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
     
+    public String getImagenUrl() { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
 }

@@ -40,6 +40,9 @@ public class Negocio {
     private Long revisadaPorId;
     @Column(name = "motivo_rechazo", length = 500)
     private String motivoRechazo;
+    @Column(name = "imagen_url", lengh = 30)
+    private String imagenUrl;
+    
     public boolean estaAprobado(){ return "APROBADO".equals(estadoAprobacion); }
     public String getEstadoAprobacion(){ return estadoAprobacion; }
     public void setEstadoAprobacion(String estado){ this.estadoAprobacion=estado; }
