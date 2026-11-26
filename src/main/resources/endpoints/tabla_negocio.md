@@ -73,19 +73,25 @@
   `404 Not Found`-> No existe el ID ingresado por el usuario
   `500 Internal Server Error`: Error interno del servidor o problema con la base de datos.
 
-### Actualizar nombre y descripcion de un negocio
+### Actualizar datos de un negocio
 
 - **URL:**`~/api/v1/negocio/{id}`
 - **Método HTTP:** `PUT`
-- **Descripción:** Actualiza el nombre y descripcion de un negocio.
+- **Descripción:** Actualiza los datos del perfil del negocio. Los campos opcionales omitidos conservan su valor actual; una cadena vacía los limpia.
 - **Request Body:**
 
 ```json
 {
   "nombre": "Pintureria Lucci",
-  "descripcion": "Pintureria en general, insumos y todo tipos de productos para tu casa"
+  "descripcion": "Pintureria en general, insumos y todo tipos de productos para tu casa",
+  "imagenUrl": "https://ejemplo.com/pintureria-lucci.jpg",
+  "aliasBancario": "lucci.pintureria",
+  "titularCuenta": "Maria Lucci",
+  "whatsappComercial": "+5491112345678"
 }
 ```
+
+`aliasBancario` admite hasta 100 caracteres, `titularCuenta` hasta 150, `whatsappComercial` hasta 30 e `imagenUrl` hasta 500. Los datos de transferencia se devuelven en las consultas autenticadas del comerciante, no en las respuestas públicas del catálogo. El cliente consulta los datos correspondientes a una compra propia mediante `GET /ventas/{id}/datos-transferencia`.
 
 - **Respuestas HTTP:**
   `200 OK`: Se pudo actualizar el negocio por su ID en particular sin problemas.

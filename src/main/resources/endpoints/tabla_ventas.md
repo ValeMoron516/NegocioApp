@@ -1,3 +1,18 @@
+### Consultar datos de transferencia de una compra propia
+
+- **URL:** `~/api/v1/ventas/{id}/datos-transferencia`
+- **Método HTTP:** `GET`
+- **Descripción:** Devuelve el alias bancario, titular y WhatsApp del comercio asociado a la compra. Solo puede consultarla el cliente dueño de la venta o un administrador.
+- **Respuesta:**
+
+```json
+{
+  "aliasBancario": "lucci.pintureria",
+  "titularCuenta": "Maria Lucci",
+  "whatsappComercial": "+5491112345678"
+}
+```
+
 ### Registrar venta
 
 - **URL:**`~/api/v1/ventas`

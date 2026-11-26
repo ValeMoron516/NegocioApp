@@ -295,7 +295,10 @@ CREATE TABLE negocios (
           usuario_id BIGINT REFERENCES usuarios(id) ON DELETE CASCADE,
           nombre VARCHAR(150) NOT NULL,
           descripcion TEXT,
-          imagen_url VARCHAR(30)
+          imagen_url VARCHAR(500),
+          alias_bancario VARCHAR(100),
+          titular_cuenta VARCHAR(150),
+          whatsapp_comercial VARCHAR(30)
 );
 
 CREATE TABLE direcciones (
@@ -447,6 +450,8 @@ INSERT INTO valoraciones_negocio (negocio_id, cliente_id, estrellas, comentario)
 
 COMMIT;
 ```
+
+Si la base ya existe, antes de iniciar la aplicación ejecutá una vez `src/main/resources/db/migration/V20261126_01__datos_comerciales_negocio.sql` en PostgreSQL. El backend usa `spring.jpa.hibernate.ddl-auto=validate` y no aplica migraciones automáticamente.
 
 ### 3. Configurar las credenciales de PostgreSQL
 

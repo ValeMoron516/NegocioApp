@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.desarrolloweb.NegocioApp.dto.venta.VentaRequestDTO;
 import com.desarrolloweb.NegocioApp.dto.venta.VentaResponseDTO;
+import com.desarrolloweb.NegocioApp.dto.negocio.DatosTransferenciaNegocioDTO;
 import com.desarrolloweb.NegocioApp.service.AccessGuard;
+import com.desarrolloweb.NegocioApp.service.NegocioService;
 import com.desarrolloweb.NegocioApp.service.VentaService;
 import java.util.List;
 import java.time.LocalDate;
@@ -19,6 +21,8 @@ public class VentaController {
 
     @Autowired
     private VentaService ventaService;
+    @Autowired
+    private NegocioService negocioService;
 
     @PostMapping
     public ResponseEntity<VentaResponseDTO> crear(@RequestBody VentaRequestDTO request) {
@@ -34,6 +38,13 @@ public class VentaController {
 
         VentaResponseDTO venta = ventaService.buscarPorId(id);
         return new ResponseEntity<>(venta, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/datos-transferencia")
+    public ResponseEntity<DatosTransferenciaNegocioDTO> datosTransferencia(@PathVariable Long id) {
+        guard.saleOwner(id);
+        VentaResponseDTO venta = ventaService.buscarPorId(id);
+        return ResponseEntity.ok(negocioService.datosTransferencia(venta.getNegocioId()));
     }
 
     @GetMapping("/usuario/{id}")

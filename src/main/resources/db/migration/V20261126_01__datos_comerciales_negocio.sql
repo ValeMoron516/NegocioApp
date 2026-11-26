@@ -1,0 +1,5 @@
+ALTER TABLE negocios
+    ADD COLUMN IF NOT EXISTS alias_bancario VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS titular_cuenta VARCHAR(150),
+    ADD COLUMN IF NOT EXISTS whatsapp_comercial VARCHAR(30),
+    ALTER COLUMN imagen_url TYPE VARCHAR(500);
