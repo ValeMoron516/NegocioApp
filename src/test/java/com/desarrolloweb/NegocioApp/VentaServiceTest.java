@@ -242,9 +242,39 @@ void crearVentaSinStockDebeFallar() {
         when(ventaRepository.save(any(Venta.class))).thenAnswer(i -> i.getArgument(0));
         VentaRequestDTO request = new VentaRequestDTO();
         request.setEstado("pagado");
+        request.setNumeroComprobante("12345678");
         VentaResponseDTO res = ventaService.actualizar(4L, request);
         assertEquals("PAGADO", res.getEstado());
+        assertEquals("12345678", res.getNumeroComprobante());
         verify(productoRepository, never()).save(any(Producto.class));
+    }
+
+    @Test
+    void noPermiteMarcarPagadoSinComprobante() {
+        Venta venta = new Venta();
+        venta.setId(4L);
+        venta.setEstado("PENDIENTE");
+        venta.setTotal(new BigDecimal("100.00"));
+        when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
+        VentaRequestDTO request = new VentaRequestDTO();
+        request.setEstado("PAGADO");
+        assertThrows(IllegalArgumentException.class,
+                () -> ventaService.actualizar(4L, request));
+        verify(ventaRepository, never()).save(any(Venta.class));
+    }
+
+    @Test
+    void noPermiteMarcarEnviadoSinNumeroEnvio() {
+        Venta venta = new Venta();
+        venta.setId(4L);
+        venta.setEstado("PAGADO");
+        venta.setTotal(new BigDecimal("100.00"));
+        when(ventaRepository.buscarParaModificar(4L)).thenReturn(Optional.of(venta));
+        VentaRequestDTO request = new VentaRequestDTO();
+        request.setEstado("ENVIADO");
+        assertThrows(IllegalArgumentException.class,
+                () -> ventaService.actualizar(4L, request));
+        verify(ventaRepository, never()).save(any(Venta.class));
     }
 
     @Test

@@ -91,7 +91,7 @@ public class VentaController {
         return ResponseEntity.ok(ventaService.listarPorNegocio(id));
     }
 
-    public record CambioEstadoRequest(String estado) {}
+    public record CambioEstadoRequest(String estado, String numeroComprobante, String numeroEnvio) {}
 
     @PatchMapping("/{id}/estado")
     public ResponseEntity<VentaResponseDTO> cambiarEstado(
@@ -100,7 +100,7 @@ public class VentaController {
         guard.ownsSaleBusiness(id);
         if (request == null || request.estado() == null || request.estado().isBlank())
             throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado obligatorio");
-        return ResponseEntity.ok(ventaService.cambiarEstado(id, request.estado()));
+        return ResponseEntity.ok(ventaService.cambiarEstado(id, request.estado(), request.numeroComprobante(), request.numeroEnvio()));
     }
 
 }

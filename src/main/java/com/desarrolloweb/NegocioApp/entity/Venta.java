@@ -48,6 +48,17 @@ public class Venta {
     @Column(name = "total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
+    @Column(name = "numero_comprobante", length = 100)
+    private String numeroComprobante;
+
+    @Column(name = "numero_envio", length = 100)
+    private String numeroEnvio;
+
+    public String getNumeroComprobante() { return numeroComprobante; }
+    public void setNumeroComprobante(String numeroComprobante) { this.numeroComprobante = numeroComprobante; }
+    public String getNumeroEnvio() { return numeroEnvio; }
+    public void setNumeroEnvio(String numeroEnvio) { this.numeroEnvio = numeroEnvio; }
+
     public Venta() {}
 
     public Venta(Long id, Usuario usuario, Direccion direccion, Negocio negocio, LocalDateTime fechaVenta, String estado, BigDecimal total) {

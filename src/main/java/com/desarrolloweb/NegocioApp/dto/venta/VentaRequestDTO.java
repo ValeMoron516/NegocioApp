@@ -13,6 +13,8 @@ public class VentaRequestDTO {
     private Long negocioId;
     private LocalDate fechaVenta;
     private String estado;
+    private String numeroComprobante;
+    private String numeroEnvio;
     private BigDecimal total;
 
     private List<ProductoCompraDTO> productos = new ArrayList<>();
@@ -51,6 +53,11 @@ public class VentaRequestDTO {
     public void setFechaVenta(LocalDate fechaVenta) {
         this.fechaVenta = fechaVenta;
     }
+
+    public String getNumeroComprobante() { return numeroComprobante; }
+    public void setNumeroComprobante(String numeroComprobante) { this.numeroComprobante = numeroComprobante; }
+    public String getNumeroEnvio() { return numeroEnvio; }
+    public void setNumeroEnvio(String numeroEnvio) { this.numeroEnvio = numeroEnvio; }
 
     public String getEstado() {
         return estado;

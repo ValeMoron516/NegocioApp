@@ -379,6 +379,16 @@ public class VentaService {
 
             String actual = normalizarEstado(venta.getEstado());
             validarCambioEstado(actual, nuevo);
+            if (!actual.equals(nuevo)) {
+                if ("PAGADO".equals(nuevo)) {
+                    venta.setNumeroComprobante(validarReferencia(
+                        request.getNumeroComprobante(), "numero de comprobante"));
+                }
+                if ("ENVIADO".equals(nuevo)) {
+                    venta.setNumeroEnvio(validarReferencia(
+                        request.getNumeroEnvio(), "numero de envio"));
+                }
+            }
 
             if ("CANCELADO".equals(nuevo)
                     && !"CANCELADO".equals(actual)) {
@@ -399,6 +409,18 @@ public class VentaService {
         );
     }
 
+    private String validarReferencia(String valor, String campo) {
+        if (valor == null || valor.isBlank()) {
+            throw new IllegalArgumentException("Se requiere el " + campo);
+        }
+        String normalizado = valor.trim();
+        if (normalizado.length() < 3 || normalizado.length() > 100
+                || !normalizado.matches("[\\p{L}\\p{N} ._/-]+")) {
+            throw new IllegalArgumentException("El " + campo + " no tiene un formato valido");
+        }
+        return normalizado;
+    }
+
     // Cambio controlado por un endpoint exclusivo. No permite editar importes ni compradores.
     @Transactional
     public VentaResponseDTO cambiarEstado(Long id, String nuevoEstado) {
@@ -406,6 +428,18 @@ public class VentaService {
             throw new IllegalArgumentException("El estado es obligatorio");
         VentaRequestDTO dto = new VentaRequestDTO();
         dto.setEstado(nuevoEstado);
+        return actualizar(id, dto);
+    }
+
+    @Transactional
+    public VentaResponseDTO cambiarEstado(Long id, String nuevoEstado,
+            String numeroComprobante, String numeroEnvio) {
+        if (nuevoEstado == null || nuevoEstado.isBlank())
+            throw new IllegalArgumentException("El estado es obligatorio");
+        VentaRequestDTO dto = new VentaRequestDTO();
+        dto.setEstado(nuevoEstado);
+        dto.setNumeroComprobante(numeroComprobante);
+        dto.setNumeroEnvio(numeroEnvio);
         return actualizar(id, dto);
     }
 
@@ -572,6 +606,8 @@ public class VentaService {
         }
 
         dto.setProductos(productos);
+        dto.setNumeroComprobante(venta.getNumeroComprobante());
+        dto.setNumeroEnvio(venta.getNumeroEnvio());
 
         return dto;
     }

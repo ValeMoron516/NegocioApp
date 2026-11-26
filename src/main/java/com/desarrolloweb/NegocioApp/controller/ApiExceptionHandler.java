@@ -55,7 +55,9 @@ public class ApiExceptionHandler {
                        HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class,
                        MissingServletRequestParameterException.class, MethodArgumentNotValidException.class})
     public ResponseEntity<Map<String,Object>> invalid(Exception ex) {
-        return error(HttpStatus.BAD_REQUEST, "Datos de solicitud invalidos");
+        String mensaje = (ex instanceof IllegalArgumentException && ex.getMessage() != null)
+            ? ex.getMessage() : "Datos de solicitud invalidos";
+        return error(HttpStatus.BAD_REQUEST, mensaje);
     }
 
     @ExceptionHandler({NotFoundException.class, NoSuchElementException.class})
