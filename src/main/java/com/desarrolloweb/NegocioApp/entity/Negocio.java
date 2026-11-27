@@ -40,8 +40,14 @@ public class Negocio {
     private Long revisadaPorId;
     @Column(name = "motivo_rechazo", length = 500)
     private String motivoRechazo;
-    @Column(name = "imagen_url", length = 30)
+    @Column(name = "imagen_url", length = 500)
     private String imagenUrl;
+    @Column(name = "alias_bancario", length = 100)
+    private String aliasBancario;
+    @Column(name = "titular_cuenta", length = 150)
+    private String titularCuenta;
+    @Column(name = "whatsapp_comercial", length = 30)
+    private String whatsappComercial;
     
     public boolean estaAprobado(){ return "APROBADO".equals(estadoAprobacion); }
     public String getEstadoAprobacion(){ return estadoAprobacion; }
@@ -91,5 +97,11 @@ public class Negocio {
     
     public String getImagenUrl() { return imagenUrl; }
     public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+    public String getAliasBancario() { return aliasBancario; }
+    public void setAliasBancario(String aliasBancario) { this.aliasBancario = aliasBancario; }
+    public String getTitularCuenta() { return titularCuenta; }
+    public void setTitularCuenta(String titularCuenta) { this.titularCuenta = titularCuenta; }
+    public String getWhatsappComercial() { return whatsappComercial; }
+    public void setWhatsappComercial(String whatsappComercial) { this.whatsappComercial = whatsappComercial; }
 }
 

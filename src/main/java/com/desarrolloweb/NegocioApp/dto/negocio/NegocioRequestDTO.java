@@ -5,6 +5,9 @@ public class NegocioRequestDTO{
     private String nombre;
     private String descripcion;
     private String imagenUrl;
+    private String aliasBancario;
+    private String titularCuenta;
+    private String whatsappComercial;
     
     public NegocioRequestDTO(){
 }
@@ -29,6 +32,12 @@ public class NegocioRequestDTO{
     
     public String getImagenUrl() { return imagenUrl; }
     public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+    public String getAliasBancario() { return aliasBancario; }
+    public void setAliasBancario(String aliasBancario) { this.aliasBancario = aliasBancario; }
+    public String getTitularCuenta() { return titularCuenta; }
+    public void setTitularCuenta(String titularCuenta) { this.titularCuenta = titularCuenta; }
+    public String getWhatsappComercial() { return whatsappComercial; }
+    public void setWhatsappComercial(String whatsappComercial) { this.whatsappComercial = whatsappComercial; }
 }
 
 
